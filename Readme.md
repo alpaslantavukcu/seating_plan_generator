@@ -185,6 +185,6 @@ The program handles various error conditions:
 
 Feel free to submit issues and enhancement requests!
 
-## License
+## Lisans 
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Yayımlanan kodları izin almadan, kaynak göstermeden, özgürce okuyabilir, başkalarına okutabilir, kopyalayabilir, dağıtabilir, yayabilir, eleştirebilir, kendi etik ilkeleriniz doğrultusunda, çalabilir, talan edebilir, kısmen ya da tamamen sahiplenebilir, satabilir, değiştirerek ya da değiştirmeden tekrar yayımlayabilir, kötüleyebilir, lanetleyebilirsiniz.
