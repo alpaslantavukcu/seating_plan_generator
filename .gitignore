@@ -1,0 +1,10 @@
+# SpecStory explanation file
+.specstory/*
+*.pdf
+*.txt
+
+# Ignore all .xlsx files
+*.xlsx
+
+# But not those in the Templates folder
+!Templates/*.xlsx

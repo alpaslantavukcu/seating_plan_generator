@@ -1,0 +1,5 @@
+{
+    "available_classrooms": ["Z-16", "Z-17"],
+    "student_ids_file": "dummy-with-names.txt",
+    "output_prefix": "dummy_seating_plan"
+}
