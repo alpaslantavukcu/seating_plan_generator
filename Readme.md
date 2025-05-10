@@ -1,45 +1,51 @@
-# Exam Seating Plan Generator
+# Otomatik Oturma Planı Oluşturucu
 
-A Python program that generates exam seating plans by distributing students across available classrooms based on classroom capacities and seat mappings, with template-based visual output.
+Projenin amacı, oturma planı hazırlama işlemini otomatikleştirmek ve standartlaştırmaktır. Hazırlanan oturma planlarında öğrenci sadece imza atacağı için yoklama alma süreci de **hızlanacaktır**.
 
-## Features
+Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını excel dosyası olarak oluşturur. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
 
-- Reads classroom configurations and seat mappings from a JSON file
-- Accepts student IDs and names from a text file
-- Shuffles students for random assignment
-- Uses Excel templates for each classroom
-- Assigns students to specific seats (cells) in Excel
-- Formats long names to maintain readability
-- Command-line interface for easy integration
+## Hızlı Başlangıç
 
-## Prerequisites
+**1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `students.txt` dosyasına kopyalayın.
 
-- Python 3.7 or higher
-- Required Python packages:
-  ```bash
-  pip install openpyxl
-  ```
+![Ninova Öğrenci Listesi](imgs/ninova-ogrenciler.png)
 
-## Usage
+**2-** "input.json" dosyasında, hangi sınıfların kullanılacağını belirtin.
 
-### Command Line Interface
+```
+{
+    "available_classrooms": ["Z-16", "Z-17"],       // Kullanacağınız sınıflar
+    "student_ids_file": "students.txt",             // Öğrenci listesi
+    "output_prefix": "BLG102 Midterm Seating Plan"  // Sınav İsmi
+}
+```
+
+**3-** `python seating_plan_generator.py` komutunu çalıştırarak planları excel dosyası olarak oluşturun. Örnek ekran görüntüsü (listelenen öğrenciler gerçek değildir):
+
+![Örnek Çıktı](imgs/ornek-cikti.png)
+
+TODO: **Bu resim güncellenecek!**
+
+## Ön Gereksinimler
+
+- Python 3.7 veya üzeri
+- Gerekli paketler için: `pip install openpyxl`
+
+## Detaylar
+
+### Komut Satırı Arayüzü
 
 ```bash
 python seating_plan_generator.py -c <config_file> -i <input_file>
 ```
 
-Arguments:
-- `-c, --config`: Path to configuration JSON file (required)
-- `-i, --input`: Path to input JSON file (required)
+Argümanlar:
+- `-c, --config`: Yapılandırma JSON dosyasının yolu (Varsayılan: configuration.json)
+- `-i, --input`: Girdi JSON dosyasının yolu (Varsayılan: input.json)
 
-Example:
-```bash
-python seating_plan_generator.py -c config/configuration.json -i config/input.json
-```
+### Dosya Formatları
 
-### File Formats
-
-#### 1. Configuration File (configuration.json)
+#### 1. "Configuration" dosyası (configuration.json)
 ```json
 {
     "classroom-capacities": {
@@ -61,10 +67,11 @@ python seating_plan_generator.py -c config/configuration.json -i config/input.js
     }
 }
 ```
-- `classroom-capacities`: Object with classroom codes as keys and their capacities as values
-- `seat-mappings`: Object mapping seat numbers to Excel cells for each classroom
 
-#### 2. Input File (input.json)
+- `classroom-capacities`: Sınıf isimlerini ve kapasitelerini belirten nesne
+- `seat-mappings`: Template'e göre her sınıf için oturma düzenini belirten nesne
+
+#### 2. "Input" dosyası (input.json)
 ```json
 {
     "available_classrooms": ["Z-16", "Z-17"],
@@ -72,118 +79,52 @@ python seating_plan_generator.py -c config/configuration.json -i config/input.js
     "output_prefix": "output/seating_plan"
 }
 ```
-- `available_classrooms`: List of classrooms to use (must exist in configuration.json)
-- `student_ids_file`: Path to text file containing student IDs and names
-- `output_prefix`: Prefix for output files - one file per classroom will be created (e.g., "seating_plan_Z-16.xlsx", "seating_plan_Z-17.xlsx")
+- `available_classrooms`: Kullanılacak sınıfların listesi (configuration.json'da belirtilmiş olmalıdır)
+- `student_ids_file`: Öğrenci ID'lerini ve adlarını içeren metin dosyasının yolu
+- `output_prefix`: Çıktı dosyalarının ön eki - her sınıf için bir dosya oluşturulacak (örnek: "seating_plan_Z-16.xlsx", "seating_plan_Z-17.xlsx")
 
-#### 3. Student IDs File (specified in input.json)
+#### 3. Öğrenci ID'leri Dosyası (input.json'da belirtilmiş olmalıdır)
 ```text
-150220722   John Smith (smithj)
-150220724   Jane Doe (doej)
-150220725   Alex Johnson (johnsona)
+150220722   Ahmet Yılmaz (yilmaza22)
+150220724   Ayşe Kaya (kayaa22)
+...
 ```
-- Each line contains: Student ID, name, and nickname in parentheses
-- IDs and names are separated by tabs or spaces
+- Her satır, öğrenci ID, adı ve kısaltmasını içerir
+- ID'ler ve adlar, tab veya boşluklarla ayrılır
 
-#### 4. Excel Templates
-- Each classroom should have a template file named `Template_ROOM.xlsx`
-- For example: `Template_Z-16.xlsx`, `Template_Z-17.xlsx`
-- The templates should contain the classroom layout
+#### 4. Excel Template Dosyaları
+- Her sınıf için bir template dosyası olmalıdır
+- Örnek: `Template_Z-16.xlsx`, `Template_Z-17.xlsx`
+- Template dosyaları, sınıf düzenini içermelidir
 
-## Distribution Algorithm
+## Programın Akışı
 
-The program uses the following algorithm to distribute students:
+- Program, belirtilen configuration, input ve öğrenci listesi dosyalarını okur.
+- Öğrenciler, her sınıf için belirtilen oturma düzenine göre Excel hücrelerine rastgele atanır.
+- Çıktı dosyaları, `{prefix}_{room}.xlsx` desenini kullanarak adlandırılır.
 
-1. **Input Processing**
-   - Loads classroom configurations and seat mappings
-   - Validates available classrooms and their seat mappings
-   - Reads student IDs and names
-   - Shuffles students for random assignment
+## Hata İşleme
 
-2. **Capacity Validation**
-   - Calculates total capacity of available classrooms
-   - Verifies if there's enough capacity for all students
-   - Ensures seat mappings exist for all classrooms
+Program, çeşitli hata durumlarını işler:
+- Configuration/input dosyaları eksik veya geçersiz
+- Girdi dosyasında bilinmeyen sınıflar
+- Sınıflar için eksik oturma düzeni
+- Boş oturma düzeni
+- Yetersiz toplam kapasite
+- Eksik template dosyaları
+- Dosya izin sorunları
 
-3. **Distribution Logic**
-   - Shuffles the student list for random assignment
-   - Assigns students to specific seats in each classroom
-   - Uses the seat mapping to determine Excel cell positions
+## Notlar
 
-4. **Output Generation**
-   - For each classroom, loads its template file
-   - Places each student in their assigned cell
-   - Formats each entry as "(seat_number) student_id - name"
-   - For long names, formats as "First M. Last" (first name, middle initials, last name)
-   - Creates separate output files for each classroom
+- Öğrenciler rastgele dağıtılır
+- Template dosyalarının tam olarak `Template_ROOM.xlsx` olarak adlandırılması gerekir
+- Uzun adlar, ilk ad + orta ilkler + soyad olarak yeniden biçimlendirilir
+- Çıktı dosyaları, `{prefix}_{room}.xlsx` desenini kullanarak adlandırılır
+- Çıktı dizinleri, eğer yoksa otomatik olarak oluşturulur
 
-## Example Workflow
+## Katkıda Bulunma
 
-1. **Setup Configuration**
-   ```json
-   {
-       "classroom-capacities": {
-           "Z-16": 70,
-           "Z-17": 49
-       },
-       "seat-mappings": {
-           "Z-16": {
-               "1": "C4",
-               "2": "D4"
-           },
-           "Z-17": {
-               "1": "C4",
-               "2": "D4"
-           }
-       }
-   }
-   ```
-
-2. **Prepare Input**
-   ```json
-   {
-       "available_classrooms": ["Z-16", "Z-17"],
-       "student_ids_file": "students.txt",
-       "output_prefix": "output/dummy"
-   }
-   ```
-
-3. **Create Templates**
-   - Create `Template_Z-16.xlsx` and `Template_Z-17.xlsx` with your desired layout
-
-4. **Run Program**
-   ```bash
-   python seating_plan_generator.py -c configuration.json -i input.json
-   ```
-
-5. **Result**
-   - One Excel file per classroom using the output prefix from input.json
-   - For example: `dummy_Z-16.xlsx`, `dummy_Z-17.xlsx` if prefix is "dummy"
-   - Students randomly assigned to seats with visual layout
-   - Each cell shows: "(seat_number) student_id - name"
-
-## Error Handling
-
-The program handles various error conditions:
-- Missing or invalid configuration/input files
-- Unknown classrooms in input file
-- Missing seat mappings for classrooms
-- Empty seat mappings
-- Insufficient total capacity
-- Missing template files
-- File permission issues
-
-## Notes
-
-- Students are shuffled for random distribution
-- Template files must be named exactly `Template_ROOM.xlsx`
-- Long names are reformatted to first name + middle initials + last name
-- Output files are named using the pattern `{prefix}_{room}.xlsx`
-- Output directories are created automatically if they don't exist
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
+Eksik gördüğünüz veya daha iyi hale getirilebilecek bir şey varsa, lütfen PR açın. Lütfen yazım hataları, basit kod düzenlemeleri gibi şeyler için PR açmayın!
 
 ## Lisans 
 
