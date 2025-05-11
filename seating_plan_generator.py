@@ -2,9 +2,15 @@ import os
 import json
 import argparse
 import random
+import platform
+import subprocess
 from typing import List, Dict, Tuple
 from pathlib import Path
 from openpyxl import load_workbook
+
+# Only import win32com on Windows
+if platform.system() == 'Windows':
+    import win32com.client
 
 class SeatingPlanGenerator:
     def __init__(self, config_file: str):
@@ -231,6 +237,106 @@ class SeatingPlanGenerator:
                 print(f"Error processing classroom {room}: {str(e)}")
                 continue
 
+    def export_to_pdf(self, output_directory: str):
+        """Convert generated Excel files to PDF format."""
+        system = platform.system()
+        
+        if system == 'Windows':
+            self._export_to_pdf_windows(output_directory)
+        elif system == 'Linux':
+            self._export_to_pdf_linux(output_directory)
+        else:
+            print(f"PDF conversion is not supported on {system} system")
+
+    def _export_to_pdf_windows(self, output_directory: str):
+        """Convert Excel files to PDF on Windows using win32com."""
+        try:
+            print("Starting PDF conversion...")
+            # Initialize Excel application once
+            excel = win32com.client.Dispatch("Excel.Application")
+            excel.Visible = False
+            excel.DisplayAlerts = False  # Disable alerts for faster processing
+            
+            # Get all Excel files in the output directory
+            output_dir = Path(output_directory)
+            excel_files = list(output_dir.glob("*.xlsx"))
+            total_files = len(excel_files)
+            
+            print(f"Found {total_files} Excel files to convert")
+            
+            for idx, excel_file in enumerate(excel_files, 1):
+                print(f"Converting file {idx}/{total_files}: {excel_file.name}")
+                
+                # Convert to PDF
+                pdf_path = excel_file.with_suffix('.pdf')
+                
+                # Open the workbook
+                wb = excel.Workbooks.Open(str(excel_file.absolute()))
+                
+                # Export as PDF with optimized settings
+                wb.ExportAsFixedFormat(
+                    Type=0,  # PDF format
+                    Filename=str(pdf_path.absolute()),
+                    Quality=0,  # Standard quality
+                    IncludeDocProperties=True,
+                    IgnorePrintAreas=False,
+                    OpenAfterPublish=False
+                )
+                
+                # Close workbook
+                wb.Close(SaveChanges=False)
+                
+                print(f"✓ Generated PDF: {pdf_path.name}")
+            
+            # Quit Excel application
+            excel.Quit()
+            print("PDF conversion completed successfully!")
+            
+        except Exception as e:
+            print(f"Error converting to PDF: {str(e)}")
+            if 'excel' in locals():
+                excel.Quit()
+
+    def _export_to_pdf_linux(self, output_directory: str):
+        """Convert Excel files to PDF on Linux using LibreOffice."""
+        try:
+            print("Starting PDF conversion...")
+            output_dir = Path(output_directory)
+            excel_files = list(output_dir.glob("*.xlsx"))
+            total_files = len(excel_files)
+            
+            print(f"Found {total_files} Excel files to convert")
+            
+            for idx, excel_file in enumerate(excel_files, 1):
+                print(f"Converting file {idx}/{total_files}: {excel_file.name}")
+                
+                # Convert to PDF using LibreOffice
+                pdf_path = excel_file.with_suffix('.pdf')
+                
+                # Use LibreOffice to convert
+                cmd = [
+                    'libreoffice',
+                    '--headless',
+                    '--convert-to', 'pdf',
+                    '--outdir', str(output_dir),
+                    str(excel_file.absolute())
+                ]
+                
+                try:
+                    subprocess.run(cmd, check=True, capture_output=True, text=True)
+                    print(f"✓ Generated PDF: {pdf_path.name}")
+                except subprocess.CalledProcessError as e:
+                    print(f"Error converting {excel_file.name}: {e.stderr}")
+                    continue
+                except FileNotFoundError:
+                    print("Error: LibreOffice not found. Please install LibreOffice to convert files to PDF.")
+                    return
+            
+            print("PDF conversion completed successfully!")
+            
+        except Exception as e:
+            print(f"Error during PDF conversion: {str(e)}")
+
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Generate exam seating plan.')
@@ -262,6 +368,10 @@ def main():
         # Export to Excel
         generator.export_to_excel(seating_plan, output_directory)
         print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+        
+        # Export to PDF
+        generator.export_to_pdf(output_directory)
+        print("PDF files have been generated successfully!")
         
     except Exception as e:
         print(f"Error: {str(e)}")
