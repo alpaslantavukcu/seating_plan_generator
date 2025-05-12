@@ -236,7 +236,7 @@ class SeatingPlanGenerator:
                                 cell_parts.append(name)
                         
                         # Join parts with spaces
-                        ws[cell] = "\r".join(cell_parts)
+                        ws[cell] = "\n".join(cell_parts)
                 
                 # Generate output filename using exam name
                 filename = f"{self.exam_name}_{room}.xlsx"
