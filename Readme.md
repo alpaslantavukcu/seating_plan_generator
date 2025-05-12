@@ -2,11 +2,11 @@
 
 Projenin amacı, oturma planı hazırlama işlemini **otomatikleştirmek** ve standartlaştırmaktır. Hazırlanan oturma planlarında öğrenci sadece imza atacağı için yoklama alma süreci de **hızlanacaktır**.
 
-Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını excel dosyası olarak oluşturur. Ardından pdf e dönüştürerek Ninova'da paylaşılabilir hale getirir. Ek olarak tutanak sayfası eklenmiş halini de oluşturarak çıktı alınabilir hale getirir. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
+Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını Excel dosyası olarak oluşturur. Ardından PDF'e dönüştürerek Ninova'da paylaşılabilir hale getirir. Ek olarak tutanak sayfası eklenmiş halini de oluşturarak çıktı alınabilir hale getirir. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
 
-:construction: Şimdilik sadece Z-16 ve Z-17 sınıflarının oturma planlarını mevcuttur. Diğer sınıflar için template dosyalarının el birliği ile hazırlanması gerekmektedir.
+:construction: Şimdilik sadece Z-16 ve Z-17 sınıflarının oturma planları mevcuttur. Diğer sınıflar için template dosyalarının el birliği ile hazırlanması gerekmektedir.
 
-:construction: Şimdilik MacOS da sadece excel dosyasını oluşturmaktadır, pdf'e dönüştürme işleminin elle yapılması gerekmektedir.
+:construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
 
 ## Hızlı Başlangıç
 
@@ -26,7 +26,7 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 }
 ```
 
-**3-** `python seating_plan_generator.py` komutunu çalıştırarak planları **excel** ve **pdf** dosyası olarak oluşturun. Örnek ekran görüntüsü (listelenen öğrenciler gerçek değildir):
+**3-** `python seating_plan_generator.py` komutunu çalıştırarak planları **Excel** ve **PDF** dosyası olarak oluşturun. Örnek ekran görüntüsü (listelenen öğrenciler gerçek değildir):
 
 ![Örnek Çıktı](imgs/ornek-cikti.png)
 
@@ -38,7 +38,7 @@ Python 3.8 ile test edilmiştir. Gerekli paketleri yüklemek için:
 pip install -r requirements.txt
 ```
 
-Pdf'e dönüştürmek için Windows da **MS Office**, Linux da ise **LibreOffice** kurulu olmalıdır.  
+PDF'e dönüştürmek için Windows'ta **MS Office**, Linux'ta ise **LibreOffice** kurulu olmalıdır.  
 
 ## Detaylar
 
@@ -132,7 +132,7 @@ Program, çeşitli hata durumlarını işler:
 - Öğrenciler rastgele dağıtılır
 - Template dosyalarının tam olarak `Template_ROOM.xlsx` olarak adlandırılması gerekir
 - Uzun adlar, ilk ad + orta ilkler + soyad olarak yeniden biçimlendirilir
-- Çıktı dosyaları, `{prefix}_{room}.xlsx` desenini kullanarak adlandırılır
+- Çıktı dosyaları, `{prefix}_{room}.xlsx` kalıbını kullanarak adlandırılır
 - Çıktı dizinleri, eğer yoksa otomatik olarak oluşturulur
 
 ## Katkıda Bulunma
