@@ -7,6 +7,7 @@ import subprocess
 from typing import List, Dict, Tuple
 from pathlib import Path
 from openpyxl import load_workbook
+from pypdf import PdfWriter
 
 # Only import win32com on Windows
 if platform.system() == 'Windows':
@@ -18,6 +19,8 @@ class SeatingPlanGenerator:
         self.config_file = config_file
         self._load_config()
         self._parse_input()
+        self.generated_excel_files = []  # Track Excel files
+        self.generated_pdf_files = []    # Track PDF files
         
     def _load_config(self):
         """Load classroom configuration from JSON file."""
@@ -190,6 +193,9 @@ class SeatingPlanGenerator:
         output_dir = Path(output_directory)
         output_dir.mkdir(parents=True, exist_ok=True)
         
+        # Clear previous list of generated files
+        self.generated_excel_files = []
+        
         # For each classroom and its students
         for room in seating_plan:
             # Load the template for this classroom
@@ -228,6 +234,8 @@ class SeatingPlanGenerator:
                 
                 # Save the filled template
                 wb.save(str(full_output_path))
+                # Add to the list of generated files
+                self.generated_excel_files.append(full_output_path)
                 print(f"Generated seating plan for classroom {room}: {full_output_path}")
                 
             except FileNotFoundError:
@@ -240,6 +248,9 @@ class SeatingPlanGenerator:
     def export_to_pdf(self, output_directory: str):
         """Convert generated Excel files to PDF format."""
         system = platform.system()
+        
+        # Clear previous list of generated PDF files
+        self.generated_pdf_files = []
         
         if system == 'Windows':
             self._export_to_pdf_windows(output_directory)
@@ -257,14 +268,12 @@ class SeatingPlanGenerator:
             excel.Visible = False
             excel.DisplayAlerts = False  # Disable alerts for faster processing
             
-            # Get all Excel files in the output directory
-            output_dir = Path(output_directory)
-            excel_files = list(output_dir.glob("*.xlsx"))
-            total_files = len(excel_files)
+            # Use the tracked Excel files
+            total_files = len(self.generated_excel_files)
             
             print(f"Found {total_files} Excel files to convert")
             
-            for idx, excel_file in enumerate(excel_files, 1):
+            for idx, excel_file in enumerate(self.generated_excel_files, 1):
                 print(f"Converting file {idx}/{total_files}: {excel_file.name}")
                 
                 # Convert to PDF
@@ -286,6 +295,8 @@ class SeatingPlanGenerator:
                 # Close workbook
                 wb.Close(SaveChanges=False)
                 
+                # Add to the list of generated PDF files
+                self.generated_pdf_files.append(pdf_path)
                 print(f"✓ Generated PDF: {pdf_path.name}")
             
             # Quit Excel application
@@ -302,12 +313,12 @@ class SeatingPlanGenerator:
         try:
             print("Starting PDF conversion...")
             output_dir = Path(output_directory)
-            excel_files = list(output_dir.glob("*.xlsx"))
-            total_files = len(excel_files)
+            # Use the tracked Excel files
+            total_files = len(self.generated_excel_files)
             
             print(f"Found {total_files} Excel files to convert")
             
-            for idx, excel_file in enumerate(excel_files, 1):
+            for idx, excel_file in enumerate(self.generated_excel_files, 1):
                 print(f"Converting file {idx}/{total_files}: {excel_file.name}")
                 
                 # Convert to PDF using LibreOffice
@@ -324,6 +335,8 @@ class SeatingPlanGenerator:
                 
                 try:
                     subprocess.run(cmd, check=True, capture_output=True, text=True)
+                    # Add to the list of generated PDF files
+                    self.generated_pdf_files.append(pdf_path)
                     print(f"✓ Generated PDF: {pdf_path.name}")
                 except subprocess.CalledProcessError as e:
                     print(f"Error converting {excel_file.name}: {e.stderr}")
@@ -336,6 +349,45 @@ class SeatingPlanGenerator:
             
         except Exception as e:
             print(f"Error during PDF conversion: {str(e)}")
+
+    def merge_pdfs(self, output_directory: str):
+        """Merge all generated PDF files into a single PDF."""
+        output_dir = Path(output_directory)
+        
+        # Use the tracked PDF files
+        pdf_files = sorted(self.generated_pdf_files)  # Sort for consistent order
+
+        if not pdf_files:
+            print("No PDF files found to merge.")
+            return
+
+        writer = PdfWriter()
+        for pdf_file in pdf_files:
+            with open(pdf_file, "rb") as f:
+                writer.append(f)
+            print(f"Added {pdf_file.name} to merged PDF.")
+
+        merged_filename = f"{self.exam_name}_All_Seating_Plans.pdf"
+        merged_path = output_dir / merged_filename
+        with open(merged_path, "wb") as f_out:
+            writer.write(f_out)
+        print(f"Merged PDF created: {merged_path}")
+
+        # Add a tutanak.pdf file befor the each file in the list
+        tutanak_path = "Templates/tutanak.pdf"
+        writer = PdfWriter()
+        for pdf_file in pdf_files:
+            with open(pdf_file, "rb") as f:
+                with open(tutanak_path, "rb") as f_tutanak:
+                    writer.append(f_tutanak)
+                    writer.append(f)
+            print(f"Added tutanak and {pdf_file.name} to merged PDF.")
+        
+        merged_with_tutanak_name = f"{self.exam_name}_All_Seating_Plans_with_Tutanak_Printable.pdf"
+        merged_with_tutanak_path = output_dir / merged_with_tutanak_name
+        with open(merged_with_tutanak_path, "wb") as f_out:
+            writer.write(f_out)
+        print(f"Merged PDF with tutanak created: {merged_with_tutanak_path}")
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -372,6 +424,10 @@ def main():
         # Export to PDF
         generator.export_to_pdf(output_directory)
         print("PDF files have been generated successfully!")
+        
+        # Merge PDFs
+        generator.merge_pdfs(output_directory)
+        print("Merged PDF has been created successfully!")
         
     except Exception as e:
         print(f"Error: {str(e)}")
