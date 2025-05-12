@@ -213,7 +213,7 @@ class SeatingPlanGenerator:
                 ws = wb.active
                 
                 # Write exam name to A1
-                ws['A1'] = self.exam_name
+                ws['A1'] = f"{self.exam_name} | {room}"
                 
                 room_seats = self.seat_mappings[room]
                 
