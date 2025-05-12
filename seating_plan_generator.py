@@ -14,10 +14,12 @@ from pypdf import PdfWriter
 if platform.system() == 'Windows':
     import win32com.client # type: ignore
 
+
 class SeatingPlanGenerator:
-    def __init__(self, config_file: str):
+    def __init__(self, config_file: str, input_file: str):
         """Initialize with path to master configuration file."""
         self.config_file = config_file
+        self.input_file = input_file
         self._load_config()
         self._parse_input()
         self.generated_excel_files = []  # Track Excel files
@@ -41,7 +43,7 @@ class SeatingPlanGenerator:
         """Parse and validate all input data."""
         try:
             # Load input file
-            with open('input.json', 'r', encoding='utf-8') as f:
+            with open(self.input_file, 'r', encoding='utf-8') as f:
                 input_data = json.load(f)
                 
             # Parse available classrooms
@@ -234,7 +236,7 @@ class SeatingPlanGenerator:
                                 cell_parts.append(name)
                         
                         # Join parts with spaces
-                        ws[cell] = " ".join(cell_parts)
+                        ws[cell] = "\n".join(cell_parts)
                 
                 # Generate output filename using exam name
                 filename = f"{self.exam_name}_{room}.xlsx"
@@ -420,7 +422,7 @@ def main():
         args = parse_arguments()
         
         # Initialize seating plan generator with provided configuration
-        generator = SeatingPlanGenerator(args.config)
+        generator = SeatingPlanGenerator(args.config, args.input)
         
         # Generate seating plan
         seating_plan, output_directory = generator.generate_seating_plan()

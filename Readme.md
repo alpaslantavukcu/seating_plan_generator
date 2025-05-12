@@ -10,7 +10,7 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 ## Hızlı Başlangıç
 
-**1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın.
+**1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın. Öğrenci kullanıcı adları kod tarafından kullanılmamaktadır ve dosyanın içinde yazıp yazmaması bir şeyi değiştirmez.
 
 ![Ninova Öğrenci Listesi](imgs/ninova-ogrenciler.png)
 
@@ -18,7 +18,7 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 ```
 {
-    "exam_name": "BLG102E Arasınav Yerleşim Planı",         // Oturma planının başlığı
+    "exam_name": "BLG 102E Arasınav Yerleşim Planı",        // Oturma planının başlığı
     "available_classrooms": ["Z-16", "Z-17"],               // Sınavın yapılacağı sınıflar
     "student_ids_file": "ogrenci-listesi.txt",
     "output_directory": "BLG102E-oturma-planları",
@@ -81,17 +81,37 @@ Argümanlar:
 - `seat-mappings`: Template'e göre her sınıf için oturma düzenini belirten alan
 
 #### 2. `input.json` dosyası
+
+`input.json` dosyası iki formatta oluşturulabilir.
+Format 1'de öğrenci dağılımları sınıfların tam kapasitelerine göre yapılır.
+Format 2'de öğrenci dağılımları sınıf için belirtilen kapasitelere göre yapılır.
+
+Format 1
 ```json
 {
-    "exam_name": "BLG322E Arasınav Yerleşim Planı",
+    "exam_name": "BLG 102E Arasınav Yerleşim Planı",
     "available_classrooms": ["Z-16", "Z-17"],
     "student_ids_file": "ogrenci-listesi.txt",
-    "output_directory": "BLG322E-oturma-planlari",
+    "output_directory": "BLG102E-oturma-planları",
+    "cell_params": ["student_id", "name", "seat_number"]
+}
+```
+
+Format 2
+```json
+{
+    "exam_name": "BLG 102E Arasınav Yerleşim Planı",
+    "available_classrooms": {"Z-16": 62, "Z-17": 38},
+    "student_ids_file": "ogrenci-listesi.txt",
+    "output_directory": "BLG102E-oturma-planları",
     "cell_params": ["student_id", "name", "seat_number"]
 }
 ```
 - `exam_name`: Oturma planının başlığı
 - `available_classrooms`: Kullanılacak sınıfların listesi (configuration.json'da belirtilmiş olmalıdır)
+- - Liste veya sözlük formatında olabilir
+  - Liste formatında: Sınıf isimleri
+  - Sözlük formatında: Sınıf isimleri ve kapasiteleri. Kapasite sayılarının toplamı öğrenci sayısından az olmamalıdır. Değiştirilmiş kapasite değerleri `configuration.json` dosyasındaki sınıf kapasitelerinden yüksek olmamalıdır.
 - `student_ids_file`: Öğrenci ID'lerini, adlarını ve mail adreslerini içeren metin dosyası
 - `output_directory`: Çıktı dosyalarının kaydedileceği dizin
 - `cell_params`: Oluşan pdf de hangi bilgilerin görünmesini istediğinizi belirtin. 
