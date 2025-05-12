@@ -14,12 +14,24 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 ![Ninova Öğrenci Listesi](imgs/ninova-ogrenciler.png)
 
-**2-** `input.json` dosyasını aşağıdaki gibi düzenleyin.
+**2-** `input.json` dosyasını aşağıdaki iki formattan biri olacak şekilde düzenleyin. Eğer Format 2 ile sınıfta olacak öğrenci sayısını belirlemek istiyorsanız, sayıların toplamının `ogrenci-listesi.txt` dosyasındaki öğrenci sayısından az olmaması gerektiğini unutmayın.
 
+Format 1
 ```
 {
-    "exam_name": "BLG102E Arasınav Yerleşim Planı",         // Oturma planının başlığı
+    "exam_name": "BLG 102E Arasınav Yerleşim Planı",        // Oturma planının başlığı
     "available_classrooms": ["Z-16", "Z-17"],               // Sınavın yapılacağı sınıflar
+    "student_ids_file": "ogrenci-listesi.txt",
+    "output_directory": "BLG102E-oturma-planları",
+    ... 
+}
+```
+
+Format 2
+```
+{
+    "exam_name": "BLG 102E Arasınav Yerleşim Planı",         // Oturma planının başlığı
+    "available_classrooms": {"Z-16": 48, "Z-17": 36},        // Sınavın yapılacağı sınıflar
     "student_ids_file": "ogrenci-listesi.txt",
     "output_directory": "BLG102E-oturma-planları",
     ... 
