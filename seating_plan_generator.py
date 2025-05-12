@@ -1,17 +1,18 @@
-import os
-import json
 import argparse
-import random
+import json
+import os
 import platform
+import random
 import subprocess
-from typing import List, Dict, Tuple
 from pathlib import Path
+from typing import Dict, List, Tuple
+
 from openpyxl import load_workbook
 from pypdf import PdfWriter
 
 # Only import win32com on Windows
 if platform.system() == 'Windows':
-    import win32com.client
+    import win32com.client # type: ignore
 
 class SeatingPlanGenerator:
     def __init__(self, config_file: str):
@@ -154,7 +155,7 @@ class SeatingPlanGenerator:
         except Exception as e:
             raise Exception(f"Error reading student ID file: {str(e)}")
 
-    def generate_seating_plan(self) -> tuple[Dict[str, Dict[str, Tuple[str, str]]], str]:
+    def generate_seating_plan(self) -> Tuple[Dict[str, Dict[str, Tuple[str, str]]], str]:
         """Generate seating plan based on input specifications."""
         # Load student data
         students = self._load_student_ids(self.student_file)
@@ -191,6 +192,13 @@ class SeatingPlanGenerator:
         """Export seating plan to Excel file with specific cell mappings using templates."""
         # Create output directory if it doesn't exist
         output_dir = Path(output_directory)
+
+        while output_dir.exists():
+            if input(f"Output directory {output_dir} already exists. Do you want to overwrite it? (y/n): ").lower() == "y":
+                break
+            else:
+                output_dir = Path(input("Please enter a new output directory: "))
+
         output_dir.mkdir(parents=True, exist_ok=True)
         
         # Clear previous list of generated files

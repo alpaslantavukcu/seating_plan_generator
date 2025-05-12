@@ -1,35 +1,44 @@
 # Otomatik Oturma Planı Oluşturucu
 
-Projenin amacı, oturma planı hazırlama işlemini otomatikleştirmek ve standartlaştırmaktır. Hazırlanan oturma planlarında öğrenci sadece imza atacağı için yoklama alma süreci de **hızlanacaktır**.
+Projenin amacı, oturma planı hazırlama işlemini **otomatikleştirmek** ve standartlaştırmaktır. Hazırlanan oturma planlarında öğrenci sadece imza atacağı için yoklama alma süreci de **hızlanacaktır**.
 
-Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını excel dosyası olarak oluşturur. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
+Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını Excel dosyası olarak oluşturur. Ardından PDF'e dönüştürerek Ninova'da paylaşılabilir hale getirir. Ek olarak tutanak sayfası eklenmiş halini de oluşturarak çıktı alınabilir hale getirir. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
+
+:construction: Şimdilik sadece Z-16 ve Z-17 sınıflarının oturma planları mevcuttur. Diğer sınıflar için template dosyalarının el birliği ile hazırlanması gerekmektedir.
+
+:construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
 
 ## Hızlı Başlangıç
 
-**1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `students.txt` dosyasına kopyalayın.
+**1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın.
 
 ![Ninova Öğrenci Listesi](imgs/ninova-ogrenciler.png)
 
-**2-** "input.json" dosyasında, hangi sınıfların kullanılacağını belirtin.
+**2-** `input.json` dosyasını aşağıdaki gibi düzenleyin.
 
 ```
 {
-    "available_classrooms": ["Z-16", "Z-17"],       // Kullanacağınız sınıflar
-    "student_ids_file": "students.txt",             // Öğrenci listesi
-    "output_prefix": "BLG102 Midterm Seating Plan"  // Sınav İsmi
+    "exam_name": "BLG102E Arasınav Yerleşim Planı",         // Oturma planının başlığı
+    "available_classrooms": ["Z-16", "Z-17"],               // Sınavın yapılacağı sınıflar
+    "student_ids_file": "ogrenci-listesi.txt",
+    "output_directory": "BLG102E-oturma-planları",
+    ... 
 }
 ```
 
-**3-** `python seating_plan_generator.py` komutunu çalıştırarak planları excel dosyası olarak oluşturun. Örnek ekran görüntüsü (listelenen öğrenciler gerçek değildir):
+**3-** `python seating_plan_generator.py` komutunu çalıştırarak planları **Excel** ve **PDF** dosyası olarak oluşturun. Örnek ekran görüntüsü (listelenen öğrenciler gerçek değildir):
 
 ![Örnek Çıktı](imgs/ornek-cikti.png)
 
-TODO: **Bu resim güncellenecek!**
+## Kurulum
 
-## Ön Gereksinimler
+Python 3.8 ile test edilmiştir. Gerekli paketleri yüklemek için:
 
-- Python 3.7 veya üzeri
-- Gerekli paketler için: `pip install openpyxl`
+```bash
+pip install -r requirements.txt
+```
+
+PDF'e dönüştürmek için Windows'ta **MS Office**, Linux'ta ise **LibreOffice** kurulu olmalıdır.  
 
 ## Detaylar
 
@@ -45,7 +54,7 @@ Argümanlar:
 
 ### Dosya Formatları
 
-#### 1. "Configuration" dosyası (configuration.json)
+#### 1. `configuration.json` dosyası 
 ```json
 {
     "classroom-capacities": {
@@ -68,22 +77,26 @@ Argümanlar:
 }
 ```
 
-- `classroom-capacities`: Sınıf isimlerini ve kapasitelerini belirten nesne
-- `seat-mappings`: Template'e göre her sınıf için oturma düzenini belirten nesne
+- `classroom-capacities`: Sınıf isimlerini ve kapasitelerini belirten alan
+- `seat-mappings`: Template'e göre her sınıf için oturma düzenini belirten alan
 
-#### 2. "Input" dosyası (input.json)
+#### 2. `input.json` dosyası
 ```json
 {
+    "exam_name": "BLG322E Arasınav Yerleşim Planı",
     "available_classrooms": ["Z-16", "Z-17"],
-    "student_ids_file": "data/student_ids.txt",
-    "output_prefix": "output/seating_plan"
+    "student_ids_file": "ogrenci-listesi.txt",
+    "output_directory": "BLG322E-oturma-planlari",
+    "cell_params": ["student_id", "name", "seat_number"]
 }
 ```
+- `exam_name`: Oturma planının başlığı
 - `available_classrooms`: Kullanılacak sınıfların listesi (configuration.json'da belirtilmiş olmalıdır)
-- `student_ids_file`: Öğrenci ID'lerini ve adlarını içeren metin dosyasının yolu
-- `output_prefix`: Çıktı dosyalarının ön eki - her sınıf için bir dosya oluşturulacak (örnek: "seating_plan_Z-16.xlsx", "seating_plan_Z-17.xlsx")
+- `student_ids_file`: Öğrenci ID'lerini, adlarını ve mail adreslerini içeren metin dosyası
+- `output_directory`: Çıktı dosyalarının kaydedileceği dizin
+- `cell_params`: Oluşan pdf de hangi bilgilerin görünmesini istediğinizi belirtin. 
 
-#### 3. Öğrenci ID'leri Dosyası (input.json'da belirtilmiş olmalıdır)
+#### 3. Öğrenci ID'leri Dosyası (`input.json`'da `student_ids_file` alanı)
 ```text
 150220722   Ahmet Yılmaz (yilmaza22)
 150220724   Ayşe Kaya (kayaa22)
@@ -93,7 +106,7 @@ Argümanlar:
 - ID'ler ve adlar, tab veya boşluklarla ayrılır
 
 #### 4. Excel Template Dosyaları
-- Her sınıf için bir template dosyası olmalıdır
+- Her sınıf için `Template_<sınıf-isim>.xlsx` formatında bir template dosyası olmalıdır. 
 - Örnek: `Template_Z-16.xlsx`, `Template_Z-17.xlsx`
 - Template dosyaları, sınıf düzenini içermelidir
 
@@ -101,7 +114,7 @@ Argümanlar:
 
 - Program, belirtilen configuration, input ve öğrenci listesi dosyalarını okur.
 - Öğrenciler, her sınıf için belirtilen oturma düzenine göre Excel hücrelerine rastgele atanır.
-- Çıktı dosyaları, `{prefix}_{room}.xlsx` desenini kullanarak adlandırılır.
+- Çıktı dosyaları, `{exam_name}_{room}.xlsx` desenini kullanarak adlandırılır.
 
 ## Hata İşleme
 
@@ -119,7 +132,7 @@ Program, çeşitli hata durumlarını işler:
 - Öğrenciler rastgele dağıtılır
 - Template dosyalarının tam olarak `Template_ROOM.xlsx` olarak adlandırılması gerekir
 - Uzun adlar, ilk ad + orta ilkler + soyad olarak yeniden biçimlendirilir
-- Çıktı dosyaları, `{prefix}_{room}.xlsx` desenini kullanarak adlandırılır
+- Çıktı dosyaları, `{prefix}_{room}.xlsx` kalıbını kullanarak adlandırılır
 - Çıktı dizinleri, eğer yoksa otomatik olarak oluşturulur
 
 ## Katkıda Bulunma
