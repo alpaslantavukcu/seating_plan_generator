@@ -414,6 +414,16 @@ def parse_arguments():
         default='input.json',
         help='Path to input file (default: input.json)'
     )
+    parser.add_argument(
+        '--pdf-only',
+        action='store_true',
+        help='Only perform PDF operations (convert Excel to PDF and merge) without generating new seating plans'
+    )
+    parser.add_argument(
+        '--seed',
+        type=int,
+        help='Random seed for reproducible student shuffling'
+    )
     return parser.parse_args()
 
 def main():
@@ -421,15 +431,32 @@ def main():
         # Parse command line arguments
         args = parse_arguments()
         
+        # Set random seed if provided
+        if args.seed is not None:
+            random.seed(args.seed)
+            print(f"Using random seed: {args.seed}")
+        
         # Initialize seating plan generator with provided configuration
         generator = SeatingPlanGenerator(args.config, args.input)
         
-        # Generate seating plan
-        seating_plan, output_directory = generator.generate_seating_plan()
-        
-        # Export to Excel
-        generator.export_to_excel(seating_plan, output_directory)
-        print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+        if not args.pdf_only:
+            # Generate seating plan
+            seating_plan, output_directory = generator.generate_seating_plan()
+            
+            # Export to Excel
+            generator.export_to_excel(seating_plan, output_directory)
+            print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+        else:
+            # In PDF-only mode, we need to find existing Excel files
+            output_directory = generator.output_directory
+            excel_dir = Path(output_directory)
+            generator.generated_excel_files = list(excel_dir.glob(f"{generator.exam_name}_*.xlsx"))
+            
+            if not generator.generated_excel_files:
+                print(f"No Excel files found for exam '{generator.exam_name}' in {output_directory}")
+                return
+                
+            print(f"Found {len(generator.generated_excel_files)} Excel files to process")
         
         # Export to PDF
         generator.export_to_pdf(output_directory)
