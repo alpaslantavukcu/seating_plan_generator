@@ -8,7 +8,8 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment, Font
 from pypdf import PdfWriter, PdfReader
 
 # Only import win32com on Windows
@@ -426,6 +427,115 @@ class SeatingPlanGenerator:
             writer_tutanak.write(f_out)
         print(f"Merged full version PDF with tutanak created: {merged_with_tutanak_path}")
 
+    def export_single_sheet_room_list(self, seating_plan: Dict[str, Dict[str, Tuple[str, str]]], output_directory: str):
+        """
+        Export a single Excel sheet where each column is a classroom and each row is a student ID assigned to that classroom.
+        """
+        output_dir = Path(output_directory)
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Room List"
+
+        # Write the title row (merged)
+        title = f"{self.exam_name}"
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(seating_plan)+5)
+        ws.cell(row=1, column=1, value=title)
+        ws.cell(row=1, column=1).font = Font(bold=True, size=12)
+        ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
+        ws.row_dimensions[1].height = 20  # Make the title row taller
+
+        # Write classroom headers
+        for col, room in enumerate(seating_plan.keys(), 1):
+            ws.cell(row=2, column=col, value=room)
+            ws.cell(row=2, column=col).font = Font(bold=True)
+            ws.cell(row=2, column=col).alignment = Alignment(horizontal='center')
+
+        # Find the max number of students in any room
+        max_students = max(len(students) for students in seating_plan.values())
+
+        # Write student IDs under each classroom
+        for col, room in enumerate(seating_plan.keys(), 1):
+            students = list(seating_plan[room].values())
+            for row in range(max_students):
+                if row < len(students):
+                    student_id = students[row][0]
+                    cell = ws.cell(row=row+3, column=col, value=student_id)
+                    cell.alignment = Alignment(horizontal='center')
+                    cell.font = Font(size=6)  # Smaller font size
+                    ws.row_dimensions[row+3].height = 8  # Smaller row height
+
+        # Adjust column widths
+        for col in range(1, len(seating_plan) + 1):
+            ws.column_dimensions[chr(64 + col)].width = 16
+
+        # Set print settings to fit all columns on one page (width-wise)
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = 0
+        ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+
+        # Reduce print margins (in inches)
+        ws.page_margins.left = 0.2
+        ws.page_margins.right = 0.2
+        ws.page_margins.top = 0.2
+        ws.page_margins.bottom = 0.2
+        ws.page_margins.header = 0.1
+        ws.page_margins.footer = 0.1
+
+        # Save the file
+        room_list_file = output_dir / f"{self.exam_name}_SingleSheetRoomList.xlsx"
+        wb.save(str(room_list_file))
+        print(f"Generated single-sheet room list Excel file: {room_list_file}")
+
+        # Export to PDF
+        system = platform.system()
+        if system == 'Windows':
+            try:
+                excel = win32com.client.Dispatch("Excel.Application")
+                excel.Visible = False
+                excel.DisplayAlerts = False
+                
+                wb = excel.Workbooks.Open(str(room_list_file.absolute()))
+                pdf_path = room_list_file.with_suffix('.pdf')
+                
+                wb.ExportAsFixedFormat(
+                    Type=0,  # PDF format
+                    Filename=str(pdf_path.absolute()),
+                    Quality=0,  # Standard quality
+                    IncludeDocProperties=True,
+                    IgnorePrintAreas=False,
+                    OpenAfterPublish=False
+                )
+                
+                wb.Close(SaveChanges=False)
+                excel.Quit()
+                print(f"Generated room list PDF: {pdf_path}")
+                
+            except Exception as e:
+                print(f"Error converting room list to PDF: {str(e)}")
+                if 'excel' in locals():
+                    excel.Quit()
+                    
+        elif system == 'Linux':
+            try:
+                pdf_path = room_list_file.with_suffix('.pdf')
+                cmd = [
+                    'libreoffice',
+                    '--headless',
+                    '--convert-to', 'pdf',
+                    '--outdir', str(output_dir),
+                    str(room_list_file.absolute())
+                ]
+                
+                subprocess.run(cmd, check=True, capture_output=True, text=True)
+                print(f"Generated room list PDF: {pdf_path}")
+                
+            except subprocess.CalledProcessError as e:
+                print(f"Error converting room list to PDF: {e.stderr}")
+            except FileNotFoundError:
+                print("Error: LibreOffice not found. Please install LibreOffice to convert files to PDF.")
+        else:
+            print(f"PDF conversion is not supported on {system} system")
+
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description='Generate exam seating plan.')
@@ -473,6 +583,9 @@ def main():
             # Export to Excel
             generator.export_to_excel(seating_plan, output_directory)
             print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+            
+            # Export the single-sheet room list
+            generator.export_single_sheet_room_list(seating_plan, output_directory)
         else:
             # In PDF-only mode, we need to find existing Excel files
             output_directory = generator.output_directory
