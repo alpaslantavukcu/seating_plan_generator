@@ -461,8 +461,8 @@ class SeatingPlanGenerator:
                     student_id = students[row][0]
                     cell = ws.cell(row=row+3, column=col, value=student_id)
                     cell.alignment = Alignment(horizontal='center')
-                    cell.font = Font(size=6)  # Smaller font size
-                    ws.row_dimensions[row+3].height = 8  # Smaller row height
+                    cell.font = Font(size=5.5)  # Smaller font size
+                    ws.row_dimensions[row+3].height = 7.5  # Smaller row height
 
         # Adjust column widths
         for col in range(1, len(seating_plan) + 1):
