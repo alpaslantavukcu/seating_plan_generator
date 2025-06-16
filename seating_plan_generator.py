@@ -3,12 +3,13 @@ import json
 import os
 import platform
 import random
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 from openpyxl import load_workbook
-from pypdf import PdfWriter
+from pypdf import PdfWriter, PdfReader
 
 # Only import win32com on Windows
 if platform.system() == 'Windows':
@@ -197,7 +198,7 @@ class SeatingPlanGenerator:
 
         while output_dir.exists():
             if input(f"Output directory {output_dir} already exists. Do you want to overwrite it? (y/n): ").lower() == "y":
-                break
+                shutil.rmtree(output_dir)
             else:
                 output_dir = Path(input("Please enter a new output directory: "))
 
@@ -212,20 +213,29 @@ class SeatingPlanGenerator:
             template_path = f"Templates/Template_{room}.xlsx"
             try:
                 wb = load_workbook(template_path)
-                ws = wb.active
                 
-                # Write exam name to A1
-                ws['A1'] = f"{self.exam_name} | {room}"
+                # Create two worksheets
+                ws_id_only = wb.active
+                ws_id_only.title = f"{room}_id_only"
+                ws_full = wb.copy_worksheet(ws_id_only)
+                ws_full.title = f"{room}_full"
+                
+                # Write exam name to A1 in both worksheets (preserving original logic)
+                ws_id_only['A1'] = f"{self.exam_name} | {room}"
+                ws_full['A1'] = f"{self.exam_name} | {room}"
                 
                 room_seats = self.seat_mappings[room]
                 
-                # Fill in students according to seat mappings
+                # Fill in students for both worksheets
                 for seat_id, student_info in seating_plan[room].items():
                     if seat_id in room_seats:
                         cell = room_seats[seat_id]
                         student_id, name = student_info
                         
-                        # Build cell value based on configured parameters
+                        # ID-only version
+                        ws_id_only[cell] = student_id
+                        
+                        # Full version with configured parameters
                         cell_parts = []
                         for param in self.cell_params:
                             if param == "seat_number":
@@ -234,26 +244,22 @@ class SeatingPlanGenerator:
                                 cell_parts.append(student_id)
                             elif param == "name":
                                 cell_parts.append(name)
-                        
-                        # Join parts with spaces
-                        ws[cell] = "\n".join(cell_parts)
+                        ws_full[cell] = "\n".join(cell_parts)
                 
-                # Generate output filename using exam name
+                # Generate single output file
                 filename = f"{self.exam_name}_{room}.xlsx"
                 full_output_path = output_dir / filename
                 
-                # Save the filled template
+                # Save the workbook with both worksheets
                 wb.save(str(full_output_path))
                 # Add to the list of generated files
                 self.generated_excel_files.append(full_output_path)
-                print(f"Generated seating plan for classroom {room}: {full_output_path}")
+                print(f"Generated seating plan for classroom {room} with both versions: {full_output_path}")
                 
             except FileNotFoundError:
-                print(f"Warning: Template file not found for classroom {room}: {template_path}")
-                continue
+                raise Exception(f"Template file not found for classroom {room}: {template_path}")
             except Exception as e:
-                print(f"Error processing classroom {room}: {str(e)}")
-                continue
+                raise Exception(f"Error processing classroom {room}: {str(e)}")
 
     def export_to_pdf(self, output_directory: str):
         """Convert generated Excel files to PDF format."""
@@ -361,7 +367,7 @@ class SeatingPlanGenerator:
             print(f"Error during PDF conversion: {str(e)}")
 
     def merge_pdfs(self, output_directory: str):
-        """Merge all generated PDF files into a single PDF."""
+        """Merge all generated PDF files into separate PDFs for ID-only and full versions."""
         output_dir = Path(output_directory)
         
         # Use the tracked PDF files
@@ -371,33 +377,54 @@ class SeatingPlanGenerator:
             print("No PDF files found to merge.")
             return
 
-        writer = PdfWriter()
+        # Create ID-only version (first page of each PDF)
+        writer_id = PdfWriter()
         for pdf_file in pdf_files:
             with open(pdf_file, "rb") as f:
-                writer.append(f)
-            print(f"Added {pdf_file.name} to merged PDF.")
+                # Get the first page (ID-only version)
+                reader = PdfReader(f)
+                writer_id.add_page(reader.pages[0])
+            print(f"Added ID-only page from {pdf_file.name}")
 
-        merged_filename = f"{self.exam_name}_All_Seating_Plans.pdf"
-        merged_path = output_dir / merged_filename
-        with open(merged_path, "wb") as f_out:
-            writer.write(f_out)
-        print(f"Merged PDF created: {merged_path}")
+        merged_id_name = f"{self.exam_name}_All_Seating_Plans_Only_ID.pdf"
+        merged_id_path = output_dir / merged_id_name
+        with open(merged_id_path, "wb") as f_out:
+            writer_id.write(f_out)
+        print(f"Merged ID-only PDF created: {merged_id_path}")
 
-        # Add a tutanak.pdf file befor the each file in the list
+        # Create full version (second page of each PDF)
+        writer_full = PdfWriter()
+        for pdf_file in pdf_files:
+            with open(pdf_file, "rb") as f:
+                # Get the second page (full version)
+                reader = PdfReader(f)
+                writer_full.add_page(reader.pages[1])
+            print(f"Added full version page from {pdf_file.name}")
+
+        merged_full_name = f"{self.exam_name}_All_Seating_Plans_Full.pdf"
+        merged_full_path = output_dir / merged_full_name
+        with open(merged_full_path, "wb") as f_out:
+            writer_full.write(f_out)
+        print(f"Merged full version PDF created: {merged_full_path}")
+
+        # Create full version with tutanak
         tutanak_path = "Templates/tutanak.pdf"
-        writer = PdfWriter()
+        writer_tutanak = PdfWriter()
         for pdf_file in pdf_files:
             with open(pdf_file, "rb") as f:
                 with open(tutanak_path, "rb") as f_tutanak:
-                    writer.append(f_tutanak)
-                    writer.append(f)
-            print(f"Added tutanak and {pdf_file.name} to merged PDF.")
+                    # Add tutanak and the second page (full version)
+                    reader_tutanak = PdfReader(f_tutanak)
+                    reader_pdf = PdfReader(f)
+                    writer_tutanak.add_page(reader_tutanak.pages[0])
+                    writer_tutanak.add_page(reader_pdf.pages[1])
+            print(f"Added tutanak and full version page from {pdf_file.name}")
         
         merged_with_tutanak_name = f"{self.exam_name}_All_Seating_Plans_with_Tutanak_Printable.pdf"
         merged_with_tutanak_path = output_dir / merged_with_tutanak_name
         with open(merged_with_tutanak_path, "wb") as f_out:
-            writer.write(f_out)
-        print(f"Merged PDF with tutanak created: {merged_with_tutanak_path}")
+            writer_tutanak.write(f_out)
+        print(f"Merged full version PDF with tutanak created: {merged_with_tutanak_path}")
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -464,7 +491,7 @@ def main():
         
         # Merge PDFs
         generator.merge_pdfs(output_directory)
-        print("Merged PDF has been created successfully!")
+        print("Merged PDFs have been created successfully!")
         
     except Exception as e:
         print(f"Error: {str(e)}")
