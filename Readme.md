@@ -4,8 +4,6 @@ Projenin amacı, oturma planı hazırlama işlemini **otomatikleştirmek** ve st
 
 Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını Excel dosyası olarak oluşturur. Ardından PDF'e dönüştürerek Ninova'da paylaşılabilir hale getirir. Ek olarak tutanak sayfası eklenmiş halini de oluşturarak çıktı alınabilir hale getirir. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
 
-:construction: Şimdilik sadece Z-16 ve Z-17 sınıflarının oturma planları mevcuttur. Diğer sınıflar için template dosyalarının el birliği ile hazırlanması gerekmektedir.
-
 :construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
 
 ## Hızlı Başlangıç
