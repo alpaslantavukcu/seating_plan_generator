@@ -3,12 +3,14 @@ import json
 import os
 import platform
 import random
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from openpyxl import load_workbook
-from pypdf import PdfWriter
+from openpyxl import load_workbook, Workbook
+from openpyxl.styles import Alignment, Font
+from pypdf import PdfWriter, PdfReader
 
 # Only import win32com on Windows
 if platform.system() == 'Windows':
@@ -197,7 +199,7 @@ class SeatingPlanGenerator:
 
         while output_dir.exists():
             if input(f"Output directory {output_dir} already exists. Do you want to overwrite it? (y/n): ").lower() == "y":
-                break
+                shutil.rmtree(output_dir)
             else:
                 output_dir = Path(input("Please enter a new output directory: "))
 
@@ -212,20 +214,29 @@ class SeatingPlanGenerator:
             template_path = f"Templates/Template_{room}.xlsx"
             try:
                 wb = load_workbook(template_path)
-                ws = wb.active
                 
-                # Write exam name to A1
-                ws['A1'] = f"{self.exam_name} | {room}"
+                # Create two worksheets
+                ws_id_only = wb.active
+                ws_id_only.title = f"{room}_id_only"
+                ws_full = wb.copy_worksheet(ws_id_only)
+                ws_full.title = f"{room}_full"
+                
+                # Write exam name to A1 in both worksheets (preserving original logic)
+                ws_id_only['A1'] = f"{self.exam_name} | {room}"
+                ws_full['A1'] = f"{self.exam_name} | {room}"
                 
                 room_seats = self.seat_mappings[room]
                 
-                # Fill in students according to seat mappings
+                # Fill in students for both worksheets
                 for seat_id, student_info in seating_plan[room].items():
                     if seat_id in room_seats:
                         cell = room_seats[seat_id]
                         student_id, name = student_info
                         
-                        # Build cell value based on configured parameters
+                        # ID-only version
+                        ws_id_only[cell] = student_id
+                        
+                        # Full version with configured parameters
                         cell_parts = []
                         for param in self.cell_params:
                             if param == "seat_number":
@@ -234,26 +245,22 @@ class SeatingPlanGenerator:
                                 cell_parts.append(student_id)
                             elif param == "name":
                                 cell_parts.append(name)
-                        
-                        # Join parts with spaces
-                        ws[cell] = "\n".join(cell_parts)
+                        ws_full[cell] = "\n".join(cell_parts)
                 
-                # Generate output filename using exam name
+                # Generate single output file
                 filename = f"{self.exam_name}_{room}.xlsx"
                 full_output_path = output_dir / filename
                 
-                # Save the filled template
+                # Save the workbook with both worksheets
                 wb.save(str(full_output_path))
                 # Add to the list of generated files
                 self.generated_excel_files.append(full_output_path)
-                print(f"Generated seating plan for classroom {room}: {full_output_path}")
+                print(f"Generated seating plan for classroom {room} with both versions: {full_output_path}")
                 
             except FileNotFoundError:
-                print(f"Warning: Template file not found for classroom {room}: {template_path}")
-                continue
+                raise Exception(f"Template file not found for classroom {room}: {template_path}")
             except Exception as e:
-                print(f"Error processing classroom {room}: {str(e)}")
-                continue
+                raise Exception(f"Error processing classroom {room}: {str(e)}")
 
     def export_to_pdf(self, output_directory: str):
         """Convert generated Excel files to PDF format."""
@@ -361,7 +368,7 @@ class SeatingPlanGenerator:
             print(f"Error during PDF conversion: {str(e)}")
 
     def merge_pdfs(self, output_directory: str):
-        """Merge all generated PDF files into a single PDF."""
+        """Merge all generated PDF files into separate PDFs for ID-only and full versions."""
         output_dir = Path(output_directory)
         
         # Use the tracked PDF files
@@ -371,33 +378,163 @@ class SeatingPlanGenerator:
             print("No PDF files found to merge.")
             return
 
-        writer = PdfWriter()
+        # Create ID-only version (first page of each PDF)
+        writer_id = PdfWriter()
         for pdf_file in pdf_files:
             with open(pdf_file, "rb") as f:
-                writer.append(f)
-            print(f"Added {pdf_file.name} to merged PDF.")
+                # Get the first page (ID-only version)
+                reader = PdfReader(f)
+                writer_id.add_page(reader.pages[0])
+            print(f"Added ID-only page from {pdf_file.name}")
 
-        merged_filename = f"{self.exam_name}_All_Seating_Plans.pdf"
-        merged_path = output_dir / merged_filename
-        with open(merged_path, "wb") as f_out:
-            writer.write(f_out)
-        print(f"Merged PDF created: {merged_path}")
+        merged_id_name = f"{self.exam_name}_All_Seating_Plans_Only_ID.pdf"
+        merged_id_path = output_dir / merged_id_name
+        with open(merged_id_path, "wb") as f_out:
+            writer_id.write(f_out)
+        print(f"Merged ID-only PDF created: {merged_id_path}")
 
-        # Add a tutanak.pdf file befor the each file in the list
+        # Create full version (second page of each PDF)
+        writer_full = PdfWriter()
+        for pdf_file in pdf_files:
+            with open(pdf_file, "rb") as f:
+                # Get the second page (full version)
+                reader = PdfReader(f)
+                writer_full.add_page(reader.pages[1])
+            print(f"Added full version page from {pdf_file.name}")
+
+        merged_full_name = f"{self.exam_name}_All_Seating_Plans_Full.pdf"
+        merged_full_path = output_dir / merged_full_name
+        with open(merged_full_path, "wb") as f_out:
+            writer_full.write(f_out)
+        print(f"Merged full version PDF created: {merged_full_path}")
+
+        # Create full version with tutanak
         tutanak_path = "Templates/tutanak.pdf"
-        writer = PdfWriter()
+        writer_tutanak = PdfWriter()
         for pdf_file in pdf_files:
             with open(pdf_file, "rb") as f:
                 with open(tutanak_path, "rb") as f_tutanak:
-                    writer.append(f_tutanak)
-                    writer.append(f)
-            print(f"Added tutanak and {pdf_file.name} to merged PDF.")
+                    # Add tutanak and the second page (full version)
+                    reader_tutanak = PdfReader(f_tutanak)
+                    reader_pdf = PdfReader(f)
+                    writer_tutanak.add_page(reader_tutanak.pages[0])
+                    writer_tutanak.add_page(reader_pdf.pages[1])
+            print(f"Added tutanak and full version page from {pdf_file.name}")
         
         merged_with_tutanak_name = f"{self.exam_name}_All_Seating_Plans_with_Tutanak_Printable.pdf"
         merged_with_tutanak_path = output_dir / merged_with_tutanak_name
         with open(merged_with_tutanak_path, "wb") as f_out:
-            writer.write(f_out)
-        print(f"Merged PDF with tutanak created: {merged_with_tutanak_path}")
+            writer_tutanak.write(f_out)
+        print(f"Merged full version PDF with tutanak created: {merged_with_tutanak_path}")
+
+    def export_single_sheet_room_list(self, seating_plan: Dict[str, Dict[str, Tuple[str, str]]], output_directory: str):
+        """
+        Export a single Excel sheet where each column is a classroom and each row is a student ID assigned to that classroom.
+        """
+        output_dir = Path(output_directory)
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Room List"
+
+        # Write the title row (merged)
+        title = f"{self.exam_name}"
+        ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(seating_plan)+5)
+        ws.cell(row=1, column=1, value=title)
+        ws.cell(row=1, column=1).font = Font(bold=True, size=12)
+        ws.cell(row=1, column=1).alignment = Alignment(horizontal='center', vertical='center')
+        ws.row_dimensions[1].height = 20  # Make the title row taller
+
+        # Write classroom headers
+        for col, room in enumerate(seating_plan.keys(), 1):
+            ws.cell(row=2, column=col, value=room)
+            ws.cell(row=2, column=col).font = Font(bold=True)
+            ws.cell(row=2, column=col).alignment = Alignment(horizontal='center')
+
+        # Find the max number of students in any room
+        max_students = max(len(students) for students in seating_plan.values())
+
+        # Write student IDs under each classroom
+        for col, room in enumerate(seating_plan.keys(), 1):
+            students = list(seating_plan[room].values())
+            for row in range(max_students):
+                if row < len(students):
+                    student_id = students[row][0]
+                    cell = ws.cell(row=row+3, column=col, value=student_id)
+                    cell.alignment = Alignment(horizontal='center')
+                    cell.font = Font(size=6)  # Smaller font size
+                    ws.row_dimensions[row+3].height = 8  # Smaller row height
+
+        # Adjust column widths
+        for col in range(1, len(seating_plan) + 1):
+            ws.column_dimensions[chr(64 + col)].width = 16
+
+        # Set print settings to fit all columns on one page (width-wise)
+        ws.page_setup.fitToWidth = 1
+        ws.page_setup.fitToHeight = 0
+        ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
+
+        # Reduce print margins (in inches)
+        ws.page_margins.left = 0.2
+        ws.page_margins.right = 0.2
+        ws.page_margins.top = 0.2
+        ws.page_margins.bottom = 0.2
+        ws.page_margins.header = 0.1
+        ws.page_margins.footer = 0.1
+
+        # Save the file
+        room_list_file = output_dir / f"{self.exam_name}_SingleSheetRoomList.xlsx"
+        wb.save(str(room_list_file))
+        print(f"Generated single-sheet room list Excel file: {room_list_file}")
+
+        # Export to PDF
+        system = platform.system()
+        if system == 'Windows':
+            try:
+                excel = win32com.client.Dispatch("Excel.Application")
+                excel.Visible = False
+                excel.DisplayAlerts = False
+                
+                wb = excel.Workbooks.Open(str(room_list_file.absolute()))
+                pdf_path = room_list_file.with_suffix('.pdf')
+                
+                wb.ExportAsFixedFormat(
+                    Type=0,  # PDF format
+                    Filename=str(pdf_path.absolute()),
+                    Quality=0,  # Standard quality
+                    IncludeDocProperties=True,
+                    IgnorePrintAreas=False,
+                    OpenAfterPublish=False
+                )
+                
+                wb.Close(SaveChanges=False)
+                excel.Quit()
+                print(f"Generated room list PDF: {pdf_path}")
+                
+            except Exception as e:
+                print(f"Error converting room list to PDF: {str(e)}")
+                if 'excel' in locals():
+                    excel.Quit()
+                    
+        elif system == 'Linux':
+            try:
+                pdf_path = room_list_file.with_suffix('.pdf')
+                cmd = [
+                    'libreoffice',
+                    '--headless',
+                    '--convert-to', 'pdf',
+                    '--outdir', str(output_dir),
+                    str(room_list_file.absolute())
+                ]
+                
+                subprocess.run(cmd, check=True, capture_output=True, text=True)
+                print(f"Generated room list PDF: {pdf_path}")
+                
+            except subprocess.CalledProcessError as e:
+                print(f"Error converting room list to PDF: {e.stderr}")
+            except FileNotFoundError:
+                print("Error: LibreOffice not found. Please install LibreOffice to convert files to PDF.")
+        else:
+            print(f"PDF conversion is not supported on {system} system")
 
 def parse_arguments():
     """Parse command line arguments."""
@@ -414,6 +551,16 @@ def parse_arguments():
         default='input.json',
         help='Path to input file (default: input.json)'
     )
+    parser.add_argument(
+        '--pdf-only',
+        action='store_true',
+        help='Only perform PDF operations (convert Excel to PDF and merge) without generating new seating plans'
+    )
+    parser.add_argument(
+        '--seed',
+        type=int,
+        help='Random seed for reproducible student shuffling'
+    )
     return parser.parse_args()
 
 def main():
@@ -421,15 +568,35 @@ def main():
         # Parse command line arguments
         args = parse_arguments()
         
+        # Set random seed if provided
+        if args.seed is not None:
+            random.seed(args.seed)
+            print(f"Using random seed: {args.seed}")
+        
         # Initialize seating plan generator with provided configuration
         generator = SeatingPlanGenerator(args.config, args.input)
         
-        # Generate seating plan
-        seating_plan, output_directory = generator.generate_seating_plan()
-        
-        # Export to Excel
-        generator.export_to_excel(seating_plan, output_directory)
-        print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+        if not args.pdf_only:
+            # Generate seating plan
+            seating_plan, output_directory = generator.generate_seating_plan()
+            
+            # Export to Excel
+            generator.export_to_excel(seating_plan, output_directory)
+            print(f"Seating plan has been generated successfully! Output saved to: {output_directory}")
+            
+            # Export the single-sheet room list
+            generator.export_single_sheet_room_list(seating_plan, output_directory)
+        else:
+            # In PDF-only mode, we need to find existing Excel files
+            output_directory = generator.output_directory
+            excel_dir = Path(output_directory)
+            generator.generated_excel_files = list(excel_dir.glob(f"{generator.exam_name}_*.xlsx"))
+            
+            if not generator.generated_excel_files:
+                print(f"No Excel files found for exam '{generator.exam_name}' in {output_directory}")
+                return
+                
+            print(f"Found {len(generator.generated_excel_files)} Excel files to process")
         
         # Export to PDF
         generator.export_to_pdf(output_directory)
@@ -437,7 +604,7 @@ def main():
         
         # Merge PDFs
         generator.merge_pdfs(output_directory)
-        print("Merged PDF has been created successfully!")
+        print("Merged PDFs have been created successfully!")
         
     except Exception as e:
         print(f"Error: {str(e)}")
