@@ -1,0 +1,7 @@
+{
+    "exam_name": "BLG102E Arasınav Yerleşim Planı",
+    "available_classrooms": ["Z-16", "Z-17"],
+    "student_ids_file": "ogrenci-listesi.txt",
+    "output_directory": "BLG102E-oturma-planlari",
+    "cell_params": ["student_id", "name"]
+}

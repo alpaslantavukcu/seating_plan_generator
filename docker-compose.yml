@@ -1,0 +1,16 @@
+services:
+  seating-plan-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seating-plan-app
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_UPLOAD_DIR=/app/runtime/uploads
+      - STREAMLIT_OUTPUT_BASE_DIR=/app/runtime/output
+    volumes:
+      - ./runtime/uploads:/app/runtime/uploads
+      - ./runtime/output:/app/runtime/output
+      - ./Templates:/app/Templates
+    restart: unless-stopped

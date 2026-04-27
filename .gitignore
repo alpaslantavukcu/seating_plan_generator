@@ -1,0 +1,23 @@
+# SpecStory explanation file
+.specstory/*
+*.pdf
+*.txt
+
+# Ignore all .xlsx files
+*.xlsx
+
+# But not those in the Templates folder
+!Templates/*.xlsx
+
+# Python / tooling
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# App runtime (local / Docker)
+.streamlit_uploads/
+generated_outputs/
+runtime/
