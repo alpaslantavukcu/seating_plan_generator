@@ -1,10 +1,10 @@
-# Otomatik Oturma Planı Oluşturucu
+﻿# Otomatik Oturma Planı Oluşturucu
 
 Projenin amacı, oturma planı hazırlama işlemini **otomatikleştirmek** ve standartlaştırmaktır. Hazırlanan oturma planlarında öğrenci sadece imza atacağı için yoklama alma süreci de **hızlanacaktır**.
 
 Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak oturma planlarını Excel dosyası olarak oluşturur. Ardından PDF'e dönüştürerek Ninova'da paylaşılabilir hale getirir. Ek olarak tutanak sayfası eklenmiş halini de oluşturarak çıktı alınabilir hale getirir. Sınıf kapasiteleri ve oturma düzenleri önceden hazırlandığı için sadece öğrenci listesi ve sınıf seçimi yapılması gerekmektedir.
 
-:construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
+:construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir. (Docker kullanırsanız gerek kalmamakta.)
 
 ## Hızlı Başlangıç
 
@@ -36,7 +36,42 @@ Python 3.8 ile test edilmiştir. Gerekli paketleri yüklemek için:
 pip install -r requirements.txt
 ```
 
-PDF'e dönüştürmek için Windows'ta **MS Office**, Linux'ta ise **LibreOffice** kurulu olmalıdır.  
+PDF'e dönüştürmek için Windows'ta **MS Office**, Linux'ta ise **LibreOffice** kurulu olmalıdır.
+
+## Docker ile Kullanım
+
+Python veya LibreOffice kurmadan çalıştırmak için Docker kullanabilirsiniz.
+
+**1-** İmajı oluşturun (tek seferlik):
+
+```bash
+docker build -t seating-plan-generator .
+```
+
+**2-** Çalıştırın:
+
+`input.json` ve `ogrenci-listesi.txt` dosyalarını düzenledikten sonra aşağıdaki komutu çalıştırın. Çıktı dosyaları bulunduğunuz klasöre yazılır.
+
+**Windows - PowerShell:**
+```powershell
+docker run --rm -it --mount "type=bind,source=${PWD},target=/app" seating-plan-generator
+```
+
+**Windows - CMD:**
+```cmd
+docker run --rm -it --mount "type=bind,source=%CD%,target=/app" seating-plan-generator
+```
+
+**WSL / Ubuntu:**
+```bash
+docker run --rm -it --mount "type=bind,source=$(pwd),target=/app" seating-plan-generator
+```
+
+Tekrarlanabilir çalıştırma için `--seed` ekleyin:
+
+```bash
+docker run --rm -it --mount "type=bind,source=$(pwd),target=/app" seating-plan-generator --seed 123
+```
 
 ## Detaylar
 

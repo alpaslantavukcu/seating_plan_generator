@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.cache/
+.venv/
+venv/
+env/
+build/
+dist/
+*.egg-info/
+.DS_Store
+Thumbs.db
