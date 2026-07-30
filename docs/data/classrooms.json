@@ -531,7 +531,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
@@ -546,12 +546,12 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
      "letter": "F",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
@@ -566,7 +566,7 @@
     },
     {
      "letter": "I",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     }
    ],
@@ -907,7 +907,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
@@ -922,17 +922,17 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
      "letter": "F",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
      "letter": "G",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     },
     {
@@ -947,7 +947,7 @@
     },
     {
      "letter": "J",
-     "width": 12.66,
+     "width": 18.22,
      "type": "seat"
     }
    ],
@@ -1329,7 +1329,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -1344,7 +1344,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -1359,7 +1359,7 @@
     },
     {
      "letter": "H",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     }
    ],
@@ -1769,7 +1769,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -1784,7 +1784,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -1799,7 +1799,7 @@
     },
     {
      "letter": "H",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     }
    ],
@@ -2061,7 +2061,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -2076,7 +2076,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -2091,7 +2091,7 @@
     },
     {
      "letter": "H",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     }
    ],
@@ -2316,7 +2316,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     },
     {
@@ -2331,7 +2331,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -2491,7 +2491,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     },
     {
@@ -2506,7 +2506,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -2666,7 +2666,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     },
     {
@@ -2681,7 +2681,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -2866,7 +2866,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     },
     {
@@ -2881,7 +2881,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -3066,7 +3066,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -3081,7 +3081,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     },
     {
@@ -3096,7 +3096,7 @@
     },
     {
      "letter": "H",
-     "width": 12.66,
+     "width": 15.33,
      "type": "seat"
     }
    ],
@@ -3429,7 +3429,7 @@
     },
     {
      "letter": "B",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     },
     {
@@ -3444,7 +3444,7 @@
     },
     {
      "letter": "E",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -3742,7 +3742,7 @@
     },
     {
      "letter": "F",
-     "width": 12.66,
+     "width": 20.0,
      "type": "seat"
     }
    ],
@@ -3957,32 +3957,32 @@
     },
     {
      "letter": "B",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "C",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "D",
-     "width": 8.43,
+     "width": 11.66,
      "type": "corridor"
     },
     {
      "letter": "E",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "F",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "G",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     }
    ],
@@ -4387,32 +4387,32 @@
     },
     {
      "letter": "B",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "C",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "D",
-     "width": 8.43,
+     "width": 11.66,
      "type": "corridor"
     },
     {
      "letter": "E",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "F",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     },
     {
      "letter": "G",
-     "width": 8.43,
+     "width": 11.66,
      "type": "seat"
     }
    ],
@@ -4817,22 +4817,22 @@
     },
     {
      "letter": "B",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     },
     {
      "letter": "C",
-     "width": 8.43,
+     "width": 16.66,
      "type": "corridor"
     },
     {
      "letter": "D",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     },
     {
      "letter": "E",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     }
    ],
@@ -5092,22 +5092,22 @@
     },
     {
      "letter": "B",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     },
     {
      "letter": "C",
-     "width": 8.43,
+     "width": 16.66,
      "type": "corridor"
     },
     {
      "letter": "D",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     },
     {
      "letter": "E",
-     "width": 8.43,
+     "width": 16.66,
      "type": "seat"
     }
    ],

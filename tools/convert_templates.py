@@ -38,6 +38,25 @@ def parse_cell(ref: str):
     return letters, int(digits)
 
 
+def column_widths(ws, last_col_idx: int) -> dict:
+    """Width (in Excel character units) of columns 1..last_col_idx.
+
+    A worksheet stores widths as ranges — <col min="1" max="6" width="18.2"/> —
+    and openpyxl keys column_dimensions by the *min* letter only, so reading
+    ws.column_dimensions["B"] for that range yields nothing and the caller
+    silently falls back to the sheet default. Expand every range instead.
+    """
+    default = round(ws.sheet_format.defaultColWidth or 8.43, 2)
+    widths = {get_column_letter(i): default for i in range(1, last_col_idx + 1)}
+    for dim in ws.column_dimensions.values():
+        if dim.width is None:
+            continue
+        # dim.max is 16384 for whole-sheet ranges — clamp to the room's extent
+        for idx in range(dim.min, min(dim.max, last_col_idx) + 1):
+            widths[get_column_letter(idx)] = round(dim.width, 2)
+    return widths
+
+
 def convert_room(room: str, capacity: int, seat_mapping: dict) -> dict:
     template_path = TEMPLATES_DIR / f"Template_{room}.xlsx"
     if not template_path.exists():
@@ -84,15 +103,6 @@ def convert_room(room: str, capacity: int, seat_mapping: dict) -> dict:
     title_text = ws.cell(row=1, column=title_rng.min_col).value or "SINAV YERLEŞİM PLANI"
     lectern_text = ws.cell(row=3, column=lectern_rng.min_col).value or "KÜRSÜ"
 
-    # Corridors: tall merges in narrow columns spanning the seat rows
-    default_width = ws.sheet_format.defaultColWidth or 8.43
-
-    def col_width(letter: str) -> float:
-        dim = ws.column_dimensions.get(letter)
-        if dim is not None and dim.width is not None:
-            return round(dim.width, 2)
-        return round(default_width, 2)
-
     corridors = []
     unassigned_desks = []
     seat_anchor_refs = set(seat_mapping.values())
@@ -136,6 +146,7 @@ def convert_room(room: str, capacity: int, seat_mapping: dict) -> dict:
         raise AssertionError(f"{room}: {len(seats)} seats != capacity {capacity}")
 
     # Columns inside the extent, classified
+    widths = column_widths(ws, last_col_idx)
     columns = []
     for idx in range(1, last_col_idx + 1):
         letter = get_column_letter(idx)
@@ -145,7 +156,7 @@ def convert_room(room: str, capacity: int, seat_mapping: dict) -> dict:
             ctype = "seat"
         else:
             ctype = "gap"
-        columns.append({"letter": letter, "width": col_width(letter), "type": ctype})
+        columns.append({"letter": letter, "width": widths[letter], "type": ctype})
 
     for s in seats:
         if column_index_from_string(s["col"]) > last_col_idx:

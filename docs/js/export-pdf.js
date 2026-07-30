@@ -8,7 +8,8 @@ import { PT_TO_MM, CHAR_TO_MM, safeFileName, roomSnapshot, seatLines } from './e
 const MARGIN = 10;
 const TITLE_H = 12;
 const LECTERN_H = 8;
-const MAX_COL_MM = 30;   // cap so tiny rooms don't get comically wide cells
+const PAD = 1.5;         // mm kept clear inside every cell
+const LINE = 1.2;        // line-height as a multiple of the font size
 const FONT = 'NotoSans';
 
 function newDoc(orientation) {
@@ -20,20 +21,34 @@ function pageSize(doc) {
   return { w: doc.internal.pageSize.getWidth(), h: doc.internal.pageSize.getHeight() };
 }
 
-// Column x-positions/widths (mm) for a room, centered on the page.
-function columnLayout(room, pageW) {
-  const usable = pageW - 2 * MARGIN;
-  const units = room.columns.reduce((s, c) => s + c.width, 0);
-  const scale = Math.min(usable / units, MAX_COL_MM / Math.max(...room.columns.map((c) => c.width)));
-  const widths = room.columns.map((c) => c.width * scale);
-  const total = widths.reduce((a, b) => a + b, 0);
-  let x = (pageW - total) / 2;
+// Geometry (mm) for one room: the template rendered at its true size, scaled
+// by a single factor so it fits the page in both axes — which keeps the
+// template's aspect ratio instead of stretching columns and rows apart.
+function roomLayout(room, pageW, pageH) {
+  const usableW = pageW - 2 * MARGIN;
+  const usableH = pageH - 2 * MARGIN - TITLE_H - LECTERN_H;
+  const natW = room.columns.reduce((s, c) => s + c.width, 0) * CHAR_TO_MM;
+  const natH = room.bands.length * room.rowHeight * 3 * PT_TO_MM;
+  const scale = Math.min(usableW / natW, usableH / natH);
+
+  const total = natW * scale;
+  const gridH = natH * scale;
+  const left = (pageW - total) / 2;
+  let x = left;
   const cols = {};
-  room.columns.forEach((c, i) => {
-    cols[c.letter] = { x, w: widths[i] };
-    x += widths[i];
+  room.columns.forEach((c) => {
+    const w = c.width * CHAR_TO_MM * scale;
+    cols[c.letter] = { x, w };
+    x += w;
   });
-  return { cols, left: (pageW - total) / 2, total };
+  return {
+    cols,
+    left,
+    total,
+    bandH: gridH / room.bands.length,
+    // title + lectern + grid are centered vertically as one block
+    top: (pageH - (TITLE_H + LECTERN_H + gridH)) / 2,
+  };
 }
 
 function fitText(doc, text, maxW, size, minSize = 5) {
@@ -45,47 +60,83 @@ function fitText(doc, text, maxW, size, minSize = 5) {
   return size;
 }
 
+// Wrap each spec onto as many lines as it needs, shrinking the whole block
+// until it also fits maxH. Nothing ever leaves the cell: splitTextToSize
+// breaks on spaces and fitText is the backstop for one over-long word.
+// specs: [{text, base, bold}] -> [{text, size, bold}]
+function cellLines(doc, specs, maxW, maxH) {
+  for (let shrink = 1; ; shrink -= 0.05) {
+    const out = [];
+    let h = 0;
+    for (const s of specs) {
+      const size = Math.max(4, s.base * shrink);
+      doc.setFont(FONT, s.bold ? 'bold' : 'normal');
+      doc.setFontSize(size);
+      for (const part of doc.splitTextToSize(s.text, maxW)) {
+        const ps = fitText(doc, part, maxW, size, 4);
+        out.push({ text: part, size: ps, bold: s.bold });
+        h += ps * PT_TO_MM * LINE;
+      }
+    }
+    if (h <= maxH || shrink <= 0.5) return out;
+  }
+}
+
+// Draw pre-measured lines centered in the box (x, y, w, h).
+function drawLines(doc, lines, x, y, w, h) {
+  const totalH = lines.reduce((a, l) => a + l.size * PT_TO_MM * LINE, 0);
+  let ty = y + (h - totalH) / 2;
+  for (const l of lines) {
+    const lh = l.size * PT_TO_MM * LINE;
+    doc.setFont(FONT, l.bold ? 'bold' : 'normal');
+    doc.setFontSize(l.size);
+    doc.text(l.text, x + w / 2, ty + lh / 2, { align: 'center', baseline: 'middle' });
+    ty += lh;
+  }
+}
+
 export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examName) {
   const { w: pageW, h: pageH } = pageSize(doc);
-  const { cols, left, total } = columnLayout(room, pageW);
-
-  let bandH = room.rowHeight * 3 * PT_TO_MM;
+  const { cols, left, total, bandH, top } = roomLayout(room, pageW, pageH);
   const bands = room.bands.length;
-  const usableH = pageH - 2 * MARGIN - TITLE_H - LECTERN_H;
-  if (bands * bandH > usableH) bandH = usableH / bands;
 
   doc.setDrawColor(0);
   doc.setLineWidth(0.25);
 
   // Title band: "{exam} | {room}" — mirrors template cell A1
-  const titleY = MARGIN;
+  const titleY = top;
   doc.rect(left, titleY, total, TITLE_H);
-  doc.setFont(FONT, 'bold');
   const title = `${examName} | ${roomId}`;
-  fitText(doc, title, total - 4, 13, 8);
-  doc.text(title, pageW / 2, titleY + TITLE_H / 2, { align: 'center', baseline: 'middle' });
+  drawLines(doc, cellLines(doc, [{ text: title, base: 13, bold: true }],
+    total - 2 * PAD, TITLE_H - PAD), left, titleY, total, TITLE_H);
 
   // Lectern (KÜRSÜ) band
   const lectY = titleY + TITLE_H;
   doc.setFillColor(245, 245, 245);
   doc.rect(left, lectY, total, LECTERN_H, 'FD');
-  doc.setFontSize(11);
-  doc.text(room.lectern, pageW / 2, lectY + LECTERN_H / 2, { align: 'center', baseline: 'middle' });
+  drawLines(doc, cellLines(doc, [{ text: room.lectern, base: 11, bold: true }],
+    total - 2 * PAD, LECTERN_H - PAD), left, lectY, total, LECTERN_H);
 
   const gridTop = lectY + LECTERN_H;
   const gridBottom = gridTop + bands * bandH;
 
-  // Corridors: full-height striped columns with vertical label
+  // Corridors: full-height striped columns with a vertical label.
+  // jsPDF 2.5.2 applies align/baseline in unrotated page space and only then
+  // rotates, which throws the label half its own length out of the column —
+  // so anchor it by hand and pass nothing but the angle. angle 90 emits
+  // Tm [0 1 -1 0]: the text reads bottom-to-top with glyph tops facing left,
+  // hence the baseline sits right of centre by about half the cap height.
   for (const corridor of room.corridors) {
     const c = cols[corridor.col];
     doc.setFillColor(238, 238, 238);
     doc.rect(c.x, gridTop, c.w, gridBottom - gridTop, 'FD');
     doc.setFont(FONT, 'normal');
-    doc.setFontSize(7);
     doc.setTextColor(120);
-    doc.text(corridor.label, c.x + c.w / 2, (gridTop + gridBottom) / 2, {
-      align: 'center', baseline: 'middle', angle: 90,
-    });
+    const size = fitText(doc, corridor.label, gridBottom - gridTop,
+      Math.min(10, Math.max(6, c.w * 0.4)));
+    const len = doc.getTextWidth(corridor.label);
+    doc.text(corridor.label, c.x + c.w / 2 + size * PT_TO_MM * 0.35,
+      (gridTop + gridBottom + len) / 2, { angle: 90 });
     doc.setTextColor(0);
   }
 
@@ -96,7 +147,9 @@ export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examNam
     doc.rect(c.x, gridTop + desk.band * bandH, c.w, bandH, 'FD');
   }
 
-  // Seats
+  // Seats. Base sizes track the band height so the bigger cells of small
+  // rooms don't end up with a lonely 9pt id floating in the middle.
+  const idBase = Math.min(14, Math.max(9, bandH * 0.38));
   const seatByN = {};
   room.seats.forEach((s) => { seatByN[s.n] = s; });
   for (const snap of snaps) {
@@ -110,20 +163,11 @@ export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examNam
 
     const specs = lines.map((text, i) => {
       const isId = mode === 'id' || (cellFields.id && i === 0);
-      const base = isId ? 9 : (text.startsWith('(') ? 7 : 8);
-      doc.setFont(FONT, isId ? 'bold' : 'normal');
-      const size = fitText(doc, text, c.w - 2, base);
-      return { text, size, bold: isId };
+      const base = isId ? idBase : idBase * (text.startsWith('(') ? 0.72 : 0.85);
+      return { text: String(text), base, bold: isId };
     });
-    const lineH = specs.map((s) => s.size * PT_TO_MM * 1.25);
-    const totalH = lineH.reduce((a, b) => a + b, 0);
-    let ty = y + (bandH - totalH) / 2;
-    specs.forEach((s, i) => {
-      doc.setFont(FONT, s.bold ? 'bold' : 'normal');
-      doc.setFontSize(s.size);
-      doc.text(s.text, c.x + c.w / 2, ty + lineH[i] / 2, { align: 'center', baseline: 'middle' });
-      ty += lineH[i];
-    });
+    drawLines(doc, cellLines(doc, specs, c.w - 2 * PAD, bandH - 2 * PAD),
+      c.x, y, c.w, bandH);
   }
 }
 
