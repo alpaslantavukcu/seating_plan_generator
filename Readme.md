@@ -6,6 +6,12 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 :construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
 
+## 🌐 Web Uygulaması (GitHub Pages)
+
+`docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır: Ninova'dan öğrenci listesini yapıştırın (veya .txt / .xlsx / .csv yükleyin), derslikleri seçin, planı oluşturun; ardından sürükle-bırak ile yer değiştirin, öğrencileri düzenleyin ve PDF / Excel çıktılarını indirin. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
+
+Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür; `configuration.json` veya şablonlar değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
+
 ## Hızlı Başlangıç
 
 **1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın. Öğrenci kullanıcı adları kod tarafından kullanılmamaktadır ve dosyanın içinde yazıp yazmaması bir şeyi değiştirmez.

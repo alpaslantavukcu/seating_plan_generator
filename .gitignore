@@ -2,6 +2,7 @@
 .specstory/*
 *.pdf
 *.txt
+!requirements.txt
 
 # Ignore all .xlsx files
 *.xlsx

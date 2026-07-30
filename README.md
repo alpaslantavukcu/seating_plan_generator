@@ -4,8 +4,21 @@ Automatically assign students from a class list to physical seats using per-room
 
 The project includes:
 
+- **`docs/`** — **Static web app (GitHub Pages)**: the full generator running entirely in the browser — no server, no installation. Paste a Ninova student list (or upload .txt / .xlsx / .csv), pick classrooms, generate, then rearrange seats by drag-and-drop, edit students inline, and download PDFs / Excel files. Bilingual (TR/EN). See [Web app](#web-app-github-pages).
 - **`seating_plan_generator.py`** — CLI pipeline: load `configuration.json` and an input JSON, shuffle students into seat mappings, fill templates, convert to PDF (LibreOffice on Linux, Microsoft Office on Windows).
 - **`app.py`** — Streamlit web UI for the same pipeline with file upload, optional per-room capacities, ZIP download of results.
+
+## Web app (GitHub Pages)
+
+The `docs/` folder is a self-contained static site. To publish it:
+
+1. Push this repository to GitHub.
+2. In the repository: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**, then select branch **`main`** and folder **`/docs`**. Save.
+3. The site appears at `https://<user>.github.io/<repo>/` within a minute or two.
+
+Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json` by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json` or the Excel templates, and commit the result.
+
+To preview locally: `python3 -m http.server 8000 --directory docs` and open http://localhost:8000.
 
 ## Prerequisites
 

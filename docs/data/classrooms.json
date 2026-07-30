@@ -1,0 +1,5383 @@
+{
+ "version": 1,
+ "rooms": {
+  "Z-16": {
+   "capacity": 70,
+   "orientation": "landscape",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "D",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "G",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "I",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "J",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "K",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "L",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22
+   ],
+   "rowHeight": 19.8,
+   "corridors": [
+    {
+     "col": "D",
+     "range": "D4:D24",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "I",
+     "range": "I4:I24",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "L4",
+     "col": "L",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 6,
+     "cell": "L10",
+     "col": "L",
+     "band": 2
+    },
+    {
+     "n": 7,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 8,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 9,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 10,
+     "cell": "L16",
+     "col": "L",
+     "band": 4
+    },
+    {
+     "n": 11,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 12,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    },
+    {
+     "n": 13,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 14,
+     "cell": "L22",
+     "col": "L",
+     "band": 6
+    },
+    {
+     "n": 15,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 16,
+     "cell": "H22",
+     "col": "H",
+     "band": 6
+    },
+    {
+     "n": 17,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 18,
+     "cell": "L7",
+     "col": "L",
+     "band": 1
+    },
+    {
+     "n": 19,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 20,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 21,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "L13",
+     "col": "L",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 26,
+     "cell": "L19",
+     "col": "L",
+     "band": 5
+    },
+    {
+     "n": 27,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 28,
+     "cell": "H19",
+     "col": "H",
+     "band": 5
+    },
+    {
+     "n": 29,
+     "cell": "C4",
+     "col": "C",
+     "band": 0
+    },
+    {
+     "n": 30,
+     "cell": "J4",
+     "col": "J",
+     "band": 0
+    },
+    {
+     "n": 31,
+     "cell": "C10",
+     "col": "C",
+     "band": 2
+    },
+    {
+     "n": 32,
+     "cell": "J10",
+     "col": "J",
+     "band": 2
+    },
+    {
+     "n": 33,
+     "cell": "C16",
+     "col": "C",
+     "band": 4
+    },
+    {
+     "n": 34,
+     "cell": "J16",
+     "col": "J",
+     "band": 4
+    },
+    {
+     "n": 35,
+     "cell": "C22",
+     "col": "C",
+     "band": 6
+    },
+    {
+     "n": 36,
+     "cell": "J22",
+     "col": "J",
+     "band": 6
+    },
+    {
+     "n": 37,
+     "cell": "C7",
+     "col": "C",
+     "band": 1
+    },
+    {
+     "n": 38,
+     "cell": "J7",
+     "col": "J",
+     "band": 1
+    },
+    {
+     "n": 39,
+     "cell": "C13",
+     "col": "C",
+     "band": 3
+    },
+    {
+     "n": 40,
+     "cell": "J13",
+     "col": "J",
+     "band": 3
+    },
+    {
+     "n": 41,
+     "cell": "C19",
+     "col": "C",
+     "band": 5
+    },
+    {
+     "n": 42,
+     "cell": "J19",
+     "col": "J",
+     "band": 5
+    },
+    {
+     "n": 43,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 44,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 45,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 46,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 47,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 48,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 49,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    },
+    {
+     "n": 50,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 51,
+     "cell": "K4",
+     "col": "K",
+     "band": 0
+    },
+    {
+     "n": 52,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 53,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 54,
+     "cell": "K10",
+     "col": "K",
+     "band": 2
+    },
+    {
+     "n": 55,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 56,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 57,
+     "cell": "K16",
+     "col": "K",
+     "band": 4
+    },
+    {
+     "n": 58,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 59,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 60,
+     "cell": "K22",
+     "col": "K",
+     "band": 6
+    },
+    {
+     "n": 61,
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "n": 62,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 63,
+     "cell": "K7",
+     "col": "K",
+     "band": 1
+    },
+    {
+     "n": 64,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 65,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 66,
+     "cell": "K13",
+     "col": "K",
+     "band": 3
+    },
+    {
+     "n": 67,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 68,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 69,
+     "cell": "K19",
+     "col": "K",
+     "band": 5
+    },
+    {
+     "n": 70,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    }
+   ],
+   "extent": {
+    "lastCol": "L",
+    "lastRow": 24
+   }
+  },
+  "Z-17": {
+   "capacity": 49,
+   "orientation": "landscape",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "G",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "H",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "I",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22
+   ],
+   "rowHeight": 21.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C24",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "G",
+     "range": "G4:G24",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "I4",
+     "col": "I",
+     "band": 0
+    },
+    {
+     "n": 8,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 14,
+     "cell": "I7",
+     "col": "I",
+     "band": 1
+    },
+    {
+     "n": 15,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 20,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 21,
+     "cell": "I10",
+     "col": "I",
+     "band": 2
+    },
+    {
+     "n": 22,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 26,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 27,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 28,
+     "cell": "I13",
+     "col": "I",
+     "band": 3
+    },
+    {
+     "n": 29,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 32,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 33,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 34,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    },
+    {
+     "n": 35,
+     "cell": "I16",
+     "col": "I",
+     "band": 4
+    },
+    {
+     "n": 36,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 37,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 38,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 39,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 40,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 41,
+     "cell": "H19",
+     "col": "H",
+     "band": 5
+    },
+    {
+     "n": 42,
+     "cell": "I19",
+     "col": "I",
+     "band": 5
+    },
+    {
+     "n": 43,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 44,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 45,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 46,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 47,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    },
+    {
+     "n": 48,
+     "cell": "H22",
+     "col": "H",
+     "band": 6
+    },
+    {
+     "n": 49,
+     "cell": "I22",
+     "col": "I",
+     "band": 6
+    }
+   ],
+   "extent": {
+    "lastCol": "I",
+    "lastRow": 24
+   }
+  },
+  "Z-18": {
+   "capacity": 54,
+   "orientation": "landscape",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "G",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "I",
+     "width": 18.22,
+     "type": "seat"
+    },
+    {
+     "letter": "J",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22
+   ],
+   "rowHeight": 21.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C24",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "H",
+     "range": "H4:H24",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [
+    {
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    }
+   ],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "I4",
+     "col": "I",
+     "band": 0
+    },
+    {
+     "n": 8,
+     "cell": "J4",
+     "col": "J",
+     "band": 0
+    },
+    {
+     "n": 9,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 14,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 15,
+     "cell": "I7",
+     "col": "I",
+     "band": 1
+    },
+    {
+     "n": 16,
+     "cell": "J7",
+     "col": "J",
+     "band": 1
+    },
+    {
+     "n": 17,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 20,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 21,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 22,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 23,
+     "cell": "I10",
+     "col": "I",
+     "band": 2
+    },
+    {
+     "n": 24,
+     "cell": "J10",
+     "col": "J",
+     "band": 2
+    },
+    {
+     "n": 25,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 26,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 27,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 28,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 29,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 30,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 31,
+     "cell": "I13",
+     "col": "I",
+     "band": 3
+    },
+    {
+     "n": 32,
+     "cell": "J13",
+     "col": "J",
+     "band": 3
+    },
+    {
+     "n": 33,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 34,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 35,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 36,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 37,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 38,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 39,
+     "cell": "I16",
+     "col": "I",
+     "band": 4
+    },
+    {
+     "n": 40,
+     "cell": "J16",
+     "col": "J",
+     "band": 4
+    },
+    {
+     "n": 41,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 42,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 43,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 44,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 45,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 46,
+     "cell": "I19",
+     "col": "I",
+     "band": 5
+    },
+    {
+     "n": 47,
+     "cell": "J19",
+     "col": "J",
+     "band": 5
+    },
+    {
+     "n": 48,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 49,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 50,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 51,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 52,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    },
+    {
+     "n": 53,
+     "cell": "I22",
+     "col": "I",
+     "band": 6
+    },
+    {
+     "n": 54,
+     "cell": "J22",
+     "col": "J",
+     "band": 6
+    }
+   ],
+   "extent": {
+    "lastCol": "J",
+    "lastRow": 24
+   }
+  },
+  "Z-19": {
+   "capacity": 60,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "G",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25,
+    28,
+    31
+   ],
+   "rowHeight": 21.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C33",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "F",
+     "range": "F4:F33",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 32,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 33,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 34,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 35,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    },
+    {
+     "n": 36,
+     "cell": "H19",
+     "col": "H",
+     "band": 5
+    },
+    {
+     "n": 37,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 38,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 39,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 40,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 41,
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "n": 42,
+     "cell": "H22",
+     "col": "H",
+     "band": 6
+    },
+    {
+     "n": 43,
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    },
+    {
+     "n": 44,
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "n": 45,
+     "cell": "D25",
+     "col": "D",
+     "band": 7
+    },
+    {
+     "n": 46,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 47,
+     "cell": "G25",
+     "col": "G",
+     "band": 7
+    },
+    {
+     "n": 48,
+     "cell": "H25",
+     "col": "H",
+     "band": 7
+    },
+    {
+     "n": 49,
+     "cell": "A28",
+     "col": "A",
+     "band": 8
+    },
+    {
+     "n": 50,
+     "cell": "B28",
+     "col": "B",
+     "band": 8
+    },
+    {
+     "n": 51,
+     "cell": "D28",
+     "col": "D",
+     "band": 8
+    },
+    {
+     "n": 52,
+     "cell": "E28",
+     "col": "E",
+     "band": 8
+    },
+    {
+     "n": 53,
+     "cell": "G28",
+     "col": "G",
+     "band": 8
+    },
+    {
+     "n": 54,
+     "cell": "H28",
+     "col": "H",
+     "band": 8
+    },
+    {
+     "n": 55,
+     "cell": "A31",
+     "col": "A",
+     "band": 9
+    },
+    {
+     "n": 56,
+     "cell": "B31",
+     "col": "B",
+     "band": 9
+    },
+    {
+     "n": 57,
+     "cell": "D31",
+     "col": "D",
+     "band": 9
+    },
+    {
+     "n": 58,
+     "cell": "E31",
+     "col": "E",
+     "band": 9
+    },
+    {
+     "n": 59,
+     "cell": "G31",
+     "col": "G",
+     "band": 9
+    },
+    {
+     "n": 60,
+     "cell": "H31",
+     "col": "H",
+     "band": 9
+    }
+   ],
+   "extent": {
+    "lastCol": "H",
+    "lastRow": 33
+   }
+  },
+  "Z-20": {
+   "capacity": 36,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "G",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C21",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "F",
+     "range": "F4:F21",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 32,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 33,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 34,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 35,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    },
+    {
+     "n": 36,
+     "cell": "H19",
+     "col": "H",
+     "band": 5
+    }
+   ],
+   "extent": {
+    "lastCol": "H",
+    "lastRow": 21
+   }
+  },
+  "Z-21": {
+   "capacity": 30,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "G",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C18",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "F",
+     "range": "F4:F18",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    }
+   ],
+   "extent": {
+    "lastCol": "H",
+    "lastRow": 18
+   }
+  },
+  "Z-22": {
+   "capacity": 20,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C18",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 18
+   }
+  },
+  "Z-23": {
+   "capacity": 20,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C18",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 18
+   }
+  },
+  "101": {
+   "capacity": 24,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C21",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 21,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 22,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 23,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 24,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 21
+   }
+  },
+  "102": {
+   "capacity": 24,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C21",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 21,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 22,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 23,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 24,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 21
+   }
+  },
+  "104": {
+   "capacity": 44,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 4.0,
+     "type": "corridor"
+    },
+    {
+     "letter": "G",
+     "width": 15.33,
+     "type": "seat"
+    },
+    {
+     "letter": "H",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25
+   ],
+   "rowHeight": 18.75,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C27",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "F",
+     "range": "F4:F27",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [
+    {
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    }
+   ],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "H4",
+     "col": "H",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "H7",
+     "col": "H",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "H10",
+     "col": "H",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "H13",
+     "col": "H",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "H16",
+     "col": "H",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 32,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 33,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 34,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 35,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    },
+    {
+     "n": 36,
+     "cell": "H19",
+     "col": "H",
+     "band": 5
+    },
+    {
+     "n": 37,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 38,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 39,
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "n": 40,
+     "cell": "H22",
+     "col": "H",
+     "band": 6
+    },
+    {
+     "n": 41,
+     "cell": "D25",
+     "col": "D",
+     "band": 7
+    },
+    {
+     "n": 42,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 43,
+     "cell": "G25",
+     "col": "G",
+     "band": 7
+    },
+    {
+     "n": 44,
+     "cell": "H25",
+     "col": "H",
+     "band": 7
+    }
+   ],
+   "extent": {
+    "lastCol": "H",
+    "lastRow": 27
+   }
+  },
+  "121": {
+   "capacity": 20,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 12.66,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C18",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 18
+   }
+  },
+  "122": {
+   "capacity": 12,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 22.22,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "C",
+     "width": 22.22,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "B",
+     "range": "B4:B21",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "C4",
+     "col": "C",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 4,
+     "cell": "C7",
+     "col": "C",
+     "band": 1
+    },
+    {
+     "n": 5,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 6,
+     "cell": "C10",
+     "col": "C",
+     "band": 2
+    },
+    {
+     "n": 7,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 8,
+     "cell": "C13",
+     "col": "C",
+     "band": 3
+    },
+    {
+     "n": 9,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 10,
+     "cell": "C16",
+     "col": "C",
+     "band": 4
+    },
+    {
+     "n": 11,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 12,
+     "cell": "C19",
+     "col": "C",
+     "band": 5
+    }
+   ],
+   "extent": {
+    "lastCol": "C",
+    "lastRow": 21
+   }
+  },
+  "123": {
+   "capacity": 28,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "C",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "D",
+     "width": 5.55,
+     "type": "corridor"
+    },
+    {
+     "letter": "E",
+     "width": 20.0,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 12.66,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22
+   ],
+   "rowHeight": 24.0,
+   "corridors": [
+    {
+     "col": "B",
+     "range": "B4:B24",
+     "label": "KORİDOR"
+    },
+    {
+     "col": "D",
+     "range": "D4:D24",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "C4",
+     "col": "C",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "C7",
+     "col": "C",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "C10",
+     "col": "C",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "C13",
+     "col": "C",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "C16",
+     "col": "C",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 21,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 22,
+     "cell": "C19",
+     "col": "C",
+     "band": 5
+    },
+    {
+     "n": 23,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 24,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 25,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 26,
+     "cell": "C22",
+     "col": "C",
+     "band": 6
+    },
+    {
+     "n": 27,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 28,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    }
+   ],
+   "extent": {
+    "lastCol": "F",
+    "lastRow": 24
+   }
+  },
+  "MED_A31": {
+   "capacity": 60,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 11.66,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "D",
+     "width": 8.43,
+     "type": "corridor"
+    },
+    {
+     "letter": "E",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "G",
+     "width": 8.43,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25,
+    28,
+    31
+   ],
+   "rowHeight": 20.0,
+   "corridors": [
+    {
+     "col": "D",
+     "range": "D4:D33",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "C4",
+     "col": "C",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "C7",
+     "col": "C",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "C10",
+     "col": "C",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "C13",
+     "col": "C",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "C16",
+     "col": "C",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 32,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 33,
+     "cell": "C19",
+     "col": "C",
+     "band": 5
+    },
+    {
+     "n": 34,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 35,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 36,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    },
+    {
+     "n": 37,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 38,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 39,
+     "cell": "C22",
+     "col": "C",
+     "band": 6
+    },
+    {
+     "n": 40,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 41,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    },
+    {
+     "n": 42,
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "n": 43,
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    },
+    {
+     "n": 44,
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "n": 45,
+     "cell": "C25",
+     "col": "C",
+     "band": 7
+    },
+    {
+     "n": 46,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 47,
+     "cell": "F25",
+     "col": "F",
+     "band": 7
+    },
+    {
+     "n": 48,
+     "cell": "G25",
+     "col": "G",
+     "band": 7
+    },
+    {
+     "n": 49,
+     "cell": "A28",
+     "col": "A",
+     "band": 8
+    },
+    {
+     "n": 50,
+     "cell": "B28",
+     "col": "B",
+     "band": 8
+    },
+    {
+     "n": 51,
+     "cell": "C28",
+     "col": "C",
+     "band": 8
+    },
+    {
+     "n": 52,
+     "cell": "E28",
+     "col": "E",
+     "band": 8
+    },
+    {
+     "n": 53,
+     "cell": "F28",
+     "col": "F",
+     "band": 8
+    },
+    {
+     "n": 54,
+     "cell": "G28",
+     "col": "G",
+     "band": 8
+    },
+    {
+     "n": 55,
+     "cell": "A31",
+     "col": "A",
+     "band": 9
+    },
+    {
+     "n": 56,
+     "cell": "B31",
+     "col": "B",
+     "band": 9
+    },
+    {
+     "n": 57,
+     "cell": "C31",
+     "col": "C",
+     "band": 9
+    },
+    {
+     "n": 58,
+     "cell": "E31",
+     "col": "E",
+     "band": 9
+    },
+    {
+     "n": 59,
+     "cell": "F31",
+     "col": "F",
+     "band": 9
+    },
+    {
+     "n": 60,
+     "cell": "G31",
+     "col": "G",
+     "band": 9
+    }
+   ],
+   "extent": {
+    "lastCol": "G",
+    "lastRow": 33
+   }
+  },
+  "MED_A32": {
+   "capacity": 60,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 11.66,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "D",
+     "width": 8.43,
+     "type": "corridor"
+    },
+    {
+     "letter": "E",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "F",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "G",
+     "width": 8.43,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25,
+    28,
+    31
+   ],
+   "rowHeight": 20.0,
+   "corridors": [
+    {
+     "col": "D",
+     "range": "D4:D33",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "C4",
+     "col": "C",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "F4",
+     "col": "F",
+     "band": 0
+    },
+    {
+     "n": 6,
+     "cell": "G4",
+     "col": "G",
+     "band": 0
+    },
+    {
+     "n": 7,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "C7",
+     "col": "C",
+     "band": 1
+    },
+    {
+     "n": 10,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 11,
+     "cell": "F7",
+     "col": "F",
+     "band": 1
+    },
+    {
+     "n": 12,
+     "cell": "G7",
+     "col": "G",
+     "band": 1
+    },
+    {
+     "n": 13,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 14,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 15,
+     "cell": "C10",
+     "col": "C",
+     "band": 2
+    },
+    {
+     "n": 16,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 17,
+     "cell": "F10",
+     "col": "F",
+     "band": 2
+    },
+    {
+     "n": 18,
+     "cell": "G10",
+     "col": "G",
+     "band": 2
+    },
+    {
+     "n": 19,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 20,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 21,
+     "cell": "C13",
+     "col": "C",
+     "band": 3
+    },
+    {
+     "n": 22,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 23,
+     "cell": "F13",
+     "col": "F",
+     "band": 3
+    },
+    {
+     "n": 24,
+     "cell": "G13",
+     "col": "G",
+     "band": 3
+    },
+    {
+     "n": 25,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 26,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 27,
+     "cell": "C16",
+     "col": "C",
+     "band": 4
+    },
+    {
+     "n": 28,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 29,
+     "cell": "F16",
+     "col": "F",
+     "band": 4
+    },
+    {
+     "n": 30,
+     "cell": "G16",
+     "col": "G",
+     "band": 4
+    },
+    {
+     "n": 31,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 32,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 33,
+     "cell": "C19",
+     "col": "C",
+     "band": 5
+    },
+    {
+     "n": 34,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 35,
+     "cell": "F19",
+     "col": "F",
+     "band": 5
+    },
+    {
+     "n": 36,
+     "cell": "G19",
+     "col": "G",
+     "band": 5
+    },
+    {
+     "n": 37,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 38,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 39,
+     "cell": "C22",
+     "col": "C",
+     "band": 6
+    },
+    {
+     "n": 40,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 41,
+     "cell": "F22",
+     "col": "F",
+     "band": 6
+    },
+    {
+     "n": 42,
+     "cell": "G22",
+     "col": "G",
+     "band": 6
+    },
+    {
+     "n": 43,
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    },
+    {
+     "n": 44,
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "n": 45,
+     "cell": "C25",
+     "col": "C",
+     "band": 7
+    },
+    {
+     "n": 46,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 47,
+     "cell": "F25",
+     "col": "F",
+     "band": 7
+    },
+    {
+     "n": 48,
+     "cell": "G25",
+     "col": "G",
+     "band": 7
+    },
+    {
+     "n": 49,
+     "cell": "A28",
+     "col": "A",
+     "band": 8
+    },
+    {
+     "n": 50,
+     "cell": "B28",
+     "col": "B",
+     "band": 8
+    },
+    {
+     "n": 51,
+     "cell": "C28",
+     "col": "C",
+     "band": 8
+    },
+    {
+     "n": 52,
+     "cell": "E28",
+     "col": "E",
+     "band": 8
+    },
+    {
+     "n": 53,
+     "cell": "F28",
+     "col": "F",
+     "band": 8
+    },
+    {
+     "n": 54,
+     "cell": "G28",
+     "col": "G",
+     "band": 8
+    },
+    {
+     "n": 55,
+     "cell": "A31",
+     "col": "A",
+     "band": 9
+    },
+    {
+     "n": 56,
+     "cell": "B31",
+     "col": "B",
+     "band": 9
+    },
+    {
+     "n": 57,
+     "cell": "C31",
+     "col": "C",
+     "band": 9
+    },
+    {
+     "n": 58,
+     "cell": "E31",
+     "col": "E",
+     "band": 9
+    },
+    {
+     "n": 59,
+     "cell": "F31",
+     "col": "F",
+     "band": 9
+    },
+    {
+     "n": 60,
+     "cell": "G31",
+     "col": "G",
+     "band": 9
+    }
+   ],
+   "extent": {
+    "lastCol": "G",
+    "lastRow": 33
+   }
+  },
+  "EEB_5204": {
+   "capacity": 36,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 16.66,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 8.43,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 8.43,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25,
+    28
+   ],
+   "rowHeight": 20.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C30",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 21,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 22,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 23,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 24,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 25,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 26,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 27,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 28,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 29,
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    },
+    {
+     "n": 30,
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "n": 31,
+     "cell": "D25",
+     "col": "D",
+     "band": 7
+    },
+    {
+     "n": 32,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 33,
+     "cell": "A28",
+     "col": "A",
+     "band": 8
+    },
+    {
+     "n": 34,
+     "cell": "B28",
+     "col": "B",
+     "band": 8
+    },
+    {
+     "n": 35,
+     "cell": "D28",
+     "col": "D",
+     "band": 8
+    },
+    {
+     "n": 36,
+     "cell": "E28",
+     "col": "E",
+     "band": 8
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 30
+   }
+  },
+  "EEB_5302": {
+   "capacity": 40,
+   "orientation": "portrait",
+   "title": "SINAV YERLEŞİM PLANI",
+   "lectern": "KÜRSÜ",
+   "columns": [
+    {
+     "letter": "A",
+     "width": 16.66,
+     "type": "seat"
+    },
+    {
+     "letter": "B",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "C",
+     "width": 8.43,
+     "type": "corridor"
+    },
+    {
+     "letter": "D",
+     "width": 8.43,
+     "type": "seat"
+    },
+    {
+     "letter": "E",
+     "width": 8.43,
+     "type": "seat"
+    }
+   ],
+   "bands": [
+    4,
+    7,
+    10,
+    13,
+    16,
+    19,
+    22,
+    25,
+    28,
+    31
+   ],
+   "rowHeight": 20.0,
+   "corridors": [
+    {
+     "col": "C",
+     "range": "C4:C33",
+     "label": "KORİDOR"
+    }
+   ],
+   "unassignedDesks": [],
+   "seats": [
+    {
+     "n": 1,
+     "cell": "A4",
+     "col": "A",
+     "band": 0
+    },
+    {
+     "n": 2,
+     "cell": "B4",
+     "col": "B",
+     "band": 0
+    },
+    {
+     "n": 3,
+     "cell": "D4",
+     "col": "D",
+     "band": 0
+    },
+    {
+     "n": 4,
+     "cell": "E4",
+     "col": "E",
+     "band": 0
+    },
+    {
+     "n": 5,
+     "cell": "A7",
+     "col": "A",
+     "band": 1
+    },
+    {
+     "n": 6,
+     "cell": "B7",
+     "col": "B",
+     "band": 1
+    },
+    {
+     "n": 7,
+     "cell": "D7",
+     "col": "D",
+     "band": 1
+    },
+    {
+     "n": 8,
+     "cell": "E7",
+     "col": "E",
+     "band": 1
+    },
+    {
+     "n": 9,
+     "cell": "A10",
+     "col": "A",
+     "band": 2
+    },
+    {
+     "n": 10,
+     "cell": "B10",
+     "col": "B",
+     "band": 2
+    },
+    {
+     "n": 11,
+     "cell": "D10",
+     "col": "D",
+     "band": 2
+    },
+    {
+     "n": 12,
+     "cell": "E10",
+     "col": "E",
+     "band": 2
+    },
+    {
+     "n": 13,
+     "cell": "A13",
+     "col": "A",
+     "band": 3
+    },
+    {
+     "n": 14,
+     "cell": "B13",
+     "col": "B",
+     "band": 3
+    },
+    {
+     "n": 15,
+     "cell": "D13",
+     "col": "D",
+     "band": 3
+    },
+    {
+     "n": 16,
+     "cell": "E13",
+     "col": "E",
+     "band": 3
+    },
+    {
+     "n": 17,
+     "cell": "A16",
+     "col": "A",
+     "band": 4
+    },
+    {
+     "n": 18,
+     "cell": "B16",
+     "col": "B",
+     "band": 4
+    },
+    {
+     "n": 19,
+     "cell": "D16",
+     "col": "D",
+     "band": 4
+    },
+    {
+     "n": 20,
+     "cell": "E16",
+     "col": "E",
+     "band": 4
+    },
+    {
+     "n": 21,
+     "cell": "A19",
+     "col": "A",
+     "band": 5
+    },
+    {
+     "n": 22,
+     "cell": "B19",
+     "col": "B",
+     "band": 5
+    },
+    {
+     "n": 23,
+     "cell": "D19",
+     "col": "D",
+     "band": 5
+    },
+    {
+     "n": 24,
+     "cell": "E19",
+     "col": "E",
+     "band": 5
+    },
+    {
+     "n": 25,
+     "cell": "A22",
+     "col": "A",
+     "band": 6
+    },
+    {
+     "n": 26,
+     "cell": "B22",
+     "col": "B",
+     "band": 6
+    },
+    {
+     "n": 27,
+     "cell": "D22",
+     "col": "D",
+     "band": 6
+    },
+    {
+     "n": 28,
+     "cell": "E22",
+     "col": "E",
+     "band": 6
+    },
+    {
+     "n": 29,
+     "cell": "A25",
+     "col": "A",
+     "band": 7
+    },
+    {
+     "n": 30,
+     "cell": "B25",
+     "col": "B",
+     "band": 7
+    },
+    {
+     "n": 31,
+     "cell": "D25",
+     "col": "D",
+     "band": 7
+    },
+    {
+     "n": 32,
+     "cell": "E25",
+     "col": "E",
+     "band": 7
+    },
+    {
+     "n": 33,
+     "cell": "A28",
+     "col": "A",
+     "band": 8
+    },
+    {
+     "n": 34,
+     "cell": "B28",
+     "col": "B",
+     "band": 8
+    },
+    {
+     "n": 35,
+     "cell": "D28",
+     "col": "D",
+     "band": 8
+    },
+    {
+     "n": 36,
+     "cell": "E28",
+     "col": "E",
+     "band": 8
+    },
+    {
+     "n": 37,
+     "cell": "A31",
+     "col": "A",
+     "band": 9
+    },
+    {
+     "n": 38,
+     "cell": "B31",
+     "col": "B",
+     "band": 9
+    },
+    {
+     "n": 39,
+     "cell": "D31",
+     "col": "D",
+     "band": 9
+    },
+    {
+     "n": 40,
+     "cell": "E31",
+     "col": "E",
+     "band": 9
+    }
+   ],
+   "extent": {
+    "lastCol": "E",
+    "lastRow": 33
+   }
+  }
+ }
+}
