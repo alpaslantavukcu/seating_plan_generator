@@ -21,13 +21,24 @@ function pageSize(doc) {
   return { w: doc.internal.pageSize.getWidth(), h: doc.internal.pageSize.getHeight() };
 }
 
+const CORRIDOR_RATIO = 1 / 3;  // widest an aisle may be, relative to a seat
+
 // Geometry (mm) for one room: the template rendered at its true size, scaled
 // by a single factor so it fits the page in both axes — which keeps the
 // template's aspect ratio instead of stretching columns and rows apart.
 function roomLayout(room, pageW, pageH) {
   const usableW = pageW - 2 * MARGIN;
   const usableH = pageH - 2 * MARGIN - TITLE_H - LECTERN_H;
-  const natW = room.columns.reduce((s, c) => s + c.width, 0) * CHAR_TO_MM;
+
+  // MED_* and EEB_* give the corridor a full seat's width, which reads as a
+  // missing column rather than an aisle. Cap it and let the seats have the
+  // difference, so every room's stripe looks like every other room's.
+  const seatUnits = Math.min(...room.columns.filter((c) => c.type === 'seat').map((c) => c.width));
+  const units = room.columns.map((c) => (c.type === 'seat'
+    ? c.width
+    : Math.min(c.width, seatUnits * CORRIDOR_RATIO)));
+
+  const natW = units.reduce((a, b) => a + b, 0) * CHAR_TO_MM;
   const natH = room.bands.length * room.rowHeight * 3 * PT_TO_MM;
   const scale = Math.min(usableW / natW, usableH / natH);
 
@@ -36,8 +47,8 @@ function roomLayout(room, pageW, pageH) {
   const left = (pageW - total) / 2;
   let x = left;
   const cols = {};
-  room.columns.forEach((c) => {
-    const w = c.width * CHAR_TO_MM * scale;
+  room.columns.forEach((c, i) => {
+    const w = units[i] * CHAR_TO_MM * scale;
     cols[c.letter] = { x, w };
     x += w;
   });
@@ -45,6 +56,7 @@ function roomLayout(room, pageW, pageH) {
     cols,
     left,
     total,
+    seatW: seatUnits * CHAR_TO_MM * scale,
     bandH: gridH / room.bands.length,
     // title + lectern + grid are centered vertically as one block
     top: (pageH - (TITLE_H + LECTERN_H + gridH)) / 2,
@@ -60,9 +72,39 @@ function fitText(doc, text, maxW, size, minSize = 5) {
   return size;
 }
 
+// The fields a seat cell holds, in the order seatLines emits them.
+function lineRoles(mode, cellFields, idBase) {
+  if (mode === 'id') return [{ bold: true, base: idBase }];
+  const roles = [];
+  if (cellFields.id) roles.push({ bold: true, base: idBase });
+  if (cellFields.name) roles.push({ bold: false, base: idBase * 0.85 });
+  if (cellFields.seat) roles.push({ bold: false, base: idBase * 0.72 });
+  return roles;
+}
+
+// One font size per field for the WHOLE room: the largest at which every
+// string of that kind still fits its cell on a single line. A shared size plus
+// a fixed one-line-per-field layout puts every id, name and seat number on the
+// same baseline page-wide — cells that differ in size or line count are what
+// made the grid look ragged.
+function uniformSizes(doc, rows, roles, maxW, maxH) {
+  const sizes = roles.map((r) => r.base);
+  roles.forEach((role, i) => {
+    doc.setFont(FONT, role.bold ? 'bold' : 'normal');
+    for (const lines of rows) sizes[i] = fitText(doc, lines[i], maxW, sizes[i], 4);
+    // Keep the field order legible: a long name shrinking must pull the "(n)"
+    // below it down too, otherwise the seat number shouts over the name.
+    if (i > 0) sizes[i] = Math.min(sizes[i], sizes[i - 1]);
+  });
+  const stack = sizes.reduce((a, s) => a + s * PT_TO_MM * LINE, 0);
+  if (stack <= maxH) return sizes;
+  return sizes.map((s) => Math.max(4, s * (maxH / stack)));
+}
+
 // Wrap each spec onto as many lines as it needs, shrinking the whole block
-// until it also fits maxH. Nothing ever leaves the cell: splitTextToSize
+// until it also fits maxH. Nothing ever leaves the box: splitTextToSize
 // breaks on spaces and fitText is the backstop for one over-long word.
+// Used for the title/lectern bands, where a second line is fine.
 // specs: [{text, base, bold}] -> [{text, size, bold}]
 function cellLines(doc, specs, maxW, maxH) {
   for (let shrink = 1; ; shrink -= 0.05) {
@@ -97,7 +139,7 @@ function drawLines(doc, lines, x, y, w, h) {
 
 export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examName) {
   const { w: pageW, h: pageH } = pageSize(doc);
-  const { cols, left, total, bandH, top } = roomLayout(room, pageW, pageH);
+  const { cols, left, total, seatW, bandH, top } = roomLayout(room, pageW, pageH);
   const bands = room.bands.length;
 
   doc.setDrawColor(0);
@@ -147,27 +189,30 @@ export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examNam
     doc.rect(c.x, gridTop + desk.band * bandH, c.w, bandH, 'FD');
   }
 
-  // Seats. Base sizes track the band height so the bigger cells of small
-  // rooms don't end up with a lonely 9pt id floating in the middle.
+  // Seats: borders first, then text once the room-wide sizes are known.
+  // Base sizes track the band height so the bigger cells of small rooms don't
+  // end up with a lonely 9pt id floating in the middle.
   const idBase = Math.min(14, Math.max(9, bandH * 0.38));
+  const roles = lineRoles(mode, cellFields, idBase);
   const seatByN = {};
   room.seats.forEach((s) => { seatByN[s.n] = s; });
+
+  const filled = [];
   for (const snap of snaps) {
     const def = seatByN[snap.seat];
     const c = cols[def.col];
     const y = gridTop + def.band * bandH;
     doc.rect(c.x, y, c.w, bandH);
-
     const lines = seatLines(snap, mode, cellFields);
-    if (!lines.length) continue;
+    if (lines.length) filled.push({ lines: lines.map(String), x: c.x, y, w: c.w });
+  }
+  if (!filled.length) return;
 
-    const specs = lines.map((text, i) => {
-      const isId = mode === 'id' || (cellFields.id && i === 0);
-      const base = isId ? idBase : idBase * (text.startsWith('(') ? 0.72 : 0.85);
-      return { text: String(text), base, bold: isId };
-    });
-    drawLines(doc, cellLines(doc, specs, c.w - 2 * PAD, bandH - 2 * PAD),
-      c.x, y, c.w, bandH);
+  const sizes = uniformSizes(doc, filled.map((f) => f.lines), roles,
+    seatW - 2 * PAD, bandH - 2 * PAD);
+  for (const f of filled) {
+    drawLines(doc, f.lines.map((text, i) => ({ text, size: sizes[i], bold: roles[i].bold })),
+      f.x, f.y, f.w, bandH);
   }
 }
 
