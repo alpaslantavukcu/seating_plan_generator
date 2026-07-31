@@ -12,6 +12,18 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür; `configuration.json` veya şablonlar değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
 
+### Şablonlar ve oturum kaydı
+
+**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: sınav adı, derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
+
+- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen bir dosya.
+- **Kodu kopyala** → mesajla paylaşılabilen tek satırlık `SP1-…` metni; **Kod yapıştır** ile uygulanır.
+- **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali; bağlantıyı açmak ayarları uygular.
+
+Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir, yüklü öğrenci listesi olduğu gibi kalır, plan ise artık ayarlarla uyuşmadığı için temizlenir. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
+
+**Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve **Her Şeyi Temizle** düğmesiyle silinir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
+
 ## Hızlı Başlangıç
 
 **1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın. Öğrenci kullanıcı adları kod tarafından kullanılmamaktadır ve dosyanın içinde yazıp yazmaması bir şeyi değiştirmez.

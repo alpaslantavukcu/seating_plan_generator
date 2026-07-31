@@ -28,6 +28,12 @@
     <section id="setup" class="card">
       <h2 data-i18n="setupTitle">Plan Ayarları</h2>
 
+      <p id="session-banner" class="banner hidden">
+        <span data-i18n="sessionRestored">Önceki oturum geri yüklendi.</span>
+        <button type="button" class="banner-link" data-start-fresh data-i18n="startFresh"></button>
+        <button type="button" class="banner-x" id="session-dismiss" data-i18n="sessionDismiss"></button>
+      </p>
+
       <div class="field">
         <label for="exam-name" data-i18n="examName">Sınav adı</label>
         <input id="exam-name" type="text" data-i18n-placeholder="examNamePh" autocomplete="off">
@@ -83,6 +89,30 @@
           <label class="check"><input type="checkbox" id="field-id" checked><span data-i18n="fieldId">Öğrenci No</span></label>
           <label class="check"><input type="checkbox" id="field-name" checked><span data-i18n="fieldName">Ad Soyad</span></label>
           <label class="check"><input type="checkbox" id="field-seat"><span data-i18n="fieldSeat">Sıra No</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="field template-box" id="template-box">
+        <legend data-i18n="templateTitle">Şablon ve Oturum</legend>
+        <p class="hint" data-i18n="templateHint"></p>
+        <div class="tpl-row">
+          <button type="button" class="btn-export" id="tpl-save" data-i18n="tplSave"></button>
+          <button type="button" class="btn-export" id="tpl-copy-code" data-i18n="tplCopyCode"></button>
+          <button type="button" class="btn-export" id="tpl-copy-link" data-i18n="tplCopyLink"></button>
+        </div>
+        <div class="tpl-row">
+          <button type="button" class="btn-export" id="tpl-load" data-i18n="tplLoad"></button>
+          <button type="button" class="btn-export" id="tpl-paste-toggle" data-i18n="tplPasteCode"></button>
+          <input type="file" id="tpl-file" accept=".json,application/json" hidden>
+        </div>
+        <div class="tpl-code hidden" id="tpl-code-row">
+          <input type="text" id="tpl-code" spellcheck="false" autocomplete="off" data-i18n-placeholder="tplPastePh">
+          <button type="button" class="btn-secondary" id="tpl-apply" data-i18n="tplApply"></button>
+        </div>
+        <p class="hint" data-i18n="tplDropHint"></p>
+        <div class="tpl-reset">
+          <button type="button" class="btn-danger" data-start-fresh data-i18n="startFresh"></button>
+          <span class="hint" data-i18n="sessionHint"></span>
         </div>
       </fieldset>
 

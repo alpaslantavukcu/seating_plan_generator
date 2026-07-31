@@ -8,6 +8,12 @@ import { assign, totalCapacity } from './algorithm.js';
 import { renderGrid, renderRoomTabs } from './grid.js';
 import { initDnd } from './dnd.js';
 import { initEdit } from './edit.js';
+import {
+  extractSettings, buildTemplate, serializeTemplate,
+  encodeTemplate, decodeTemplate, parseTemplateJson, validateSettings,
+} from './template.js';
+import { saveSessionSoon, saveSessionNow, loadSession, clearSession, onStorageError } from './persist.js';
+import { safeFileName, downloadBlob } from './export-common.js';
 
 let classrooms = null;
 
@@ -23,6 +29,12 @@ export function showToast(msg, isError = false) {
 
 function setStudents(students) {
   set({ students, plan: null });
+  renderStudentStatus();
+  updateCapacitySummary();
+}
+
+function renderStudentStatus() {
+  const { students } = getState();
   const status = document.getElementById('student-status');
   status.removeAttribute('data-i18n');
   if (students.length) {
@@ -32,7 +44,6 @@ function setStudents(students) {
     status.textContent = t('parseError');
     status.className = 'status error';
   }
-  updateCapacitySummary();
 }
 
 function wireStudentInputs() {
@@ -185,6 +196,37 @@ function readSetupFields() {
   });
 }
 
+// Keep the store in step with the form as it is edited, so auto-save and
+// template export never miss a field. 'change' (not 'input') fires on blur,
+// which avoids re-rendering the plan grid on every keystroke.
+function wireSetupFields() {
+  document.getElementById('exam-name').addEventListener('change', readSetupFields);
+  document.getElementById('seed').addEventListener('change', readSetupFields);
+  for (const key of ['id', 'name', 'seat']) {
+    document.getElementById(`field-${key}`).addEventListener('change', (e) => {
+      update((s) => { s.cellFields[key] = e.target.checked; });
+      document.getElementById(`live-${key}`).checked = e.target.checked;
+    });
+  }
+}
+
+// The reverse direction: write the store back into the form. Needed whenever
+// settings arrive from somewhere other than the user typing — a template or a
+// restored session.
+function hydrateSetupDom() {
+  const s = getState();
+  document.getElementById('exam-name').value = s.examName;
+  document.getElementById('seed').value = s.seed;
+  document.getElementById('custom-cap').checked = s.useCustomCapacities;
+  for (const key of ['id', 'name', 'seat']) {
+    document.getElementById(`field-${key}`).checked = s.cellFields[key];
+    document.getElementById(`live-${key}`).checked = s.cellFields[key];
+  }
+  renderRoomPicker();
+  renderCapEditor();
+  updateCapacitySummary();
+}
+
 function validate() {
   const s = getState();
   if (!s.examName) return t('errNoName');
@@ -224,7 +266,7 @@ function generate() {
   document.getElementById('live-name').checked = s.cellFields.name;
   document.getElementById('live-seat').checked = s.cellFields.seat;
 
-  document.getElementById('plan').classList.remove('hidden');
+  // Visibility is owned by the store subscriber; set() above already revealed it.
   document.getElementById('plan').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -260,6 +302,145 @@ function wirePlanView() {
     const { plan, usedSeed } = assign(s.students, s.selectedRooms, classrooms.rooms, caps, seedField);
     set({ plan, usedSeed });
   });
+}
+
+/* ---------- templates ---------- */
+
+function currentTemplate() {
+  readSetupFields();
+  return buildTemplate(extractSettings(getState()), classrooms.version);
+}
+
+// Settings replace what is in the form; the student list is deliberately left
+// alone, and the plan is dropped because it no longer matches the settings.
+function applyTemplate(raw) {
+  const { settings, warnings } = validateSettings(raw, classrooms.rooms);
+  set({ ...settings, plan: null, usedSeed: null, activeRoom: null });
+  hydrateSetupDom();
+  const messages = [t('tplLoaded'), ...warnings.map((w) => t(w.key, w.params))];
+  showToast(messages.join(' · '), warnings.length > 0);
+}
+
+function loadTemplateText(text, parse) {
+  try {
+    applyTemplate(parse(text));
+    return true;
+  } catch (err) {
+    console.error(err);
+    showToast(t('tplInvalid'), true);
+    return false;
+  }
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast(t('tplCopied'));
+  } catch (err) {
+    // Blocked clipboard (file://, older browsers): show the text to copy by hand.
+    console.error(err);
+    const row = document.getElementById('tpl-code-row');
+    const input = document.getElementById('tpl-code');
+    row.classList.remove('hidden');
+    input.value = text;
+    input.select();
+    showToast(t('tplCopyFailed'), true);
+  }
+}
+
+function wireTemplate() {
+  document.getElementById('tpl-save').addEventListener('click', () => {
+    const template = currentTemplate();
+    const blob = new Blob([serializeTemplate(template)], { type: 'application/json' });
+    downloadBlob(blob, `${safeFileName(template.settings.examName)}-template.json`);
+  });
+
+  document.getElementById('tpl-copy-code').addEventListener('click', () => {
+    copyText(encodeTemplate(currentTemplate()));
+  });
+
+  document.getElementById('tpl-copy-link').addEventListener('click', () => {
+    const code = encodeTemplate(currentTemplate());
+    copyText(`${location.origin}${location.pathname}#t=${code}`);
+  });
+
+  const fileInput = document.getElementById('tpl-file');
+  document.getElementById('tpl-load').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', async () => {
+    const file = fileInput.files[0];
+    fileInput.value = ''; // so picking the same file twice still fires
+    if (file) loadTemplateText(await file.text(), parseTemplateJson);
+  });
+
+  const box = document.getElementById('template-box');
+  box.addEventListener('dragover', (e) => { e.preventDefault(); box.classList.add('dragover'); });
+  box.addEventListener('dragleave', () => box.classList.remove('dragover'));
+  box.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    box.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) loadTemplateText(await file.text(), parseTemplateJson);
+  });
+
+  const codeRow = document.getElementById('tpl-code-row');
+  const codeInput = document.getElementById('tpl-code');
+  document.getElementById('tpl-paste-toggle').addEventListener('click', () => {
+    codeRow.classList.toggle('hidden');
+    if (!codeRow.classList.contains('hidden')) codeInput.focus();
+  });
+  document.getElementById('tpl-apply').addEventListener('click', () => {
+    if (loadTemplateText(codeInput.value, decodeTemplate)) {
+      codeInput.value = '';
+      codeRow.classList.add('hidden');
+    }
+  });
+
+  // Opening a shared link while the app is already open is a same-document
+  // fragment navigation — init() never re-runs, so catch it here too.
+  window.addEventListener('hashchange', applyHashTemplate);
+}
+
+// A shared link wins over whatever was restored: it replaces the settings.
+// The hash is stripped either way, otherwise every later refresh would silently
+// re-apply the template and wipe a freshly generated plan.
+function applyHashTemplate() {
+  if (!location.hash.startsWith('#t=')) return;
+  const code = location.hash.slice(3);
+  history.replaceState(null, '', location.pathname + location.search);
+  loadTemplateText(code, decodeTemplate);
+}
+
+/* ---------- session ---------- */
+
+function restoreSession() {
+  let restored = null;
+  try {
+    restored = loadSession(classrooms.rooms);
+  } catch (err) {
+    console.error(err);
+  }
+  if (!restored) return;
+  set(restored);
+  hydrateSetupDom();
+  if (restored.students.length) renderStudentStatus();
+  document.getElementById('session-banner').classList.remove('hidden');
+}
+
+function startAutoSave() {
+  onStorageError(() => showToast(t('storageFull'), true));
+  subscribe((s) => saveSessionSoon(s));
+  // Catch a field edited but never blurred before the tab goes away.
+  window.addEventListener('pagehide', () => {
+    readSetupFields();
+    saveSessionNow(getState());
+  });
+}
+
+function startFresh() {
+  if (!confirm(t('startFreshConfirm'))) return;
+  clearSession();
+  history.replaceState(null, '', location.pathname + location.search);
+  location.reload();
 }
 
 /* ---------- exports ---------- */
@@ -307,8 +488,10 @@ async function init() {
 
   renderRoomPicker();
   wireStudentInputs();
+  wireSetupFields();
   wirePlanView();
   wireExports();
+  wireTemplate();
   initDnd();
   initEdit();
 
@@ -320,11 +503,24 @@ async function init() {
 
   document.getElementById('generate').addEventListener('click', generate);
 
+  document.querySelectorAll('[data-start-fresh]').forEach((btn) => {
+    btn.addEventListener('click', startFresh);
+  });
+  document.getElementById('session-dismiss').addEventListener('click', () => {
+    document.getElementById('session-banner').classList.add('hidden');
+  });
+
+  // Registered before the restore below so a restored plan shows itself.
   subscribe(() => {
     const s = getState();
+    document.getElementById('plan').classList.toggle('hidden', !s.plan);
     if (s.plan) renderPlan();
-    else document.getElementById('plan').classList.add('hidden');
   });
+
+  restoreSession();
+  applyHashTemplate();
+  // Last, so hydrating the form above does not immediately rewrite storage.
+  startAutoSave();
 }
 
 init();

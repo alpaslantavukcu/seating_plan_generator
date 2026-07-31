@@ -20,6 +20,18 @@ Everything (parsing, seat assignment, PDF and Excel generation) runs client-side
 
 To preview locally: `python3 -m http.server 8000 --directory docs` and open http://localhost:8000.
 
+### Templates and session auto-save
+
+**Templates** make a setup reusable. A template holds settings only — exam name, classroom selection *and fill order*, custom capacities, seed and the seat-cell fields — so the same one serves different exams and different student lists. It can be moved three ways:
+
+- **Download template (.json)** → a file to keep, email or drop back onto the Template box on any machine.
+- **Copy code** → a single-line `SP1-…` string to paste into a message; **Paste code** applies it.
+- **Copy link** → the same code in a URL hash; opening the link applies the settings.
+
+A template **never contains the student list or the generated plan**. Applying one replaces the settings, keeps the student list already loaded, and clears the plan (it no longer matches). Templates are checked against the local `docs/data/classrooms.json`: classrooms that do not exist on the receiving machine are skipped and capacities are clamped to the real room capacity, with a warning.
+
+**Session auto-save** writes the working session — settings, parsed students and the plan including drag-drop swaps and inline edits — to the browser's `localStorage`, so a refresh or an accidental tab close loses nothing. On return a banner reports the restore. Nothing is uploaded; the data stays on that machine, and **Start Fresh** in the Template & Session box erases it. The saved plan is discarded automatically if the classroom layouts changed underneath it.
+
 ## Prerequisites
 
 - **Python 3.10+** (3.12 works; Docker image uses 3.12).
