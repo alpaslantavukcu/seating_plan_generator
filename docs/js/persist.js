@@ -3,7 +3,7 @@
 // refresh or a closed tab loses nothing. Everything stays on this machine; the
 // language lives in its own 'sp-lang' key and is never touched here.
 
-import { extractSettings, validateSettings, TEMPLATE_TYPE, TEMPLATE_VERSION } from './template.js';
+import { extractSettings, validateTemplate, TEMPLATE_TYPE, TEMPLATE_VERSION } from './template.js';
 
 const KEY = 'sp-session';
 const SESSION_VERSION = 1;
@@ -120,7 +120,7 @@ export function loadSession(rooms) {
   let settings;
   try {
     // Same rules as a shared template: unknown rooms out, capacities clamped.
-    ({ settings } = validateSettings(
+    ({ settings } = validateTemplate(
       { type: TEMPLATE_TYPE, version: TEMPLATE_VERSION, settings: data.settings },
       rooms,
     ));

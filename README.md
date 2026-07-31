@@ -22,13 +22,17 @@ To preview locally: `python3 -m http.server 8000 --directory docs` and open http
 
 ### Templates and session auto-save
 
-**Templates** make a setup reusable. A template holds settings only — exam name, classroom selection *and fill order*, custom capacities, seed and the seat-cell fields — so the same one serves different exams and different student lists. It can be moved three ways:
+**Templates** make a setup reusable. A template holds settings only — classroom selection *and fill order*, custom capacities, seed and the seat-cell fields — so the same one serves different exams and different student lists. It can be moved three ways:
 
-- **Download template (.json)** → a file to keep, email or drop back onto the Template box on any machine.
-- **Copy code** → a single-line `SP1-…` string to paste into a message; **Paste code** applies it.
-- **Copy link** → the same code in a URL hash; opening the link applies the settings.
+- **Download template (.json)** → a readable file to keep, email or drop back onto the Template box on any machine. This is the only form that also carries the **exam name**.
+- **Copy code** → a short single-line string such as `SP1-ARYCBge5YDU` to paste into a message; **Paste code** applies it.
+- **Copy link** → the same code in a URL hash (`…/#t=ARYCBge5YDU`); opening the link applies the settings.
 
-A template **never contains the student list or the generated plan**. Applying one replaces the settings, keeps the student list already loaded, and clears the plan (it no longer matches). Templates are checked against the local `docs/data/classrooms.json`: classrooms that do not exist on the receiving machine are skipped and capacities are clamped to the real room capacity, with a warning.
+The code and link leave the exam name out deliberately — it is the bulk of the bytes, and a template is meant to be reused under a different exam anyway. That keeps a typical code around 11 characters and the whole link under 60. The encoding is a packed binary layout, so it is deterministic (identical settings always give an identical code, and any difference — including room order — changes it) and self-checking: a truncated or mistyped code is rejected rather than silently misread.
+
+A template **never contains the student list or the generated plan**. Applying one replaces the settings and clears the plan (it no longer matches); the student list already loaded is kept, and a code or link also leaves the exam name you typed alone. Templates are checked against the local `docs/data/classrooms.json`: classrooms that do not exist on the receiving machine are skipped and capacities are clamped to the real room capacity, with a warning.
+
+> Maintainer note: `ROOM_TABLE` in [`docs/js/template.js`](docs/js/template.js) maps classrooms to the one-byte ids used inside codes. It is **append-only** — reordering or removing entries would decode already-shared codes into the wrong classrooms. A room missing from the list still works; it just makes the code slightly longer.
 
 **Session auto-save** writes the working session — settings, parsed students and the plan including drag-drop swaps and inline edits — to the browser's `localStorage`, so a refresh or an accidental tab close loses nothing. On return a banner reports the restore. Nothing is uploaded; the data stays on that machine, and **Start Fresh** in the Template & Session box erases it. The saved plan is discarded automatically if the classroom layouts changed underneath it.
 

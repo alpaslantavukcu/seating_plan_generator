@@ -10,7 +10,7 @@ import { initDnd } from './dnd.js';
 import { initEdit } from './edit.js';
 import {
   extractSettings, buildTemplate, serializeTemplate,
-  encodeTemplate, decodeTemplate, parseTemplateJson, validateSettings,
+  encodeSettings, decodeSettings, parseTemplateJson, validateTemplate,
 } from './template.js';
 import { saveSessionSoon, saveSessionNow, loadSession, clearSession, onStorageError } from './persist.js';
 import { safeFileName, downloadBlob } from './export-common.js';
@@ -306,24 +306,28 @@ function wirePlanView() {
 
 /* ---------- templates ---------- */
 
-function currentTemplate() {
+function currentSettings() {
   readSetupFields();
-  return buildTemplate(extractSettings(getState()), classrooms.version);
+  return extractSettings(getState());
 }
 
 // Settings replace what is in the form; the student list is deliberately left
 // alone, and the plan is dropped because it no longer matches the settings.
-function applyTemplate(raw) {
-  const { settings, warnings } = validateSettings(raw, classrooms.rooms);
+// A code carries no exam name, so its patch has no examName key and Object.assign
+// leaves whatever the user typed in place.
+function applySettings({ settings, warnings }) {
+  const keptName = !('examName' in settings);
   set({ ...settings, plan: null, usedSeed: null, activeRoom: null });
   hydrateSetupDom();
-  const messages = [t('tplLoaded'), ...warnings.map((w) => t(w.key, w.params))];
+  const messages = [t(keptName ? 'tplLoadedCode' : 'tplLoaded'),
+    ...warnings.map((w) => t(w.key, w.params))];
   showToast(messages.join(' · '), warnings.length > 0);
 }
 
-function loadTemplateText(text, parse) {
+// `read` turns the pasted text or file contents into {settings, warnings}.
+function loadTemplateText(text, read) {
   try {
-    applyTemplate(parse(text));
+    applySettings(read(text));
     return true;
   } catch (err) {
     console.error(err);
@@ -331,6 +335,9 @@ function loadTemplateText(text, parse) {
     return false;
   }
 }
+
+const readTemplateFile = (text) => validateTemplate(parseTemplateJson(text), classrooms.rooms);
+const readTemplateCode = (code) => decodeSettings(code, classrooms.rooms);
 
 async function copyText(text) {
   try {
@@ -350,17 +357,20 @@ async function copyText(text) {
 
 function wireTemplate() {
   document.getElementById('tpl-save').addEventListener('click', () => {
-    const template = currentTemplate();
+    const settings = currentSettings();
+    const template = buildTemplate(settings, classrooms.version);
     const blob = new Blob([serializeTemplate(template)], { type: 'application/json' });
-    downloadBlob(blob, `${safeFileName(template.settings.examName)}-template.json`);
+    downloadBlob(blob, `${safeFileName(settings.examName)}-template.json`);
   });
 
   document.getElementById('tpl-copy-code').addEventListener('click', () => {
-    copyText(encodeTemplate(currentTemplate()));
+    copyText(encodeSettings(currentSettings()));
   });
 
   document.getElementById('tpl-copy-link').addEventListener('click', () => {
-    const code = encodeTemplate(currentTemplate());
+    // The `t=` already labels it, so the link drops the SP1- prefix the copied
+    // code keeps for recognisability in a chat message.
+    const code = encodeSettings(currentSettings()).replace(/^SP1-/, '');
     copyText(`${location.origin}${location.pathname}#t=${code}`);
   });
 
@@ -369,7 +379,7 @@ function wireTemplate() {
   fileInput.addEventListener('change', async () => {
     const file = fileInput.files[0];
     fileInput.value = ''; // so picking the same file twice still fires
-    if (file) loadTemplateText(await file.text(), parseTemplateJson);
+    if (file) loadTemplateText(await file.text(), readTemplateFile);
   });
 
   const box = document.getElementById('template-box');
@@ -379,7 +389,7 @@ function wireTemplate() {
     e.preventDefault();
     box.classList.remove('dragover');
     const file = e.dataTransfer.files[0];
-    if (file) loadTemplateText(await file.text(), parseTemplateJson);
+    if (file) loadTemplateText(await file.text(), readTemplateFile);
   });
 
   const codeRow = document.getElementById('tpl-code-row');
@@ -389,7 +399,7 @@ function wireTemplate() {
     if (!codeRow.classList.contains('hidden')) codeInput.focus();
   });
   document.getElementById('tpl-apply').addEventListener('click', () => {
-    if (loadTemplateText(codeInput.value, decodeTemplate)) {
+    if (loadTemplateText(codeInput.value, readTemplateCode)) {
       codeInput.value = '';
       codeRow.classList.add('hidden');
     }
@@ -407,7 +417,7 @@ function applyHashTemplate() {
   if (!location.hash.startsWith('#t=')) return;
   const code = location.hash.slice(3);
   history.replaceState(null, '', location.pathname + location.search);
-  loadTemplateText(code, decodeTemplate);
+  loadTemplateText(code, readTemplateCode);
 }
 
 /* ---------- session ---------- */

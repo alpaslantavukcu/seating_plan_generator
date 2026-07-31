@@ -14,13 +14,15 @@ Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy fro
 
 ### Şablonlar ve oturum kaydı
 
-**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: sınav adı, derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
+**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
 
-- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen bir dosya.
-- **Kodu kopyala** → mesajla paylaşılabilen tek satırlık `SP1-…` metni; **Kod yapıştır** ile uygulanır.
-- **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali; bağlantıyı açmak ayarları uygular.
+- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
+- **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Kod yapıştır** ile uygulanır.
+- **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali (`…/#t=ARYCBge5YDU`); bağlantıyı açmak ayarları uygular.
 
-Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir, yüklü öğrenci listesi olduğu gibi kalır, plan ise artık ayarlarla uyuşmadığı için temizlenir. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
+Kod ve bağlantı sınav adını bilerek dışarıda bırakır: sınav adı verinin büyük kısmını oluşturur ve şablon zaten başka bir sınavda kullanılmak içindir. Böylece tipik bir kod 11 karakter, bağlantının tamamı ise 60 karakterin altında kalır. Kodlama ikili (binary) ve sıkıştırılmış olduğundan hem belirlenimlidir (aynı ayarlar her zaman aynı kodu verir; derslik sırası dâhil en küçük fark kodu değiştirir) hem de kendini denetler: eksik veya yanlış yazılmış bir kod sessizce yanlış yorumlanmak yerine reddedilir.
+
+Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir ve plan artık uyuşmadığı için temizlenir; yüklü öğrenci listesi olduğu gibi kalır, kod veya bağlantı ise yazdığınız sınav adına da dokunmaz. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
 
 **Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve **Her Şeyi Temizle** düğmesiyle silinir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
 
