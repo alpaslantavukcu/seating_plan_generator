@@ -123,9 +123,10 @@ def extract_sheet(ws, last_col_idx: int, last_row: int) -> dict:
 
     return {
         "page": {
-            # Templates without a paper size print on the printer default;
-            # in Türkiye that is A4, so fall back to it.
-            "paper": PAPER_SIZES.get(ps.paperSize, "a4"),
+            # Templates without a paper size print on the printer default. The
+            # reference pipeline (LibreOffice on Linux) prints those on Letter,
+            # so the web PDFs use Letter too to match the CLI output.
+            "paper": PAPER_SIZES.get(ps.paperSize, "letter"),
             "orientation": "landscape" if ps.orientation == "landscape" else "portrait",
             "margins": {"left": pm.left, "right": pm.right, "top": pm.top, "bottom": pm.bottom},
             "hCenter": bool(po.horizontalCentered),
@@ -301,6 +302,14 @@ def main() -> int:
     WEB_TEMPLATES_DIR.mkdir(parents=True, exist_ok=True)
     for room in rooms:
         shutil.copy2(TEMPLATES_DIR / f"Template_{room}.xlsx", WEB_TEMPLATES_DIR / f"Template_{room}.xlsx")
+    # The tutanak (exam report) page the CLI prepends to every room in the
+    # printable merged PDF; the web app needs its own copy under docs/.
+    tutanak = TEMPLATES_DIR / "tutanak.pdf"
+    if tutanak.exists():
+        shutil.copy2(tutanak, WEB_TEMPLATES_DIR / "tutanak.pdf")
+        print(f"Synced tutanak.pdf to {WEB_TEMPLATES_DIR}")
+    else:
+        print(f"WARNING: {tutanak} missing; the web app cannot build the tutanak PDF", file=sys.stderr)
     print(f"Synced {len(rooms)} templates to {WEB_TEMPLATES_DIR}")
     return 0
 
