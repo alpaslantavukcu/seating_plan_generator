@@ -1,3 +1,4 @@
-openpyxl
-pypdf
-pywin32; platform_system == 'Windows'
+streamlit>=1.30
+openpyxl>=3.1
+pypdf>=3.0
+pywin32>=300; sys_platform == 'win32'

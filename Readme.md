@@ -6,6 +6,26 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 :construction: Şimdilik MacOS'ta sadece Excel dosyasını oluşturmaktadır, PDF'e dönüştürme işleminin elle yapılması gerekmektedir.
 
+## 🌐 Web Uygulaması (GitHub Pages)
+
+`docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır: Ninova'dan öğrenci listesini yapıştırın (veya .txt / .xlsx / .csv yükleyin), derslikleri seçin, planı oluşturun; ardından sürükle-bırak ile yer değiştirin, öğrencileri düzenleyin ve PDF / Excel çıktılarını indirin. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
+
+Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür; `configuration.json` veya şablonlar değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
+
+### Şablonlar ve oturum kaydı
+
+**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
+
+- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
+- **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Kod yapıştır** ile uygulanır.
+- **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali (`…/#t=ARYCBge5YDU`); bağlantıyı açmak ayarları uygular.
+
+Kod ve bağlantı sınav adını bilerek dışarıda bırakır: sınav adı verinin büyük kısmını oluşturur ve şablon zaten başka bir sınavda kullanılmak içindir. Böylece tipik bir kod 11 karakter, bağlantının tamamı ise 60 karakterin altında kalır. Kodlama ikili (binary) ve sıkıştırılmış olduğundan hem belirlenimlidir (aynı ayarlar her zaman aynı kodu verir; derslik sırası dâhil en küçük fark kodu değiştirir) hem de kendini denetler: eksik veya yanlış yazılmış bir kod sessizce yanlış yorumlanmak yerine reddedilir.
+
+Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir ve plan artık uyuşmadığı için temizlenir; yüklü öğrenci listesi olduğu gibi kalır, kod veya bağlantı ise yazdığınız sınav adına da dokunmaz. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
+
+**Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve **Her Şeyi Temizle** düğmesiyle silinir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
+
 ## Hızlı Başlangıç
 
 **1-** Ninovada planını hazırlamak istediğiniz sınıfın "Öğrenciler" sekmesindeki listeyi `ogrenci-listesi.txt` dosyasına kopyalayın. Öğrenci kullanıcı adları kod tarafından kullanılmamaktadır ve dosyanın içinde yazıp yazmaması bir şeyi değiştirmez.
@@ -28,6 +48,54 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 ![Örnek Çıktı](imgs/ornek-cikti.png)
 
+### Streamlit GUI
+
+Terminal yerine web arayüzü kullanmak isterseniz:
+
+```bash
+streamlit run app.py
+```
+
+GUI ile:
+- Sınav adı, çıktı klasörü ve opsiyonel seed değeri girebilirsiniz
+- Öğrenci listesini dosya yolu ile verebilir veya `.txt` dosyası yükleyebilirsiniz
+- Sınıf seçebilir, isterseniz sınıf bazlı kapasiteyi özelleştirebilirsiniz
+- Hücre alanlarını checkbox/multiselect ile seçebilirsiniz (`student_id`, `name`, `seat_number`)
+- Tek tuşla tam akışı çalıştırabilirsiniz (Excel, PDF, merge PDF, single-sheet room list)
+- Üretim tamamlanınca çıktıların `.zip` hali tarayıcıya otomatik indirme olarak gönderilir (fallback indirme butonu da vardır)
+
+### Docker Compose ile Ubuntu Sunucuda Çalıştırma
+
+Varsayılan kullanıcı ile çalıştırma akışı:
+
+```bash
+mkdir -p ~/seating-plan
+cd ~/seating-plan
+git clone <repo-url> app
+cd app
+mkdir -p runtime/uploads runtime/output
+docker compose up -d --build
+```
+
+Arayüz: `http://<server-ip>:8501`
+
+SSH tunnel ile yerelden erişim:
+
+```bash
+ssh -L 8501:localhost:8501 <user>@<server-ip>
+```
+
+sonra tarayıcıdan `http://localhost:8501`.
+
+Notlar:
+- `runtime/output` host üzerinde kalıcıdır (container silinse bile çıktılar korunur)
+- `Templates` klasörü container içine mount edilir, template dosyaları hostta düzenlenebilir
+- ZIP dosyaları kullanıcı tarayıcısına otomatik iner; istenirse hosttan da alınabilir:
+
+```bash
+scp <user>@<server-ip>:~/seating-plan/app/runtime/output/<zip-dosyasi>.zip .
+```
+
 ## Kurulum
 
 Python 3.8 ile test edilmiştir. Gerekli paketleri yüklemek için:
@@ -49,6 +117,7 @@ python seating_plan_generator.py -c <config_file> -i <input_file>
 Argümanlar:
 - `-c, --config`: Yapılandırma JSON dosyasının yolu (Varsayılan: configuration.json)
 - `-i, --input`: Girdi JSON dosyasının yolu (Varsayılan: input.json)
+- `--overwrite-output`: Çıktı klasörü varsa otomatik üzerine yazar
 
 ### Dosya Formatları
 

@@ -27,6 +27,36 @@ class SeatingPlanGenerator:
         self.generated_excel_files = []  # Track Excel files
         self.generated_pdf_files = []  # Track PDF files
 
+    def _prepare_output_directory(
+        self, output_directory: str, overwrite_output: bool = False, allow_prompt: bool = True
+    ) -> Path:
+        """Prepare output directory for writing generated files."""
+        output_dir = Path(output_directory)
+
+        while output_dir.exists():
+            if overwrite_output:
+                shutil.rmtree(output_dir)
+                break
+
+            if not allow_prompt:
+                raise Exception(
+                    f"Output directory {output_dir} already exists. "
+                    "Enable overwrite_output to replace it."
+                )
+
+            if (
+                input(
+                    f"Output directory {output_dir} already exists. Do you want to overwrite it? (y/n): "
+                ).lower()
+                == "y"
+            ):
+                shutil.rmtree(output_dir)
+                break
+            output_dir = Path(input("Please enter a new output directory: "))
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        return output_dir
+
     def _load_config(self):
         """Load classroom configuration from JSON file."""
         try:
@@ -217,24 +247,18 @@ class SeatingPlanGenerator:
         return seating_plan, self.output_directory
 
     def export_to_excel(
-        self, seating_plan: Dict[str, Dict[str, Tuple[str, str]]], output_directory: str
+        self,
+        seating_plan: Dict[str, Dict[str, Tuple[str, str]]],
+        output_directory: str,
+        overwrite_output: bool = False,
+        allow_prompt: bool = True,
     ):
         """Export seating plan to Excel file with specific cell mappings using templates."""
-        # Create output directory if it doesn't exist
-        output_dir = Path(output_directory)
-
-        while output_dir.exists():
-            if (
-                input(
-                    f"Output directory {output_dir} already exists. Do you want to overwrite it? (y/n): "
-                ).lower()
-                == "y"
-            ):
-                shutil.rmtree(output_dir)
-            else:
-                output_dir = Path(input("Please enter a new output directory: "))
-
-        output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir = self._prepare_output_directory(
+            output_directory,
+            overwrite_output=overwrite_output,
+            allow_prompt=allow_prompt,
+        )
 
         # Clear previous list of generated files
         self.generated_excel_files = []
@@ -615,59 +639,81 @@ def parse_arguments():
     parser.add_argument(
         "--seed", type=int, help="Random seed for reproducible student shuffling"
     )
+    parser.add_argument(
+        "--overwrite-output",
+        action="store_true",
+        help="Overwrite output directory if it already exists",
+    )
     return parser.parse_args()
+
+
+def run_generation_pipeline(
+    config_file: str = "configuration.json",
+    input_file: str = "input.json",
+    pdf_only: bool = False,
+    seed: int = None,
+    overwrite_output: bool = False,
+    allow_prompt: bool = True,
+) -> Dict[str, object]:
+    """Run the full seating plan pipeline and return generated artifact paths."""
+    if seed is not None:
+        random.seed(seed)
+        print(f"Using random seed: {seed}")
+
+    generator = SeatingPlanGenerator(config_file, input_file)
+
+    if not pdf_only:
+        seating_plan, output_directory = generator.generate_seating_plan()
+        generator.export_to_excel(
+            seating_plan,
+            output_directory,
+            overwrite_output=overwrite_output,
+            allow_prompt=allow_prompt,
+        )
+        print(
+            f"Seating plan has been generated successfully! Output saved to: {output_directory}"
+        )
+        generator.export_single_sheet_room_list(seating_plan, output_directory)
+    else:
+        output_directory = generator.output_directory
+        excel_dir = Path(output_directory)
+        generator.generated_excel_files = list(
+            excel_dir.glob(f"{generator.exam_name}_*.xlsx")
+        )
+
+        if not generator.generated_excel_files:
+            raise Exception(
+                f"No Excel files found for exam '{generator.exam_name}' in {output_directory}"
+            )
+
+        print(f"Found {len(generator.generated_excel_files)} Excel files to process")
+
+    generator.export_to_pdf(output_directory)
+    print("PDF files have been generated successfully!")
+
+    generator.merge_pdfs(output_directory)
+    print("Merged PDFs have been created successfully!")
+
+    return {
+        "output_directory": output_directory,
+        "excel_files": [str(path) for path in generator.generated_excel_files],
+        "pdf_files": [str(path) for path in generator.generated_pdf_files],
+        "exam_name": generator.exam_name,
+    }
 
 
 def main():
     try:
         # Parse command line arguments
         args = parse_arguments()
-
-        # Set random seed if provided
-        if args.seed is not None:
-            random.seed(args.seed)
-            print(f"Using random seed: {args.seed}")
-
-        # Initialize seating plan generator with provided configuration
-        generator = SeatingPlanGenerator(args.config, args.input)
-
-        if not args.pdf_only:
-            # Generate seating plan
-            seating_plan, output_directory = generator.generate_seating_plan()
-
-            # Export to Excel
-            generator.export_to_excel(seating_plan, output_directory)
-            print(
-                f"Seating plan has been generated successfully! Output saved to: {output_directory}"
-            )
-
-            # Export the single-sheet room list
-            generator.export_single_sheet_room_list(seating_plan, output_directory)
-        else:
-            # In PDF-only mode, we need to find existing Excel files
-            output_directory = generator.output_directory
-            excel_dir = Path(output_directory)
-            generator.generated_excel_files = list(
-                excel_dir.glob(f"{generator.exam_name}_*.xlsx")
-            )
-
-            if not generator.generated_excel_files:
-                print(
-                    f"No Excel files found for exam '{generator.exam_name}' in {output_directory}"
-                )
-                return
-
-            print(
-                f"Found {len(generator.generated_excel_files)} Excel files to process"
-            )
-
-        # Export to PDF
-        generator.export_to_pdf(output_directory)
-        print("PDF files have been generated successfully!")
-
-        # Merge PDFs
-        generator.merge_pdfs(output_directory)
-        print("Merged PDFs have been created successfully!")
+        run_generation_pipeline(
+            config_file=args.config,
+            input_file=args.input,
+            pdf_only=args.pdf_only,
+            seed=args.seed,
+            overwrite_output=args.overwrite_output,
+            allow_prompt=True,
+        )
 
     except Exception as e:
         print(f"Error: {str(e)}")
