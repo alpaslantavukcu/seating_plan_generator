@@ -61,54 +61,6 @@ Kod ve bağlantı sınav adını bilerek dışarıda bırakır: sınav adı veri
 
 ![Örnek Çıktı](imgs/ornek-cikti.png)
 
-### Streamlit GUI
-
-Terminal yerine web arayüzü kullanmak isterseniz:
-
-```bash
-streamlit run app.py
-```
-
-GUI ile:
-- Sınav adı, çıktı klasörü ve opsiyonel seed değeri girebilirsiniz
-- Öğrenci listesini dosya yolu ile verebilir veya `.txt` dosyası yükleyebilirsiniz
-- Sınıf seçebilir, isterseniz sınıf bazlı kapasiteyi özelleştirebilirsiniz
-- Hücre alanlarını checkbox/multiselect ile seçebilirsiniz (`student_id`, `name`, `seat_number`)
-- Tek tuşla tam akışı çalıştırabilirsiniz (Excel, PDF, merge PDF, single-sheet room list)
-- Üretim tamamlanınca çıktıların `.zip` hali tarayıcıya otomatik indirme olarak gönderilir (fallback indirme butonu da vardır)
-
-### Docker Compose ile Ubuntu Sunucuda Çalıştırma
-
-Varsayılan kullanıcı ile çalıştırma akışı:
-
-```bash
-mkdir -p ~/seating-plan
-cd ~/seating-plan
-git clone <repo-url> app
-cd app
-mkdir -p runtime/uploads runtime/output
-docker compose up -d --build
-```
-
-Arayüz: `http://<server-ip>:8501`
-
-SSH tunnel ile yerelden erişim:
-
-```bash
-ssh -L 8501:localhost:8501 <user>@<server-ip>
-```
-
-sonra tarayıcıdan `http://localhost:8501`.
-
-Notlar:
-- `runtime/output` host üzerinde kalıcıdır (container silinse bile çıktılar korunur)
-- `Templates` klasörü container içine mount edilir, template dosyaları hostta düzenlenebilir
-- ZIP dosyaları kullanıcı tarayıcısına otomatik iner; istenirse hosttan da alınabilir:
-
-```bash
-scp <user>@<server-ip>:~/seating-plan/app/runtime/output/<zip-dosyasi>.zip .
-```
-
 ## Kurulum
 
 Python 3.8 ile test edilmiştir. Gerekli paketleri yüklemek için:

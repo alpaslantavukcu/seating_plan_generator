@@ -20,8 +20,3 @@ __pycache__/
 *$py.class
 .pytest_cache/
 .mypy_cache/
-
-# App runtime (local / Docker)
-.streamlit_uploads/
-generated_outputs/
-runtime/
