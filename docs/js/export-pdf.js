@@ -1,219 +1,190 @@
-// Vector PDF generation with jsPDF + embedded Noto Sans subset (Turkish
-// glyphs). Each room is drawn as a bordered grid mirroring the Excel
-// template geometry from classrooms.json. Merged documents are simply
-// multiple pages in one jsPDF instance — no merge library needed.
+// Vector PDF generation with jsPDF. Each room page is the room's Excel
+// template drawn the way Excel/LibreOffice prints it (the CLI pipeline's
+// PDFs): same paper, margins, centring and fit-to-page scale, same column
+// widths and row heights, the template's own borders, fonts (Arial metrics
+// via the metric-compatible Liberation Sans subset), alignment and wrapping.
+// The geometry comes from the "sheet" model tools/convert_templates.py
+// extracts into classrooms.json. Merged documents are simply multiple pages
+// in one jsPDF instance — no merge library needed.
 
-import { PT_TO_MM, CHAR_TO_MM, safeFileName, roomSnapshot, seatLines } from './export-common.js';
+import { safeFileName, roomSnapshot, seatLines } from './export-common.js';
 
-const MARGIN = 10;
-const TITLE_H = 12;
-const LECTERN_H = 8;
-const PAD = 1.5;         // mm kept clear inside every cell
-const LINE = 1.2;        // line-height as a multiple of the font size
-const FONT = 'NotoSans';
+const FONT = 'LiberationSans';   // metric-compatible with Arial, OFL 1.1
+const PT_PER_INCH = 72;
+const CHAR_PT = 5.6;      // one Excel column-width unit (Arial 10 digit) in pt
+const PAD_X = 0.3;        // cell padding left/right, pt (LibreOffice wraps this tight)
+const PAD_Y = 1.9;        // cell padding top/bottom, pt
+const ASCENT = 0.905;     // Liberation Sans ascent / em
+const LINE = 1.117;       // ascent + descent: the line pitch spreadsheets use
+const CAP = 0.688;        // cap height / em, for centring rotated labels
+const BORDER_W = 0.75;    // a "thin" border as Excel prints it
 
-function newDoc(orientation) {
+function newDoc(page) {
   const { jsPDF } = window.jspdf;
-  return new jsPDF({ orientation, unit: 'mm', format: 'a4' });
+  return new jsPDF({ orientation: page.orientation, unit: 'pt', format: page.paper });
 }
 
-function pageSize(doc) {
-  return { w: doc.internal.pageSize.getWidth(), h: doc.internal.pageSize.getHeight() };
+function colNumber(letters) {
+  let n = 0;
+  for (const ch of letters) n = n * 26 + (ch.charCodeAt(0) - 64);
+  return n;
 }
 
-const CORRIDOR_RATIO = 1 / 3;  // widest an aisle may be, relative to a seat
-
-// Geometry (mm) for one room: the template rendered at its true size, scaled
-// by a single factor so it fits the page in both axes — which keeps the
-// template's aspect ratio instead of stretching columns and rows apart.
-function roomLayout(room, pageW, pageH) {
-  const usableW = pageW - 2 * MARGIN;
-  const usableH = pageH - 2 * MARGIN - TITLE_H - LECTERN_H;
-
-  // MED_* and EEB_* give the corridor a full seat's width, which reads as a
-  // missing column rather than an aisle. Cap it and let the seats have the
-  // difference, so every room's stripe looks like every other room's.
-  const seatUnits = Math.min(...room.columns.filter((c) => c.type === 'seat').map((c) => c.width));
-  const units = room.columns.map((c) => (c.type === 'seat'
-    ? c.width
-    : Math.min(c.width, seatUnits * CORRIDOR_RATIO)));
-
-  const natW = units.reduce((a, b) => a + b, 0) * CHAR_TO_MM;
-  const natH = room.bands.length * room.rowHeight * 3 * PT_TO_MM;
-  const scale = Math.min(usableW / natW, usableH / natH);
-
-  const total = natW * scale;
-  const gridH = natH * scale;
-  const left = (pageW - total) / 2;
-  let x = left;
-  const cols = {};
-  room.columns.forEach((c, i) => {
-    const w = units[i] * CHAR_TO_MM * scale;
-    cols[c.letter] = { x, w };
-    x += w;
-  });
-  return {
-    cols,
-    left,
-    total,
-    seatW: seatUnits * CHAR_TO_MM * scale,
-    bandH: gridH / room.bands.length,
-    // title + lectern + grid are centered vertically as one block
-    top: (pageH - (TITLE_H + LECTERN_H + gridH)) / 2,
-  };
+function parseRef(ref) {
+  const m = /^([A-Z]+)(\d+)$/.exec(ref);
+  return { c: colNumber(m[1]), r: Number(m[2]) };
 }
 
-function fitText(doc, text, maxW, size, minSize = 5) {
+function parseRange(range) {
+  const [a, b] = range.split(':');
+  const p = parseRef(a);
+  const q = parseRef(b || a);
+  return { c1: p.c, r1: p.r, c2: q.c, r2: q.r };
+}
+
+// Page position (pt) of every column/row edge after scaling.
+function sheetGeometry(sheet, pageW, pageH) {
+  const { page } = sheet;
+  const cw = sheet.colWidths.map((w) => w * CHAR_PT);
+  const rh = sheet.rowHeights;
+  const natW = cw.reduce((a, b) => a + b, 0);
+  const natH = rh.reduce((a, b) => a + b, 0);
+  const m = page.margins;
+  const availW = pageW - (m.left + m.right) * PT_PER_INCH;
+  const availH = pageH - (m.top + m.bottom) * PT_PER_INCH;
+
+  let s;
+  if (page.fitToPage) {
+    const sx = page.fitToWidth > 0 ? availW / natW : Infinity;
+    const sy = page.fitToHeight > 0 ? availH / natH : Infinity;
+    s = Math.min(1, sx, sy);
+  } else {
+    s = page.scale / 100;
+  }
+  // A browser export can't spill onto a second sheet: never overflow.
+  s = Math.min(s, availW / natW, availH / natH);
+
+  const x0 = page.hCenter ? (pageW - natW * s) / 2 : m.left * PT_PER_INCH;
+  const y0 = page.vCenter ? (pageH - natH * s) / 2 : m.top * PT_PER_INCH;
+  const xs = [x0];
+  cw.forEach((w) => xs.push(xs[xs.length - 1] + w * s));
+  const ys = [y0];
+  rh.forEach((h) => ys.push(ys[ys.length - 1] + h * s));
+  return { s, xs, ys };
+}
+
+function drawText(doc, text, style, box, s) {
+  const size = style.sz * s;
+  doc.setFont(FONT, style.b ? 'bold' : 'normal');
   doc.setFontSize(size);
-  while (size > minSize && doc.getTextWidth(text) > maxW) {
-    size -= 0.5;
-    doc.setFontSize(size);
+
+  if (style.rot === 90) {
+    // Reads bottom-to-top like the template; clipped to the merged area the
+    // way a spreadsheet clips a label longer than its cell.
+    doc.saveGraphicsState();
+    doc.rect(box.x, box.y, box.w, box.h, null);
+    doc.clip();
+    doc.discardPath();
+    const len = doc.getTextWidth(text);
+    doc.text(text, box.x + box.w / 2 + (CAP * size) / 2, box.y + (box.h + len) / 2, { angle: 90 });
+    doc.restoreGraphicsState();
+    return;
   }
-  return size;
-}
 
-// The fields a seat cell holds, in the order seatLines emits them.
-function lineRoles(mode, cellFields, idBase) {
-  if (mode === 'id') return [{ bold: true, base: idBase }];
-  const roles = [];
-  if (cellFields.id) roles.push({ bold: true, base: idBase });
-  if (cellFields.name) roles.push({ bold: false, base: idBase * 0.85 });
-  if (cellFields.seat) roles.push({ bold: false, base: idBase * 0.72 });
-  return roles;
-}
+  const padX = PAD_X * s;
+  let lines = String(text).split('\n');
+  if (style.wrap) lines = lines.flatMap((l) => doc.splitTextToSize(l, box.w - 2 * padX));
 
-// One font size per field for the WHOLE room: the largest at which every
-// string of that kind still fits its cell on a single line. A shared size plus
-// a fixed one-line-per-field layout puts every id, name and seat number on the
-// same baseline page-wide — cells that differ in size or line count are what
-// made the grid look ragged.
-function uniformSizes(doc, rows, roles, maxW, maxH) {
-  const sizes = roles.map((r) => r.base);
-  roles.forEach((role, i) => {
-    doc.setFont(FONT, role.bold ? 'bold' : 'normal');
-    for (const lines of rows) sizes[i] = fitText(doc, lines[i], maxW, sizes[i], 4);
-    // Keep the field order legible: a long name shrinking must pull the "(n)"
-    // below it down too, otherwise the seat number shouts over the name.
-    if (i > 0) sizes[i] = Math.min(sizes[i], sizes[i - 1]);
+  const pitch = LINE * size;
+  const block = lines.length * pitch;
+  let top;
+  if (style.v === 'top') top = box.y + PAD_Y * s;
+  else if (style.v === 'center') top = box.y + (box.h - block) / 2;
+  else top = box.y + box.h - PAD_Y * s - block;
+
+  let x = box.x + padX;
+  let align = 'left';
+  if (style.h === 'center') { x = box.x + box.w / 2; align = 'center'; }
+  else if (style.h === 'right') { x = box.x + box.w - padX; align = 'right'; }
+
+  lines.forEach((line, i) => {
+    doc.text(line, x, top + i * pitch + ASCENT * size, { align });
   });
-  const stack = sizes.reduce((a, s) => a + s * PT_TO_MM * LINE, 0);
-  if (stack <= maxH) return sizes;
-  return sizes.map((s) => Math.max(4, s * (maxH / stack)));
 }
 
-// Wrap each spec onto as many lines as it needs, shrinking the whole block
-// until it also fits maxH. Nothing ever leaves the box: splitTextToSize
-// breaks on spaces and fitText is the backstop for one over-long word.
-// Used for the title/lectern bands, where a second line is fine.
-// specs: [{text, base, bold}] -> [{text, size, bold}]
-function cellLines(doc, specs, maxW, maxH) {
-  for (let shrink = 1; ; shrink -= 0.05) {
-    const out = [];
-    let h = 0;
-    for (const s of specs) {
-      const size = Math.max(4, s.base * shrink);
-      doc.setFont(FONT, s.bold ? 'bold' : 'normal');
-      doc.setFontSize(size);
-      for (const part of doc.splitTextToSize(s.text, maxW)) {
-        const ps = fitText(doc, part, maxW, size, 4);
-        out.push({ text: part, size: ps, bold: s.bold });
-        h += ps * PT_TO_MM * LINE;
-      }
-    }
-    if (h <= maxH || shrink <= 0.5) return out;
+// values: {cellRef: text} written over the template, exactly as the Python
+// generator writes "{exam} | {room}" into A1 and student lines into seat cells.
+function drawSheetPage(doc, sheet, values) {
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const { s, xs, ys } = sheetGeometry(sheet, pageW, pageH);
+
+  const mergeOf = new Map();   // "c,r" -> merge rect, for every covered cell
+  const anchorBox = new Map(); // anchor ref -> merge rect
+  for (const range of sheet.merges) {
+    const m = parseRange(range);
+    for (let r = m.r1; r <= m.r2; r++) for (let c = m.c1; c <= m.c2; c++) mergeOf.set(`${c},${r}`, m);
+    anchorBox.set(range.split(':')[0], m);
   }
-}
+  const box = (m) => ({ x: xs[m.c1 - 1], y: ys[m.r1 - 1], w: xs[m.c2] - xs[m.c1 - 1], h: ys[m.r2] - ys[m.r1 - 1] });
+  const sameMerge = (c1, r1, c2, r2) => {
+    const a = mergeOf.get(`${c1},${r1}`);
+    return a !== undefined && a === mergeOf.get(`${c2},${r2}`);
+  };
 
-// Draw pre-measured lines centered in the box (x, y, w, h).
-function drawLines(doc, lines, x, y, w, h) {
-  const totalH = lines.reduce((a, l) => a + l.size * PT_TO_MM * LINE, 0);
-  let ty = y + (h - totalH) / 2;
-  for (const l of lines) {
-    const lh = l.size * PT_TO_MM * LINE;
-    doc.setFont(FONT, l.bold ? 'bold' : 'normal');
-    doc.setFontSize(l.size);
-    doc.text(l.text, x + w / 2, ty + lh / 2, { align: 'center', baseline: 'middle' });
-    ty += lh;
+  // Borders: every flagged side of every cell, minus the inside of merges.
+  doc.setDrawColor(0);
+  doc.setLineWidth(BORDER_W);
+  const drawn = new Set();
+  const seg = (x1, y1, x2, y2) => {
+    const k = `${x1.toFixed(2)},${y1.toFixed(2)},${x2.toFixed(2)},${y2.toFixed(2)}`;
+    if (drawn.has(k)) return;
+    drawn.add(k);
+    doc.line(x1, y1, x2, y2);
+  };
+  for (const [ref, , bits] of sheet.cells) {
+    if (!bits.includes('1')) continue;
+    const { c, r } = parseRef(ref);
+    const x1 = xs[c - 1]; const x2 = xs[c]; const y1 = ys[r - 1]; const y2 = ys[r];
+    if (bits[0] === '1' && !sameMerge(c, r, c - 1, r)) seg(x1, y1, x1, y2);
+    if (bits[1] === '1' && !sameMerge(c, r, c + 1, r)) seg(x2, y1, x2, y2);
+    if (bits[2] === '1' && !sameMerge(c, r, c, r - 1)) seg(x1, y1, x2, y1);
+    if (bits[3] === '1' && !sameMerge(c, r, c, r + 1)) seg(x1, y2, x2, y2);
+    // Diagonals (the templates' X over a desk with no seat) span the whole
+    // merged area when set on its anchor, as Excel draws them.
+    if (bits[4] === '1' || bits[5] === '1') {
+      const m = anchorBox.get(ref);
+      const b = m ? box(m) : { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+      if (bits[4] === '1') doc.line(b.x, b.y + b.h, b.x + b.w, b.y);
+      if (bits[5] === '1') doc.line(b.x, b.y, b.x + b.w, b.y + b.h);
+    }
+  }
+
+  // Text: template labels (KÜRSÜ, KORİDOR) and the values written over it.
+  doc.setTextColor(0);
+  for (const [ref, styleIdx, , templateValue] of sheet.cells) {
+    const text = values[ref] ?? templateValue;
+    if (text == null || text === '') continue;
+    const m = anchorBox.get(ref);
+    const { c, r } = parseRef(ref);
+    const b = m ? box(m) : { x: xs[c - 1], y: ys[r - 1], w: xs[c] - xs[c - 1], h: ys[r] - ys[r - 1] };
+    drawText(doc, text, sheet.styles[styleIdx], b, s);
   }
 }
 
 export function drawRoomPage(doc, roomId, room, snaps, mode, cellFields, examName) {
-  const { w: pageW, h: pageH } = pageSize(doc);
-  const { cols, left, total, seatW, bandH, top } = roomLayout(room, pageW, pageH);
-  const bands = room.bands.length;
-
-  doc.setDrawColor(0);
-  doc.setLineWidth(0.25);
-
-  // Title band: "{exam} | {room}" — mirrors template cell A1
-  const titleY = top;
-  doc.rect(left, titleY, total, TITLE_H);
-  const title = `${examName} | ${roomId}`;
-  drawLines(doc, cellLines(doc, [{ text: title, base: 13, bold: true }],
-    total - 2 * PAD, TITLE_H - PAD), left, titleY, total, TITLE_H);
-
-  // Lectern (KÜRSÜ) band
-  const lectY = titleY + TITLE_H;
-  doc.setFillColor(245, 245, 245);
-  doc.rect(left, lectY, total, LECTERN_H, 'FD');
-  drawLines(doc, cellLines(doc, [{ text: room.lectern, base: 11, bold: true }],
-    total - 2 * PAD, LECTERN_H - PAD), left, lectY, total, LECTERN_H);
-
-  const gridTop = lectY + LECTERN_H;
-  const gridBottom = gridTop + bands * bandH;
-
-  // Corridors: full-height striped columns with a vertical label.
-  // jsPDF 2.5.2 applies align/baseline in unrotated page space and only then
-  // rotates, which throws the label half its own length out of the column —
-  // so anchor it by hand and pass nothing but the angle. angle 90 emits
-  // Tm [0 1 -1 0]: the text reads bottom-to-top with glyph tops facing left,
-  // hence the baseline sits right of centre by about half the cap height.
-  for (const corridor of room.corridors) {
-    const c = cols[corridor.col];
-    doc.setFillColor(238, 238, 238);
-    doc.rect(c.x, gridTop, c.w, gridBottom - gridTop, 'FD');
-    doc.setFont(FONT, 'normal');
-    doc.setTextColor(120);
-    const size = fitText(doc, corridor.label, gridBottom - gridTop,
-      Math.min(10, Math.max(6, c.w * 0.4)));
-    const len = doc.getTextWidth(corridor.label);
-    doc.text(corridor.label, c.x + c.w / 2 + size * PT_TO_MM * 0.35,
-      (gridTop + gridBottom + len) / 2, { angle: 90 });
-    doc.setTextColor(0);
-  }
-
-  // Unassigned desks: bordered, hatched-looking gray fill
-  for (const desk of room.unassignedDesks || []) {
-    const c = cols[desk.col];
-    doc.setFillColor(228, 228, 228);
-    doc.rect(c.x, gridTop + desk.band * bandH, c.w, bandH, 'FD');
-  }
-
-  // Seats: borders first, then text once the room-wide sizes are known.
-  // Base sizes track the band height so the bigger cells of small rooms don't
-  // end up with a lonely 9pt id floating in the middle.
-  const idBase = Math.min(14, Math.max(9, bandH * 0.38));
-  const roles = lineRoles(mode, cellFields, idBase);
-  const seatByN = {};
-  room.seats.forEach((s) => { seatByN[s.n] = s; });
-
-  const filled = [];
+  const values = { A1: `${examName} | ${roomId}` };
   for (const snap of snaps) {
-    const def = seatByN[snap.seat];
-    const c = cols[def.col];
-    const y = gridTop + def.band * bandH;
-    doc.rect(c.x, y, c.w, bandH);
     const lines = seatLines(snap, mode, cellFields);
-    if (lines.length) filled.push({ lines: lines.map(String), x: c.x, y, w: c.w });
+    if (lines.length) values[snap.cell] = lines.map(String).join('\n');
   }
-  if (!filled.length) return;
+  drawSheetPage(doc, room.sheet, values);
+}
 
-  const sizes = uniformSizes(doc, filled.map((f) => f.lines), roles,
-    seatW - 2 * PAD, bandH - 2 * PAD);
-  for (const f of filled) {
-    drawLines(doc, f.lines.map((text, i) => ({ text, size: sizes[i], bold: roles[i].bold })),
-      f.x, f.y, f.w, bandH);
-  }
+function addRoomPage(doc, room) {
+  if (!doc) return newDoc(room.sheet.page);
+  doc.addPage(room.sheet.page.paper, room.sheet.page.orientation);
+  return doc;
 }
 
 /* ---------------- public exports ---------------- */
@@ -222,9 +193,9 @@ export async function exportRoomPdf(state, classrooms) {
   const roomId = state.activeRoom;
   const room = classrooms.rooms[roomId];
   const snaps = roomSnapshot(state, roomId);
-  const doc = newDoc(room.orientation);
+  const doc = addRoomPage(null, room);
   drawRoomPage(doc, roomId, room, snaps, 'id', state.cellFields, state.examName);
-  doc.addPage('a4', room.orientation);
+  addRoomPage(doc, room);
   drawRoomPage(doc, roomId, room, snaps, 'full', state.cellFields, state.examName);
   doc.save(`${safeFileName(state.examName)}_${roomId}.pdf`);
 }
@@ -233,8 +204,7 @@ function exportMerged(state, classrooms, mode, suffix) {
   let doc = null;
   for (const roomId of state.selectedRooms) {
     const room = classrooms.rooms[roomId];
-    if (!doc) doc = newDoc(room.orientation);
-    else doc.addPage('a4', room.orientation);
+    doc = addRoomPage(doc, room);
     drawRoomPage(doc, roomId, room, roomSnapshot(state, roomId), mode, state.cellFields, state.examName);
   }
   doc.save(`${safeFileName(state.examName)}_${suffix}.pdf`);
@@ -248,55 +218,52 @@ export async function exportMergedPdfFull(state, classrooms) {
   exportMerged(state, classrooms, 'full', 'All_Seating_Plans_Full');
 }
 
-// Landscape page, one column per room, student IDs in seat order at 5.5pt —
-// port of export_single_sheet_room_list.
-export async function exportRoomListPdf(state, classrooms) {
-  const doc = newDoc('landscape');
-  const { w: pageW, h: pageH } = pageSize(doc);
-  const margin = 6;
-  const usableW = pageW - 2 * margin;
-  const rooms = state.selectedRooms;
-  const colW = usableW / rooms.length;
-  const idRowH = 7.5 * PT_TO_MM + 0.4;
-  const headerH = 6;
+// Port of export_single_sheet_room_list: one 16-wide column per room with the
+// student IDs in seat order at 5.5pt on 7.5pt rows, a bold title merged across
+// rooms+5 columns, landscape, 0.2" margins, fit to one page wide. Built as the
+// same sheet model the room templates use, so it prints like the CLI's PDF.
+function columnLetter(n) {
+  let s = '';
+  for (; n > 0; n = Math.floor((n - 1) / 26)) s = String.fromCharCode(65 + ((n - 1) % 26)) + s;
+  return s;
+}
 
+export function roomListSheet(state) {
+  const rooms = state.selectedRooms;
   const perRoom = rooms.map((roomId) =>
     roomSnapshot(state, roomId).filter((s) => s.id != null).map((s) => s.id));
   const maxRows = Math.max(...perRoom.map((ids) => ids.length));
+  const lastCol = rooms.length + 5;
 
-  let page = 0;
-  let row = 0;
-  while (row < maxRows) {
-    if (page > 0) doc.addPage('a4', 'landscape');
-    let y = margin;
-    doc.setFont(FONT, 'bold');
-    fitText(doc, state.examName, usableW, 12);
-    doc.text(state.examName, pageW / 2, y + 3, { align: 'center', baseline: 'middle' });
-    y += 8;
-    rooms.forEach((roomId, i) => {
-      const x = margin + i * colW;
-      doc.rect(x, y, colW, headerH);
-      doc.setFont(FONT, 'bold');
-      fitText(doc, roomId, colW - 2, 9);
-      doc.text(roomId, x + colW / 2, y + headerH / 2, { align: 'center', baseline: 'middle' });
-    });
-    y += headerH;
+  const styles = [
+    { sz: 12, b: 1, h: 'center', v: 'center', rot: 0, wrap: 0 }, // title
+    { sz: 11, b: 1, h: 'center', v: 'bottom', rot: 0, wrap: 0 },  // room header
+    { sz: 5.5, b: 0, h: 'center', v: 'bottom', rot: 0, wrap: 0 }, // student id
+  ];
+  const cells = [['A1', 0, '0000', state.examName]];
+  rooms.forEach((roomId, i) => cells.push([`${columnLetter(i + 1)}2`, 1, '0000', roomId]));
+  perRoom.forEach((ids, i) => ids.forEach((id, r) => {
+    cells.push([`${columnLetter(i + 1)}${r + 3}`, 2, '0000', String(id)]);
+  }));
 
-    const rowsThisPage = Math.min(maxRows - row, Math.floor((pageH - margin - y) / idRowH));
-    doc.setFont(FONT, 'normal');
-    doc.setFontSize(5.5);
-    for (let r = 0; r < rowsThisPage; r++) {
-      perRoom.forEach((ids, i) => {
-        const id = ids[row + r];
-        if (id != null) {
-          doc.text(String(id), margin + i * colW + colW / 2, y + r * idRowH + idRowH / 2, {
-            align: 'center', baseline: 'middle',
-          });
-        }
-      });
-    }
-    row += rowsThisPage;
-    page++;
-  }
+  return {
+    page: {
+      paper: 'a4', orientation: 'landscape',
+      margins: { left: 0.2, right: 0.2, top: 0.2, bottom: 0.2 },
+      hCenter: false, vCenter: false,
+      fitToPage: true, fitToWidth: 1, fitToHeight: 0, scale: 100,
+    },
+    colWidths: Array.from({ length: lastCol }, (_, i) => (i < rooms.length ? 16 : 8.43)),
+    rowHeights: [20, 15, ...Array(maxRows).fill(7.5)],
+    merges: [`A1:${columnLetter(lastCol)}1`],
+    styles,
+    cells,
+  };
+}
+
+export async function exportRoomListPdf(state) {
+  const sheet = roomListSheet(state);
+  const doc = newDoc(sheet.page);
+  drawSheetPage(doc, sheet, {});
   doc.save(`${safeFileName(state.examName)}_SingleSheetRoomList.pdf`);
 }

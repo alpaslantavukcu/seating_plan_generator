@@ -1,85 +1,45 @@
-// Excel workbooks rebuilt from classrooms.json with ExcelJS — same sheet
-// structure as the Python generator: per room a "<room>_id_only" and a
-// "<room>_full" sheet, plus the SingleSheetRoomList workbook.
+// Excel workbooks built the way the Python generator builds them: load the
+// room's own template (docs/templates/Template_<room>.xlsx, synced from
+// Templates/ by tools/convert_templates.py), write "{exam} | {room}" into A1
+// and the student lines into the seat cells, and keep everything else —
+// fonts, borders, column widths, row heights, A4 paper, margins, print area,
+// fit-to-page — exactly as the template has it. Per room a "<room>_id_only"
+// and a "<room>_full" sheet, plus the SingleSheetRoomList workbook.
 
 import { safeFileName, roomSnapshot, seatLines, downloadBlob } from './export-common.js';
 
-const THIN = { style: 'thin', color: { argb: 'FF000000' } };
-const BORDER = { top: THIN, left: THIN, bottom: THIN, right: THIN };
-const CENTER = { horizontal: 'center', vertical: 'center', wrapText: true };
+const templateCache = new Map();
 
-function colLetterToIndex(letter) {
-  let n = 0;
-  for (const ch of letter) n = n * 26 + (ch.charCodeAt(0) - 64);
-  return n;
+async function templateBuffer(roomId) {
+  if (!templateCache.has(roomId)) {
+    templateCache.set(roomId, (async () => {
+      const res = await fetch(`templates/Template_${encodeURIComponent(roomId)}.xlsx`);
+      if (!res.ok) throw new Error(`template for ${roomId}: HTTP ${res.status}`);
+      return res.arrayBuffer();
+    })());
+  }
+  return templateCache.get(roomId);
 }
 
-function buildRoomSheet(wb, roomId, room, snaps, sheetName, mode, cellFields, examName) {
-  const ws = wb.addWorksheet(sheetName, {
-    pageSetup: {
-      orientation: room.orientation,
-      fitToPage: true,
-      margins: { left: 0.25, right: 0.25, top: 0.3, bottom: 0.3, header: 0.1, footer: 0.1 },
-    },
-  });
+// Copy the template's only sheet into wb under a new name (openpyxl's
+// copy_worksheet in the Python version). Loading a fresh copy per sheet keeps
+// the two sheets from sharing style objects.
+async function addTemplateSheet(wb, roomId, sheetName) {
+  const src = new ExcelJS.Workbook();
+  await src.xlsx.load(await templateBuffer(roomId));
+  const model = src.worksheets[0].model;
+  const ws = wb.addWorksheet(sheetName);
+  ws.model = { ...model, name: sheetName, mergeCells: model.merges };
+  return ws;
+}
 
-  room.columns.forEach((c, i) => {
-    ws.getColumn(i + 1).width = c.width;
-  });
-  const lastRow = room.extent.lastRow;
-  for (let r = 1; r <= lastRow; r++) ws.getRow(r).height = room.rowHeight;
-
-  const lastCol = room.extent.lastCol;
-
-  // Title (rows 1-2) and lectern (row 3) bands, as in the templates
-  ws.mergeCells(`A1:${lastCol}2`);
-  const title = ws.getCell('A1');
-  title.value = `${examName} | ${roomId}`;
-  title.font = { name: 'Arial', size: 13, bold: true };
-  title.alignment = CENTER;
-
-  ws.mergeCells(`A3:${lastCol}3`);
-  const lectern = ws.getCell('A3');
-  lectern.value = room.lectern;
-  lectern.font = { name: 'Arial', size: 11, bold: true };
-  lectern.alignment = CENTER;
-
-  // Corridors: vertical repeated label spanning the seat rows
-  for (const corridor of room.corridors) {
-    ws.mergeCells(corridor.range);
-    const cell = ws.getCell(corridor.range.split(':')[0]);
-    cell.value = Array(7).fill(corridor.label).join(' '.repeat(16));
-    cell.font = { name: 'Arial', size: 8 };
-    cell.alignment = { horizontal: 'center', vertical: 'center', textRotation: 90 };
-    cell.border = { left: THIN, right: THIN };
-  }
-
-  // Unassigned desks: bordered empty cells
-  for (const desk of room.unassignedDesks || []) {
-    const row = room.bands[desk.band];
-    ws.mergeCells(`${desk.col}${row}:${desk.col}${row + 2}`);
-    ws.getCell(`${desk.col}${row}`).border = BORDER;
-  }
-
-  // Seats
-  const seatByN = {};
-  room.seats.forEach((s) => { seatByN[s.n] = s; });
+async function buildRoomSheet(wb, roomId, snaps, sheetName, mode, cellFields, examName) {
+  const ws = await addTemplateSheet(wb, roomId, sheetName);
+  ws.getCell('A1').value = `${examName} | ${roomId}`;
   for (const snap of snaps) {
-    const def = seatByN[snap.seat];
-    const row = room.bands[def.band];
-    ws.mergeCells(`${def.col}${row}:${def.col}${row + 2}`);
-    const cell = ws.getCell(`${def.col}${row}`);
-    cell.border = BORDER;
-    cell.alignment = CENTER;
     const lines = seatLines(snap, mode, cellFields);
-    if (lines.length) {
-      cell.value = lines.join('\n');
-      cell.font = { name: 'Arial', size: 8 };
-    }
+    if (lines.length) ws.getCell(snap.cell).value = lines.join('\n');
   }
-
-  // Keep ExcelJS from writing phantom styles past the layout
-  ws.getColumn(colLetterToIndex(lastCol) + 1).width = 8.43;
   return ws;
 }
 
@@ -90,22 +50,21 @@ async function download(wb, filename) {
   }), filename);
 }
 
-function addRoomSheets(wb, state, classrooms, roomId) {
-  const room = classrooms.rooms[roomId];
+async function addRoomSheets(wb, state, roomId) {
   const snaps = roomSnapshot(state, roomId);
-  buildRoomSheet(wb, roomId, room, snaps, `${roomId}_id_only`, 'id', state.cellFields, state.examName);
-  buildRoomSheet(wb, roomId, room, snaps, `${roomId}_full`, 'full', state.cellFields, state.examName);
+  await buildRoomSheet(wb, roomId, snaps, `${roomId}_id_only`, 'id', state.cellFields, state.examName);
+  await buildRoomSheet(wb, roomId, snaps, `${roomId}_full`, 'full', state.cellFields, state.examName);
 }
 
 export async function exportRoomXlsx(state, classrooms) {
   const wb = new ExcelJS.Workbook();
-  addRoomSheets(wb, state, classrooms, state.activeRoom);
+  await addRoomSheets(wb, state, state.activeRoom);
   await download(wb, `${safeFileName(state.examName)}_${state.activeRoom}.xlsx`);
 }
 
 export async function exportAllXlsx(state, classrooms) {
   const wb = new ExcelJS.Workbook();
-  for (const roomId of state.selectedRooms) addRoomSheets(wb, state, classrooms, roomId);
+  for (const roomId of state.selectedRooms) await addRoomSheets(wb, state, roomId);
   await download(wb, `${safeFileName(state.examName)}_All_Rooms.xlsx`);
 }
 

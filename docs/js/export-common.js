@@ -1,9 +1,5 @@
 // Helpers shared by the PDF and Excel exporters.
 
-// Excel row heights are in points; column widths in character units.
-export const PT_TO_MM = 0.352778;
-export const CHAR_TO_MM = 1.9; // ≈7px per char unit at 96dpi
-
 export function safeFileName(name) {
   return name.replace(/[\\/:*?"<>|]/g, '').trim() || 'seating-plan';
 }

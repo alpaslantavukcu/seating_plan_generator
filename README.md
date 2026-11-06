@@ -16,7 +16,7 @@ The `docs/` folder is a self-contained static site. To publish it:
 2. In the repository: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**, then select branch **`main`** and folder **`/docs`**. Save.
 3. The site appears at `https://<user>.github.io/<repo>/` within a minute or two.
 
-Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json` by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json` or the Excel templates, and commit the result.
+Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json`, and the Excel templates copied to `docs/templates/`, by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json` or the Excel templates, and commit the result. The web Excel files are the real templates filled in (as the CLI does), and the web PDFs are drawn from the same template geometry, so both match the CLI's output.
 
 To preview locally: `python3 -m http.server 8000 --directory docs` and open http://localhost:8000.
 

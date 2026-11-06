@@ -9,6 +9,7 @@
 
 # But not those in the Templates folder
 !Templates/*.xlsx
+!docs/templates/*.xlsx
 
 # Python / tooling
 .venv/
