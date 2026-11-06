@@ -1,0 +1,75 @@
+# Web Uygulaması (GitHub Pages)
+
+`docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır: Ninova'dan öğrenci listesini yapıştırın (veya .txt / .xlsx / .csv yükleyin), derslikleri seçin, planı oluşturun; ardından sürükle-bırak ile yer değiştirin, öğrencileri düzenleyin ve PDF / Excel çıktılarını indirin. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
+
+Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür ve şablonlar ile `tutanak.pdf` `docs/templates/` altına kopyalanır; `configuration.json`, şablonlar veya tutanak değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
+
+## Komut satırı çıktısıyla uyum
+
+Web uygulaması, komut satırı aracının çıktı klasöründeki dosyaların aynısını, aynı adlarla ve aynı görünümle üretir:
+
+- **Derslik başına Excel** (`{sınav}_{derslik}.xlsx`; `{derslik}_id_only` ve `{derslik}_full` sayfaları): gerçek şablon dosyası zip olarak açılıp openpyxl'in yaptığı gibi hücre hücre doldurulur. Stiller, kenarlıklar, şablonun varsayılan yazı tipi, sütun genişlikleri, satır yükseklikleri, yazdırma alanı ve yazıcı ayarları olduğu gibi kalır.
+- **Derslik başına PDF** (2 sayfa): LibreOffice'in komut satırı çıktısını bastığı gibi çizilir — aynı kağıt (A4; kağıt boyutu tanımlı olmayan şablonlarda LibreOffice'in varsayılanı olan Letter), kenar boşlukları, ortalama, genişliğe sığdırma ölçeği, kenarlıklar, Arial metrikleri (Liberation Sans) ve satır kırma.
+- **Birleşik PDF'ler** `…_All_Seating_Plans_Only_ID.pdf`, `…_All_Seating_Plans_Full.pdf` ve `…_All_Seating_Plans_with_Tutanak_Printable.pdf` (her dersliğin önünde tutanak sayfası); derslikler komut satırındaki gibi dosya adına göre sıralı.
+- **Tek sayfa derslik listesi** (`…_SingleSheetRoomList.xlsx` / `.pdf`): aynı çalışma kitabı; PDF, LibreOffice'in bastığı gibi Letter yatay, %100 ölçek (satırlar sonraki sayfalara taşar) ve Caladea yazı tipiyle çizilir.
+- **Tüm çıktılar (ZIP)**: yukarıdakilerin tamamı, komut satırının çıktı klasörünün birebir karşılığı.
+- Koltuk kutusundaki alanlar **işaretleme sırasıyla** yazılır; bu, `input.json` içindeki `cell_params` sırasının karşılığıdır.
+
+Paylaşılmayan tek şey rastgele sayı üreteci: aynı tohum komut satırında (`random.shuffle`) ve tarayıcıda (mulberry32) farklı plan verir; tekrarlanabilirlik her aracın kendi içinde geçerlidir.
+
+## Şablonlar ve oturum kaydı
+
+**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar *ile sıraları*. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
+
+- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
+- **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Kod yapıştır** ile uygulanır.
+- **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali (`…/#t=ARYCBge5YDU`); bağlantıyı açmak ayarları uygular.
+
+Kod ve bağlantı sınav adını bilerek dışarıda bırakır: sınav adı verinin büyük kısmını oluşturur ve şablon zaten başka bir sınavda kullanılmak içindir. Böylece tipik bir kod 11 karakter, bağlantının tamamı ise 60 karakterin altında kalır. Kodlama ikili (binary) ve sıkıştırılmış olduğundan hem belirlenimlidir (aynı ayarlar her zaman aynı kodu verir; derslik sırası dâhil en küçük fark kodu değiştirir) hem de kendini denetler: eksik veya yanlış yazılmış bir kod sessizce yanlış yorumlanmak yerine reddedilir.
+
+Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir ve plan artık uyuşmadığı için temizlenir; yüklü öğrenci listesi olduğu gibi kalır, kod veya bağlantı ise yazdığınız sınav adına da dokunmaz. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
+
+**Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve **Her Şeyi Temizle** düğmesiyle silinir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
+
+---
+
+# Web app (GitHub Pages)
+
+The `docs/` folder is a self-contained static site. To publish it:
+
+1. Push this repository to GitHub.
+2. In the repository: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**, then select branch **`main`** and folder **`/docs`**. Save.
+3. The site appears at `https://<user>.github.io/<repo>/` within a minute or two.
+
+Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json`, and the Excel templates (plus `tutanak.pdf`) copied to `docs/templates/`, by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json`, the Excel templates or the tutanak, and commit the result.
+
+## Output parity with the CLI
+
+The web app produces the same set of files as the CLI's output folder, with the same names and the same look:
+
+- **Excel per room** (`{exam}_{room}.xlsx`, sheets `{room}_id_only` and `{room}_full`): the real template workbook, opened as a zip and filled cell by cell the way openpyxl does it. Styles, borders, the template's default font, column widths, row heights, print areas and printer settings are untouched.
+- **PDF per room** (`{exam}_{room}.pdf`, 2 pages): drawn from the template geometry the way LibreOffice prints the CLI's workbook — same paper (A4, or Letter for templates that name no paper size, as LibreOffice defaults), margins, centring, fit-to-width scale, borders, Arial metrics (Liberation Sans), wrapping.
+- **Merged PDFs** `…_All_Seating_Plans_Only_ID.pdf`, `…_All_Seating_Plans_Full.pdf` and `…_All_Seating_Plans_with_Tutanak_Printable.pdf` (tutanak page before every room), rooms in the CLI's sorted file-name order, assembled from the per-room PDFs with pdf-lib exactly as `merge_pdfs` does with pypdf.
+- **Single-sheet room list** (`…_SingleSheetRoomList.xlsx` / `.pdf`): same workbook as the CLI's; the PDF is drawn as LibreOffice prints it — Letter landscape, 100 % scale flowing onto further pages, and the Caladea face LibreOffice uses for the CLI's unnamed font.
+- **All outputs (ZIP)**: everything above in one archive, mirroring the CLI's output directory.
+- The seat-cell fields keep their **tick order**, which is the CLI's `cell_params` order (e.g. seat number first, then ID, then name).
+
+What is not shared: the random number generator. The same seed gives a different plan in the CLI (Python's `random.shuffle`) and in the browser (mulberry32); reproducibility holds within each tool.
+
+To preview locally: `python3 -m http.server 8000 --directory docs` and open http://localhost:8000.
+
+## Templates and session auto-save
+
+**Templates** make a setup reusable. A template holds settings only — classroom selection *and fill order*, custom capacities, seed and the seat-cell fields *with their order* — so the same one serves different exams and different student lists. It can be moved three ways:
+
+- **Download template (.json)** → a readable file to keep, email or drop back onto the Template box on any machine. This is the only form that also carries the **exam name**.
+- **Copy code** → a short single-line string such as `SP1-ARYCBge5YDU` to paste into a message; **Paste code** applies it.
+- **Copy link** → the same code in a URL hash (`…/#t=ARYCBge5YDU`); opening the link applies the settings.
+
+The code and link leave the exam name out deliberately — it is the bulk of the bytes, and a template is meant to be reused under a different exam anyway. That keeps a typical code around 11 characters and the whole link under 60. The encoding is a packed binary layout, so it is deterministic (identical settings always give an identical code, and any difference — including room order — changes it) and self-checking: a truncated or mistyped code is rejected rather than silently misread.
+
+A template **never contains the student list or the generated plan**. Applying one replaces the settings and clears the plan (it no longer matches); the student list already loaded is kept, and a code or link also leaves the exam name you typed alone. Templates are checked against the local `docs/data/classrooms.json`: classrooms that do not exist on the receiving machine are skipped and capacities are clamped to the real room capacity, with a warning.
+
+> Maintainer note: `ROOM_TABLE` in [`docs/js/template.js`](docs/js/template.js) maps classrooms to the one-byte ids used inside codes. It is **append-only** — reordering or removing entries would decode already-shared codes into the wrong classrooms. A room missing from the list still works; it just makes the code slightly longer.
+
+**Session auto-save** writes the working session — settings, parsed students and the plan including drag-drop swaps and inline edits — to the browser's `localStorage`, so a refresh or an accidental tab close loses nothing. On return a banner reports the restore. Nothing is uploaded; the data stays on that machine, and **Start Fresh** in the Template & Session box erases it. The saved plan is discarded automatically if the classroom layouts changed underneath it.
