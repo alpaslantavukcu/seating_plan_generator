@@ -469,3 +469,19 @@ textarea { resize: vertical; font-family: ui-monospace, "Cascadia Mono", Consola
   .export-buttons { gap: 16px; }
   .card { padding: 16px; }
 }
+
+/* Order badge next to the seat-field checkboxes (the CLI's cell_params order) */
+.check .fo {
+  display: inline-block;
+  min-width: 1.4em;
+  padding: 0 0.35em;
+  border-radius: 999px;
+  background: var(--green-700);
+  color: #fff;
+  font-size: 0.7em;
+  line-height: 1.5em;
+  text-align: center;
+  font-weight: 700;
+}
+.check .fo:empty { display: none; }
+.btn-export.busy { opacity: 0.6; cursor: progress; }

@@ -13,24 +13,36 @@ python3 tools/convert_templates.py
 ```
 
 Reads `Templates/Template_<ROOM>.xlsx` + `configuration.json`, writes
-`docs/data/classrooms.json` and copies the templates to `docs/templates/`
-(GitHub Pages only serves `docs/`). Re-run whenever a template or the seat
-mappings change.
+`docs/data/classrooms.json` and copies the templates and `Templates/tutanak.pdf`
+to `docs/templates/` (GitHub Pages only serves `docs/`). Re-run whenever a
+template, the tutanak or the seat mappings change.
 
-- The Excel exporter fills the copied templates directly, exactly like the
-  Python generator does with openpyxl, so the web Excel files keep the
-  template's fonts, borders, A4 paper, margins, print area and fit-to-page.
+- The Excel exporter opens the copied template as a zip and edits only the
+  sheet XML (rename, copy, write A1 and the seat cells), exactly like the
+  Python generator does with openpyxl, so the web Excel files keep every
+  other part of the package — styles and default font, borders, paper,
+  margins, print area, printer settings and fit-to-page — byte for byte.
 - The PDF exporter draws each page from the `sheet` model in classrooms.json
   (column widths, row heights, merges, every bordered/labelled cell with its
-  font and alignment, page setup), the way Excel/LibreOffice prints the
-  template. Templates without a paper size are drawn on A4. The script validates every room (seat count vs capacity, merge
+  font and alignment, page setup), the way LibreOffice prints the
+  template in the CLI pipeline. Templates without a paper size are drawn on
+  Letter, LibreOffice's default on the reference machine. The script validates every room (seat count vs capacity, merge
 structure, extents) and refuses to write the JSON if anything is off.
 
 ## PDF fonts (docs/vendor/fonts/)
 
-The PDF exporter embeds a Liberation Sans subset: it has the same glyph
-widths as Arial (the templates' font), so text wraps where the CLI's PDFs
-wrap it, and it covers Turkish (ş ğ İ ı ç ö ü). To regenerate:
+The PDF exporter embeds two font subsets, both OFL 1.1 and both covering
+Turkish (ş ğ İ ı ç ö ü):
+
+- **Liberation Sans** — same glyph widths as Arial (the templates' font), so
+  text wraps where the CLI's PDFs wrap it.
+- **Caladea** — the face LibreOffice substitutes for the single-sheet room
+  list, whose cells name no font; used for that PDF only. Source:
+  `fonts-crosextra-caladea` (`/usr/share/fonts/truetype/crosextra/` on
+  Debian/Ubuntu), same subset recipe with `Caladea` in place of
+  `LiberationSans`.
+
+To regenerate:
 
 ```bash
 pip install fonttools
@@ -67,5 +79,8 @@ PY
 | File | Source | License |
 |---|---|---|
 | `jspdf.umd.min.js` | https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js | MIT |
-| `exceljs.min.js` | https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js | MIT |
+| `exceljs.min.js` | https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js (student list .xlsx parsing, room list workbook) | MIT |
+| `fflate.min.js` | fflate 0.8.2 `umd/index.js` (template zip read/write, ZIP download) | MIT |
+| `pdf-lib.min.js` | pdf-lib 1.17.1 `dist/pdf-lib.min.js` (merged PDFs, tutanak pages) | MIT |
 | `fonts/LiberationSans-*.js` | Liberation Sans 2.1.5 (subset, see above) | OFL 1.1 |
+| `fonts/Caladea-*.js` | Caladea 1.001 (subset, see above) | OFL 1.1 |

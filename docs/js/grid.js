@@ -4,6 +4,7 @@
 // corridor columns with vertical labels.
 
 import { t } from './i18n.js';
+import { activeCellOrder } from './store.js';
 
 export function renderGrid(state, classrooms) {
   const wrap = document.getElementById('grid-wrap');
@@ -72,15 +73,16 @@ export function renderGrid(state, classrooms) {
       const student = state.students[entry.studentIdx];
       el.className = 'g-seat occupied';
       el.draggable = true;
-      const f = state.cellFields;
-      if (f.id) el.appendChild(line('s-id', student.id));
-      if (f.name) {
-        const n = line('s-name', student.name);
-        n.title = student.rawName;
-        el.appendChild(n);
+      const order = activeCellOrder(state);
+      for (const key of order) {
+        if (key === 'id') el.appendChild(line('s-id', student.id));
+        else if (key === 'name') {
+          const n = line('s-name', student.name);
+          n.title = student.rawName;
+          el.appendChild(n);
+        } else if (key === 'seat') el.appendChild(line('s-no', `(${entry.seat})`));
       }
-      if (f.seat) el.appendChild(line('s-no', `(${entry.seat})`));
-      if (!f.id && !f.name && !f.seat) el.appendChild(line('s-no', '•'));
+      if (!order.length) el.appendChild(line('s-no', '•'));
     } else {
       el.className = 'g-seat empty';
       el.appendChild(line('s-no', `${t('emptySeat')} (${entry.seat})`));

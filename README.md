@@ -16,13 +16,26 @@ The `docs/` folder is a self-contained static site. To publish it:
 2. In the repository: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**, then select branch **`main`** and folder **`/docs`**. Save.
 3. The site appears at `https://<user>.github.io/<repo>/` within a minute or two.
 
-Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json`, and the Excel templates copied to `docs/templates/`, by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json` or the Excel templates, and commit the result. The web Excel files are the real templates filled in (as the CLI does), and the web PDFs are drawn from the same template geometry, so both match the CLI's output.
+Everything (parsing, seat assignment, PDF and Excel generation) runs client-side; student data never leaves the browser. Classroom layouts are pre-generated into `docs/data/classrooms.json`, and the Excel templates (plus `tutanak.pdf`) copied to `docs/templates/`, by [`tools/convert_templates.py`](tools/README.md) — re-run it after changing `configuration.json`, the Excel templates or the tutanak, and commit the result.
+
+### Output parity with the CLI
+
+The web app produces the same set of files as the CLI's output folder, with the same names and the same look:
+
+- **Excel per room** (`{exam}_{room}.xlsx`, sheets `{room}_id_only` and `{room}_full`): the real template workbook, opened as a zip and filled cell by cell the way openpyxl does it. Styles, borders, the template's default font, column widths, row heights, print areas and printer settings are untouched.
+- **PDF per room** (`{exam}_{room}.pdf`, 2 pages): drawn from the template geometry the way LibreOffice prints the CLI's workbook — same paper (A4, or Letter for templates that name no paper size, as LibreOffice defaults), margins, centring, fit-to-width scale, borders, Arial metrics (Liberation Sans), wrapping.
+- **Merged PDFs** `…_All_Seating_Plans_Only_ID.pdf`, `…_All_Seating_Plans_Full.pdf` and `…_All_Seating_Plans_with_Tutanak_Printable.pdf` (tutanak page before every room), rooms in the CLI's sorted file-name order, assembled from the per-room PDFs with pdf-lib exactly as `merge_pdfs` does with pypdf.
+- **Single-sheet room list** (`…_SingleSheetRoomList.xlsx` / `.pdf`): same workbook as the CLI's; the PDF is drawn as LibreOffice prints it — Letter landscape, 100 % scale flowing onto further pages, and the Caladea face LibreOffice uses for the CLI's unnamed font.
+- **All outputs (ZIP)**: everything above in one archive, mirroring the CLI's output directory.
+- The seat-cell fields keep their **tick order**, which is the CLI's `cell_params` order (e.g. seat number first, then ID, then name).
+
+What is not shared: the random number generator. The same seed gives a different plan in the CLI (Python's `random.shuffle`) and in the browser (mulberry32); reproducibility holds within each tool.
 
 To preview locally: `python3 -m http.server 8000 --directory docs` and open http://localhost:8000.
 
 ### Templates and session auto-save
 
-**Templates** make a setup reusable. A template holds settings only — classroom selection *and fill order*, custom capacities, seed and the seat-cell fields — so the same one serves different exams and different student lists. It can be moved three ways:
+**Templates** make a setup reusable. A template holds settings only — classroom selection *and fill order*, custom capacities, seed and the seat-cell fields *with their order* — so the same one serves different exams and different student lists. It can be moved three ways:
 
 - **Download template (.json)** → a readable file to keep, email or drop back onto the Template box on any machine. This is the only form that also carries the **exam name**.
 - **Copy code** → a short single-line string such as `SP1-ARYCBge5YDU` to paste into a message; **Paste code** applies it.

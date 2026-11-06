@@ -21,8 +21,10 @@ export function formatLongName(fullName) {
   return formatted;
 }
 
+// Internal whitespace is kept as it is in the list (the CLI only strips the
+// ends), so a double space inside a name comes out the same in both tools.
 function makeStudent(id, rawName) {
-  const clean = rawName.trim().replace(/\s+/g, ' ');
+  const clean = rawName.trim();
   return { id: id.trim(), rawName: clean, name: formatLongName(clean) };
 }
 

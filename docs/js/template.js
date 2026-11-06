@@ -1,6 +1,7 @@
 // Plan templates: a portable, settings-only description of a setup — exam name,
-// classrooms and their fill order, custom capacities, seed, seat-cell fields.
-// Templates deliberately carry NO student data and NO generated plan.
+// classrooms and their fill order, custom capacities, seed, seat-cell fields
+// and their order. Templates deliberately carry NO student data and NO
+// generated plan.
 //
 // Two shapes, on purpose:
 //   * the .json file — readable, carries everything including the exam name;
@@ -11,13 +12,16 @@
 // Pure module: no DOM, no i18n. Warnings come back as {key, params} for the
 // caller to translate.
 
-import { DEFAULT_CELL_FIELDS } from './store.js';
+import { DEFAULT_CELL_FIELDS, DEFAULT_CELL_ORDER, CELL_KEYS } from './store.js';
 
 export const TEMPLATE_TYPE = 'seating-plan-template';
 export const TEMPLATE_VERSION = 1;
 
 const CODE_PREFIX = 'SP1-';
-const CODE_FORMAT = 1;
+// Format 1: flags, rooms, capacities, seed. Format 2 adds one byte after the
+// flags for the order of the seat-cell lines. Both are still decoded.
+const CODE_FORMAT_V1 = 1;
+const CODE_FORMAT = 2;
 const MAX_NAME_LENGTH = 200;
 
 // APPEND ONLY — NEVER REORDER OR REMOVE.
@@ -31,6 +35,7 @@ const ROOM_TABLE = [
   '101', '102', '104', '121', '122', '123',
   'Z-16', 'Z-17', 'Z-18', 'Z-19', 'Z-20', 'Z-21', 'Z-22', 'Z-23',
   'MED_A31', 'MED_A32', 'EEB_5204', 'EEB_5302',
+  'Z-01',
 ];
 
 const FLAG_CUSTOM_CAPS = 1;
@@ -41,6 +46,13 @@ const FLAG_SEED = 16;
 
 const NAME_ESCAPE = 0x80; // set on a room byte: an inline UTF-8 name follows
 
+// The six permutations of the three seat-cell lines; a code stores the index.
+const ORDERS = [
+  ['id', 'name', 'seat'], ['id', 'seat', 'name'],
+  ['name', 'id', 'seat'], ['name', 'seat', 'id'],
+  ['seat', 'id', 'name'], ['seat', 'name', 'id'],
+];
+
 export function extractSettings(state) {
   return {
     examName: state.examName,
@@ -49,6 +61,7 @@ export function extractSettings(state) {
     customCapacities: { ...state.customCapacities },
     seed: state.seed,
     cellFields: { ...state.cellFields },
+    cellOrder: state.cellOrder.slice(),
   };
 }
 
@@ -118,6 +131,18 @@ function digitsOnly(seed) {
     : '';
 }
 
+function normalizeOrder(raw) {
+  if (!Array.isArray(raw)) return null;
+  const order = raw.filter((k) => CELL_KEYS.includes(k));
+  if (order.length !== CELL_KEYS.length || new Set(order).size !== CELL_KEYS.length) return null;
+  return order;
+}
+
+function orderIndex(order) {
+  const i = ORDERS.findIndex((o) => o.every((k, j) => k === order[j]));
+  return i >= 0 ? i : 0;
+}
+
 /* ---------- code / link encoding ---------- */
 
 // Packs everything but the exam name. Deterministic: the same settings always
@@ -128,6 +153,7 @@ export function encodeSettings(settings) {
   if (rooms.length > 255) throw new Error('too many classrooms to encode');
 
   const fields = settings.cellFields || DEFAULT_CELL_FIELDS;
+  const order = normalizeOrder(settings.cellOrder) || DEFAULT_CELL_ORDER;
   const seed = digitsOnly(settings.seed);
   const useCustomCapacities = !!settings.useCustomCapacities;
 
@@ -139,6 +165,7 @@ export function encodeSettings(settings) {
     | (fields.seat ? FLAG_FIELD_SEAT : 0)
     | (seed ? FLAG_SEED : 0),
   );
+  out.push(orderIndex(order));
 
   out.push(rooms.length);
   for (const id of rooms) {
@@ -188,8 +215,15 @@ export function decodeSettings(code, rooms) {
     return bytes[cursor.i++];
   };
 
-  if (readByte() !== CODE_FORMAT) throw new Error('unsupported code format');
+  const format = readByte();
+  if (format !== CODE_FORMAT_V1 && format !== CODE_FORMAT) throw new Error('unsupported code format');
   const flags = readByte();
+  let cellOrder = DEFAULT_CELL_ORDER;
+  if (format >= 2) {
+    const idx = readByte();
+    if (idx >= ORDERS.length) throw new Error('bad field order in code');
+    cellOrder = ORDERS[idx];
+  }
   const roomCount = readByte();
 
   const selectedRooms = [];
@@ -235,6 +269,7 @@ export function decodeSettings(code, rooms) {
       name: !!(flags & FLAG_FIELD_NAME),
       seat: !!(flags & FLAG_FIELD_SEAT),
     },
+    cellOrder,
   }, rooms);
 }
 
@@ -295,6 +330,7 @@ function normalizeSettings(src, rooms) {
   settings.cellFields = cellFields.id || cellFields.name || cellFields.seat
     ? cellFields
     : { ...DEFAULT_CELL_FIELDS };
+  settings.cellOrder = (normalizeOrder(src.cellOrder) || DEFAULT_CELL_ORDER).slice();
 
   return { settings, warnings };
 }

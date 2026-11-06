@@ -86,9 +86,10 @@
         </div>
         <div class="option-col">
           <span class="label-like" data-i18n="cellFields">Koltuk kutusunda gösterilecekler</span>
-          <label class="check"><input type="checkbox" id="field-id" checked><span data-i18n="fieldId">Öğrenci No</span></label>
-          <label class="check"><input type="checkbox" id="field-name" checked><span data-i18n="fieldName">Ad Soyad</span></label>
-          <label class="check"><input type="checkbox" id="field-seat"><span data-i18n="fieldSeat">Sıra No</span></label>
+          <label class="check"><input type="checkbox" id="field-id" checked><span data-i18n="fieldId">Öğrenci No</span><b class="fo" data-fo="id"></b></label>
+          <label class="check"><input type="checkbox" id="field-name" checked><span data-i18n="fieldName">Ad Soyad</span><b class="fo" data-fo="name"></b></label>
+          <label class="check"><input type="checkbox" id="field-seat"><span data-i18n="fieldSeat">Sıra No</span><b class="fo" data-fo="seat"></b></label>
+          <p class="hint" data-i18n="cellFieldsHint"></p>
         </div>
       </fieldset>
 
@@ -131,9 +132,9 @@
         <div id="room-tabs" class="tabs" role="tablist"></div>
         <div class="toolbar-right">
           <div class="toggle-group" id="live-toggles">
-            <label class="check"><input type="checkbox" id="live-id" checked><span data-i18n="fieldId">Öğrenci No</span></label>
-            <label class="check"><input type="checkbox" id="live-name" checked><span data-i18n="fieldName">Ad Soyad</span></label>
-            <label class="check"><input type="checkbox" id="live-seat"><span data-i18n="fieldSeat">Sıra No</span></label>
+            <label class="check"><input type="checkbox" id="live-id" checked><span data-i18n="fieldId">Öğrenci No</span><b class="fo" data-fo="id"></b></label>
+            <label class="check"><input type="checkbox" id="live-name" checked><span data-i18n="fieldName">Ad Soyad</span><b class="fo" data-fo="name"></b></label>
+            <label class="check"><input type="checkbox" id="live-seat"><span data-i18n="fieldSeat">Sıra No</span><b class="fo" data-fo="seat"></b></label>
           </div>
           <button id="regenerate" class="btn-secondary" type="button" data-i18n="regenerate">Yeniden Karıştır</button>
         </div>
@@ -151,19 +152,21 @@
             <button type="button" class="btn-export" id="exp-pdf-room" data-i18n="pdfRoom"></button>
             <button type="button" class="btn-export" id="exp-pdf-all-id" data-i18n="pdfAllId"></button>
             <button type="button" class="btn-export" id="exp-pdf-all-full" data-i18n="pdfAllFull"></button>
+            <button type="button" class="btn-export" id="exp-pdf-all-tutanak" data-i18n="pdfAllTutanak"></button>
             <button type="button" class="btn-export" id="exp-pdf-roomlist" data-i18n="pdfRoomList"></button>
           </div>
           <div class="export-group">
             <span class="export-kind">Excel</span>
             <button type="button" class="btn-export" id="exp-xlsx-room" data-i18n="xlsxRoom"></button>
-            <button type="button" class="btn-export" id="exp-xlsx-all" data-i18n="xlsxAll"></button>
             <button type="button" class="btn-export" id="exp-xlsx-roomlist" data-i18n="xlsxRoomList"></button>
           </div>
           <div class="export-group">
             <span class="export-kind">&nbsp;</span>
+            <button type="button" class="btn-export btn-zip" id="exp-zip-all" data-i18n="zipAll"></button>
             <button type="button" class="btn-export" id="exp-print" data-i18n="printPage"></button>
           </div>
         </div>
+        <p class="hint" data-i18n="zipHint"></p>
       </div>
     </section>
   </main>
@@ -178,6 +181,8 @@
   <script src="vendor/exceljs.min.js" defer></script>
   <script src="vendor/fonts/LiberationSans-normal.js" defer></script>
   <script src="vendor/fonts/LiberationSans-bold.js" defer></script>
+  <script src="vendor/fonts/Caladea-normal.js" defer></script>
+  <script src="vendor/fonts/Caladea-bold.js" defer></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

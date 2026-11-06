@@ -10,11 +10,24 @@ Program, verilen öğrenci listesini sınıflara otomatik olarak dağıtarak otu
 
 `docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır: Ninova'dan öğrenci listesini yapıştırın (veya .txt / .xlsx / .csv yükleyin), derslikleri seçin, planı oluşturun; ardından sürükle-bırak ile yer değiştirin, öğrencileri düzenleyin ve PDF / Excel çıktılarını indirin. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
 
-Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür; `configuration.json` veya şablonlar değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
+Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür ve şablonlar ile `tutanak.pdf` `docs/templates/` altına kopyalanır; `configuration.json`, şablonlar veya tutanak değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
+
+### Komut satırı çıktısıyla uyum
+
+Web uygulaması, komut satırı aracının çıktı klasöründeki dosyaların aynısını, aynı adlarla ve aynı görünümle üretir:
+
+- **Derslik başına Excel** (`{sınav}_{derslik}.xlsx`; `{derslik}_id_only` ve `{derslik}_full` sayfaları): gerçek şablon dosyası zip olarak açılıp openpyxl'in yaptığı gibi hücre hücre doldurulur. Stiller, kenarlıklar, şablonun varsayılan yazı tipi, sütun genişlikleri, satır yükseklikleri, yazdırma alanı ve yazıcı ayarları olduğu gibi kalır.
+- **Derslik başına PDF** (2 sayfa): LibreOffice'in komut satırı çıktısını bastığı gibi çizilir — aynı kağıt (A4; kağıt boyutu tanımlı olmayan şablonlarda LibreOffice'in varsayılanı olan Letter), kenar boşlukları, ortalama, genişliğe sığdırma ölçeği, kenarlıklar, Arial metrikleri (Liberation Sans) ve satır kırma.
+- **Birleşik PDF'ler** `…_All_Seating_Plans_Only_ID.pdf`, `…_All_Seating_Plans_Full.pdf` ve `…_All_Seating_Plans_with_Tutanak_Printable.pdf` (her dersliğin önünde tutanak sayfası); derslikler komut satırındaki gibi dosya adına göre sıralı.
+- **Tek sayfa derslik listesi** (`…_SingleSheetRoomList.xlsx` / `.pdf`): aynı çalışma kitabı; PDF, LibreOffice'in bastığı gibi Letter yatay, %100 ölçek (satırlar sonraki sayfalara taşar) ve Caladea yazı tipiyle çizilir.
+- **Tüm çıktılar (ZIP)**: yukarıdakilerin tamamı, komut satırının çıktı klasörünün birebir karşılığı.
+- Koltuk kutusundaki alanlar **işaretleme sırasıyla** yazılır; bu, `input.json` içindeki `cell_params` sırasının karşılığıdır.
+
+Paylaşılmayan tek şey rastgele sayı üreteci: aynı tohum komut satırında (`random.shuffle`) ve tarayıcıda (mulberry32) farklı plan verir; tekrarlanabilirlik her aracın kendi içinde geçerlidir.
 
 ### Şablonlar ve oturum kaydı
 
-**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
+**Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar *ile sıraları*. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
 
 - **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
 - **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Kod yapıştır** ile uygulanır.

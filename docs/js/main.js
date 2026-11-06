@@ -1,7 +1,7 @@
 // Entry point: loads classroom data, wires the setup form, generation,
 // plan view (tabs, live toggles, regenerate) and export buttons.
 
-import { getState, set, update, subscribe } from './store.js';
+import { getState, set, update, subscribe, setCellField, activeCellOrder, CELL_KEYS } from './store.js';
 import { t, applyLang, toggleLang } from './i18n.js';
 import { parseNinovaText, parseCsv, parseXlsx } from './parse.js';
 import { assign, totalCapacity } from './algorithm.js';
@@ -188,12 +188,33 @@ function readSetupFields() {
   update((s) => {
     s.examName = document.getElementById('exam-name').value.trim();
     s.seed = document.getElementById('seed').value.trim();
-    s.cellFields = {
-      id: document.getElementById('field-id').checked,
-      name: document.getElementById('field-name').checked,
-      seat: document.getElementById('field-seat').checked,
-    };
   });
+}
+
+// The seat-cell checkboxes exist twice (setup form and plan toolbar); both
+// drive the same store fields, and ticking one appends it to the line order
+// — the CLI's cell_params order. The badge next to each label shows that
+// order.
+function renderFieldOrder() {
+  const s = getState();
+  const order = activeCellOrder(s);
+  for (const key of CELL_KEYS) {
+    const pos = order.indexOf(key);
+    document.querySelectorAll(`[data-fo="${key}"]`).forEach((el) => {
+      el.textContent = pos === -1 ? '' : String(pos + 1);
+    });
+    document.getElementById(`field-${key}`).checked = s.cellFields[key];
+    document.getElementById(`live-${key}`).checked = s.cellFields[key];
+  }
+}
+
+function wireFieldCheckbox(prefix) {
+  for (const key of CELL_KEYS) {
+    document.getElementById(`${prefix}-${key}`).addEventListener('change', (e) => {
+      update((s) => setCellField(s, key, e.target.checked));
+      renderFieldOrder();
+    });
+  }
 }
 
 // Keep the store in step with the form as it is edited, so auto-save and
@@ -202,12 +223,7 @@ function readSetupFields() {
 function wireSetupFields() {
   document.getElementById('exam-name').addEventListener('change', readSetupFields);
   document.getElementById('seed').addEventListener('change', readSetupFields);
-  for (const key of ['id', 'name', 'seat']) {
-    document.getElementById(`field-${key}`).addEventListener('change', (e) => {
-      update((s) => { s.cellFields[key] = e.target.checked; });
-      document.getElementById(`live-${key}`).checked = e.target.checked;
-    });
-  }
+  wireFieldCheckbox('field');
 }
 
 // The reverse direction: write the store back into the form. Needed whenever
@@ -218,10 +234,7 @@ function hydrateSetupDom() {
   document.getElementById('exam-name').value = s.examName;
   document.getElementById('seed').value = s.seed;
   document.getElementById('custom-cap').checked = s.useCustomCapacities;
-  for (const key of ['id', 'name', 'seat']) {
-    document.getElementById(`field-${key}`).checked = s.cellFields[key];
-    document.getElementById(`live-${key}`).checked = s.cellFields[key];
-  }
+  renderFieldOrder();
   renderRoomPicker();
   renderCapEditor();
   updateCapacitySummary();
@@ -232,7 +245,7 @@ function validate() {
   if (!s.examName) return t('errNoName');
   if (!s.students.length) return t('errNoStudents');
   if (!s.selectedRooms.length) return t('errNoRooms');
-  if (!s.cellFields.id && !s.cellFields.name && !s.cellFields.seat) return t('errNoFields');
+  if (!activeCellOrder(s).length) return t('errNoFields');
   return null;
 }
 
@@ -261,10 +274,7 @@ function generate() {
     throw e;
   }
 
-  // Sync live toggles with setup choices
-  document.getElementById('live-id').checked = s.cellFields.id;
-  document.getElementById('live-name').checked = s.cellFields.name;
-  document.getElementById('live-seat').checked = s.cellFields.seat;
+  renderFieldOrder();
 
   // Visibility is owned by the store subscriber; set() above already revealed it.
   document.getElementById('plan').scrollIntoView({ behavior: 'smooth' });
@@ -286,12 +296,7 @@ function wirePlanView() {
     if (tab) set({ activeRoom: tab.dataset.roomTab });
   });
 
-  for (const key of ['id', 'name', 'seat']) {
-    document.getElementById(`live-${key}`).addEventListener('change', (e) => {
-      update((s) => { s.cellFields[key] = e.target.checked; });
-      document.getElementById(`field-${key}`).checked = e.target.checked;
-    });
-  }
+  wireFieldCheckbox('live');
 
   document.getElementById('regenerate').addEventListener('click', () => {
     const s = getState();
@@ -461,6 +466,7 @@ function wireExports() {
       const btn = e.currentTarget;
       if (!getState().plan) return;
       btn.disabled = true;
+      btn.classList.add('busy');
       try {
         const mod = await import(module);
         await mod[fn](getState(), classrooms);
@@ -469,16 +475,18 @@ function wireExports() {
         showToast(String(err.message || err), true);
       } finally {
         btn.disabled = false;
+        btn.classList.remove('busy');
       }
     });
   };
   wire('exp-pdf-room', './export-pdf.js', 'exportRoomPdf');
   wire('exp-pdf-all-id', './export-pdf.js', 'exportMergedPdfId');
   wire('exp-pdf-all-full', './export-pdf.js', 'exportMergedPdfFull');
+  wire('exp-pdf-all-tutanak', './export-pdf.js', 'exportMergedPdfTutanak');
   wire('exp-pdf-roomlist', './export-pdf.js', 'exportRoomListPdf');
   wire('exp-xlsx-room', './export-xlsx.js', 'exportRoomXlsx');
-  wire('exp-xlsx-all', './export-xlsx.js', 'exportAllXlsx');
   wire('exp-xlsx-roomlist', './export-xlsx.js', 'exportRoomListXlsx');
+  wire('exp-zip-all', './export-pdf.js', 'exportAllZip');
   document.getElementById('exp-print').addEventListener('click', () => window.print());
 }
 
