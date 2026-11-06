@@ -20,3 +20,6 @@ __pycache__/
 *$py.class
 .pytest_cache/
 .mypy_cache/
+
+# Claude Code local config
+.claude/
