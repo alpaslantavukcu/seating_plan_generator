@@ -98,7 +98,7 @@ Useful flags:
 - **`configuration.json`** — `classroom-capacities` (max seats per room) and `seat-mappings` (seat index → Excel cell, e.g. `"1": "C4"`).
 - **`input.json`** — `exam_name`, `available_classrooms` (list of room names or a map of room → capacity), `student_ids_file`, `output_directory`, `cell_params`.
 
-Details and JSON examples are also documented in `Readme.md` (Turkish).
+Details and JSON examples are also documented in `Readme.md` (Turkish). The web app is described in Turkish in [`docs/README.md`](docs/README.md).
 
 ## Student list format
 
