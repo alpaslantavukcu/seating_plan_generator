@@ -1,5 +1,5 @@
-// Auto-saves the working session — settings, parsed students and the generated
-// plan with every drag-drop swap and inline edit — to localStorage, so a
+// Auto-saves the working session — settings, parsed students, the generated
+// plan with every swap and inline edit, and the wizard step — to localStorage, so a
 // refresh or a closed tab loses nothing. Everything stays on this machine; the
 // language lives in its own 'sp-lang' key and is never touched here.
 
@@ -24,8 +24,10 @@ function payload(state) {
     settings: extractSettings(state),
     students: state.students,
     plan: state.plan,
+    planEdited: state.planEdited,
     usedSeed: state.usedSeed,
     activeRoom: state.activeRoom,
+    step: state.step,
   };
 }
 
@@ -158,6 +160,10 @@ export function loadSession(rooms) {
     students,
     plan,
     usedSeed: plan && Number.isFinite(data.usedSeed) ? data.usedSeed : null,
+    // Older sessions have no flag: assume hand edits so nothing is dropped silently.
+    planEdited: plan ? data.planEdited !== false : false,
     activeRoom,
+    // The caller clamps this to the furthest step the restored data allows.
+    step: Number.isInteger(data.step) ? data.step : 1,
   };
 }

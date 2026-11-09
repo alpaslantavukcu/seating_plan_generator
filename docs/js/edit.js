@@ -1,120 +1,123 @@
-// Inline editing: double-click a seat to edit the student's ID/name,
-// clear the seat, or type a new student into an empty seat.
+// Seat editor: change the seated student's ID/name, clear the seat, or type a
+// new student into an empty seat. A popover next to the seat on wide screens,
+// a bottom sheet on phones (see .edit-pop in style.css).
 
-import { getState, update } from './store.js';
+import { getState } from './store.js';
 import { t } from './i18n.js';
-import { formatLongName } from './parse.js';
+import { findEntry, saveSeatStudent, clearSeat } from './plan-ops.js';
+import { el } from './ui.js';
 
 let pop = null;
+let onDone = () => {};
 
-export function initEdit() {
-  document.getElementById('grid-wrap').addEventListener('dblclick', (e) => {
-    const seat = e.target.closest('.g-seat');
-    if (!seat || seat.classList.contains('disabled') || !seat.dataset.seat) return;
-    openPopover(seat);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (pop && !pop.contains(e.target) && !e.target.closest('.g-seat')) closePopover();
+export function initEdit(options = {}) {
+  if (options.onDone) onDone = options.onDone;
+  // Close on a press outside. Seats and the selection bar manage the
+  // popover themselves, so presses there are left alone.
+  document.addEventListener('pointerdown', (e) => {
+    if (!pop || pop.contains(e.target)) return;
+    if (e.target.closest('.g-seat, [data-keeps-pop]')) return;
+    closeEditor();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closePopover();
+    if (e.key === 'Escape') closeEditor();
   });
+  window.addEventListener('resize', closeEditor);
+  document.getElementById('grid-wrap').addEventListener('scroll', closeEditor, { passive: true });
 }
 
-function closePopover() {
+export function isEditorOpen() {
+  return pop != null;
+}
+
+export function closeEditor() {
   pop?.remove();
   pop = null;
 }
 
-function openPopover(seatEl) {
-  closePopover();
-  const room = seatEl.dataset.room;
-  const seatNo = Number(seatEl.dataset.seat);
+export function openEditor(room, seatNo, anchor) {
+  closeEditor();
   const state = getState();
-  const entry = state.plan[room].find((en) => en.seat === seatNo);
+  const entry = findEntry(state, room, seatNo);
+  if (!entry) return;
   const student = entry.studentIdx != null ? state.students[entry.studentIdx] : null;
 
-  pop = document.createElement('div');
-  pop.className = 'edit-pop';
+  pop = el('div', 'edit-pop');
+  pop.setAttribute('role', 'dialog');
+  const heading = t('editTitle', { room, seat: seatNo });
+  pop.setAttribute('aria-label', heading);
+  pop.appendChild(el('h4', null, heading));
 
-  const idLabel = document.createElement('label');
-  idLabel.textContent = t('editId');
-  const idInput = document.createElement('input');
-  idInput.type = 'text';
-  idInput.value = student ? student.id : '';
+  const idInput = field(t('editId'), 'edit-id', student ? student.id : '');
+  const nameInput = field(t('editName'), 'edit-name', student ? student.rawName : '');
 
-  const nameLabel = document.createElement('label');
-  nameLabel.textContent = t('editName');
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.value = student ? student.rawName : '';
-
-  const actions = document.createElement('div');
-  actions.className = 'edit-actions';
-  const save = button(t('editSave'), () => {
+  const save = () => {
     const id = idInput.value.trim();
     const rawName = nameInput.value.trim();
-    if (!id && !rawName) { closePopover(); return; }
-    update((s) => {
-      const en = s.plan[room].find((x) => x.seat === seatNo);
-      if (en.studentIdx != null) {
-        const st = s.students[en.studentIdx];
-        st.id = id;
-        st.rawName = rawName;
-        st.name = formatLongName(rawName);
-      } else {
-        s.students.push({ id, rawName, name: formatLongName(rawName) });
-        en.studentIdx = s.students.length - 1;
-      }
-    });
-    closePopover();
-  });
-  const cancel = button(t('editCancel'), closePopover);
-  actions.appendChild(save);
-  actions.appendChild(cancel);
+    if (id || rawName) saveSeatStudent(room, seatNo, id, rawName);
+    closeEditor();
+    onDone();
+  };
 
-  pop.appendChild(idLabel);
-  pop.appendChild(idInput);
-  pop.appendChild(nameLabel);
-  pop.appendChild(nameInput);
+  const actions = el('div', 'edit-actions');
+  actions.appendChild(button(t('editCancel'), 'btn-ghost small', closeEditor));
+  actions.appendChild(button(t('editSave'), 'btn-primary small', save));
+  pop.appendChild(actions);
 
   if (student) {
-    const clear = button(t('editRemove'), () => {
-      update((s) => {
-        const en = s.plan[room].find((x) => x.seat === seatNo);
-        en.studentIdx = null;
-      });
-      closePopover();
-    });
-    clear.classList.add('danger');
-    const clearRow = document.createElement('div');
-    clearRow.className = 'edit-actions';
-    clearRow.appendChild(clear);
-    pop.appendChild(actions);
+    const clearRow = el('div', 'edit-actions');
+    clearRow.appendChild(button(t('editRemove'), 'btn-soft small danger', () => {
+      clearSeat(room, seatNo);
+      closeEditor();
+      onDone();
+    }));
     pop.appendChild(clearRow);
-  } else {
-    pop.appendChild(actions);
   }
 
   document.body.appendChild(pop);
-  const rect = seatEl.getBoundingClientRect();
-  const popW = 230;
-  let left = window.scrollX + rect.left + rect.width / 2 - popW / 2;
-  left = Math.max(8, Math.min(left, window.scrollX + document.documentElement.clientWidth - popW - 8));
-  pop.style.left = `${left}px`;
-  pop.style.top = `${window.scrollY + rect.bottom + 6}px`;
+  place(anchor);
   idInput.focus();
 
-  [idInput, nameInput].forEach((inp) =>
-    inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') save.click(); }));
+  [idInput, nameInput].forEach((input) =>
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') save(); }));
+
+  function field(label, id, value) {
+    const l = el('label', null, label);
+    l.htmlFor = id;
+    const input = el('input');
+    input.type = 'text';
+    input.id = id;
+    input.autocomplete = 'off';
+    input.value = value;
+    pop.appendChild(l);
+    pop.appendChild(input);
+    return input;
+  }
 }
 
-function button(label, onClick) {
-  const b = document.createElement('button');
+// Below the anchor if it fits, above otherwise; clamped to the viewport.
+// Phones get the bottom-sheet layout from CSS instead.
+function place(anchor) {
+  if (matchMedia('(max-width: 720px)').matches) return;
+  const w = pop.offsetWidth;
+  const h = pop.offsetHeight;
+  const vw = document.documentElement.clientWidth;
+  const vh = window.innerHeight;
+  const r = anchor
+    ? anchor.getBoundingClientRect()
+    : { left: vw / 2, width: 0, top: vh / 2 - h / 2, bottom: vh / 2 - h / 2 - 8 };
+  let left = r.left + r.width / 2 - w / 2;
+  left = Math.max(8, Math.min(left, vw - w - 8));
+  let top = r.bottom + 8;
+  if (top + h > vh - 8) top = r.top - h - 8;
+  top = Math.max(8, Math.min(top, vh - h - 8));
+  pop.style.left = `${left}px`;
+  pop.style.top = `${top}px`;
+}
+
+function button(label, className, onClick) {
+  const b = el('button', className, label);
   b.type = 'button';
-  b.className = 'btn-secondary';
-  b.textContent = label;
   b.addEventListener('click', onClick);
   return b;
 }

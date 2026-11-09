@@ -326,7 +326,7 @@ function normalizeSettings(src, rooms) {
 
   const rawFields = src.cellFields && typeof src.cellFields === 'object' ? src.cellFields : {};
   const cellFields = { id: !!rawFields.id, name: !!rawFields.name, seat: !!rawFields.seat };
-  // All-false would make the plan unbuildable (see validate() in main.js).
+  // All-false would make the plan unbuildable (see stepIssue() in wizard.js).
   settings.cellFields = cellFields.id || cellFields.name || cellFields.seat
     ? cellFields
     : { ...DEFAULT_CELL_FIELDS };

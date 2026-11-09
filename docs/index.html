@@ -2,180 +2,315 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f4ee">
   <title>Sınav Yerleşim Planı</title>
   <meta name="description" content="Derslik oturma planı oluşturucu — tarayıcıda çalışır, veri sunucuya gönderilmez.">
-  <link rel="icon" type="image/svg+xml" href="assets/bee.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/favicon-64.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/print.css" media="print">
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand">
-        <img src="assets/bee.svg" alt="" class="brand-mark" width="34" height="34">
-        <div>
-          <h1 data-i18n="appTitle">Sınav Yerleşim Planı</h1>
-          <p class="tagline" data-i18n="tagline">Derslik oturma planı oluşturucu</p>
+  <!-- Inline icon sprite: <svg class="ic"><use href="#i-name"/></svg> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 18l-6-6 6-6"/></symbol>
+      <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+      <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M4 15v3.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V15"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+      <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 4h4v4M4 20L20 4M20 16v4h-4M14.5 14.5L20 20M4 4l5 5"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M4 19.5h16"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></symbol>
+      <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 5 9h14a1.5 1.5 0 0 1 1.5 1.5v5A1.5 1.5 0 0 1 19 17h-2"/><path d="M7 14h10v6H7z"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <div class="window">
+
+      <!-- ============ Top strip: mascot, steps, language ============ -->
+      <header class="win-top">
+        <div class="brand">
+          <img src="assets/bee.webp" alt="" class="brand-bee" width="40" height="40">
+          <span class="brand-name" data-i18n="appTitle">Sınav Yerleşim Planı</span>
         </div>
-      </div>
-      <button id="lang-toggle" class="lang-toggle" type="button" data-i18n="langLabel">EN</button>
-    </div>
-  </header>
 
-  <main>
-    <!-- ===================== SETUP ===================== -->
-    <section id="setup" class="card">
-      <h2 data-i18n="setupTitle">Plan Ayarları</h2>
+        <nav class="stepper" data-i18n-aria="stepsLabel" aria-label="Adımlar">
+          <ol id="stepper">
+            <li data-step-item="1"><button type="button" class="step-btn" data-go="1"><span class="step-num"><span class="n">1</span><svg class="ic"><use href="#i-check"/></svg></span><span class="step-label" data-i18n="stepExam">Sınav ve öğrenciler</span></button></li>
+            <li data-step-item="2"><button type="button" class="step-btn" data-go="2"><span class="step-num"><span class="n">2</span><svg class="ic"><use href="#i-check"/></svg></span><span class="step-label" data-i18n="stepRooms">Derslikler</span></button></li>
+            <li data-step-item="3"><button type="button" class="step-btn" data-go="3"><span class="step-num"><span class="n">3</span><svg class="ic"><use href="#i-check"/></svg></span><span class="step-label" data-i18n="stepPlan">Yerleşim</span></button></li>
+            <li data-step-item="4"><button type="button" class="step-btn" data-go="4"><span class="step-num"><span class="n">4</span><svg class="ic"><use href="#i-check"/></svg></span><span class="step-label" data-i18n="stepExport">İndir ve kaydet</span></button></li>
+          </ol>
+        </nav>
+        <p class="stepper-compact" id="stepper-compact"></p>
 
-      <p id="session-banner" class="banner hidden">
+        <div class="top-end">
+          <button id="lang-toggle" class="lang-pill" type="button" data-i18n="langLabel">EN</button>
+        </div>
+        <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      </header>
+
+      <div id="session-notice" class="notice" hidden>
         <span data-i18n="sessionRestored">Önceki oturum geri yüklendi.</span>
-        <button type="button" class="banner-link" data-start-fresh data-i18n="startFresh"></button>
-        <button type="button" class="banner-x" id="session-dismiss" data-i18n="sessionDismiss"></button>
-      </p>
-
-      <div class="field">
-        <label for="exam-name" data-i18n="examName">Sınav adı</label>
-        <input id="exam-name" type="text" data-i18n-placeholder="examNamePh" autocomplete="off">
+        <button type="button" class="link-btn danger" data-start-fresh data-i18n="startFresh"></button>
+        <button type="button" class="icon-btn" id="session-dismiss" data-i18n-aria="close"><svg class="ic"><use href="#i-x"/></svg></button>
       </div>
 
-      <fieldset class="field">
-        <legend data-i18n="studentsTitle">Öğrenci Listesi</legend>
-        <div class="tabs" role="tablist">
-          <button type="button" class="tab active" data-input-tab="paste" data-i18n="pasteTab">Ninova’dan yapıştır</button>
-          <button type="button" class="tab" data-input-tab="txt" data-i18n="fileTab">.txt dosyası</button>
-          <button type="button" class="tab" data-input-tab="xlsx" data-i18n="excelTab">Excel / CSV</button>
-        </div>
-        <div class="tab-panel" data-input-panel="paste">
-          <textarea id="paste-area" rows="6" spellcheck="false" data-i18n-placeholder="pastePh"></textarea>
-        </div>
-        <div class="tab-panel hidden" data-input-panel="txt">
-          <label class="dropzone" id="txt-drop">
-            <input type="file" id="txt-file" accept=".txt,text/plain" hidden>
-            <span data-i18n="fileHint">Dosya seçin veya buraya bırakın</span>
-          </label>
-        </div>
-        <div class="tab-panel hidden" data-input-panel="xlsx">
-          <label class="dropzone" id="xlsx-drop">
-            <input type="file" id="xlsx-file" accept=".xlsx,.csv,.tsv" hidden>
-            <span data-i18n="fileHint">Dosya seçin veya buraya bırakın</span>
-          </label>
-          <p class="hint" data-i18n="xlsxColsHint"></p>
-        </div>
-        <p id="student-status" class="status muted" data-i18n="noStudents">Henüz öğrenci listesi yüklenmedi</p>
-      </fieldset>
+      <main class="win-body" id="win-body">
 
-      <fieldset class="field">
-        <legend data-i18n="roomsTitle">Derslikler</legend>
-        <p class="hint" data-i18n="roomsHint"></p>
-        <div id="room-picker" class="room-picker"></div>
-        <label class="check">
-          <input type="checkbox" id="custom-cap">
-          <span data-i18n="customCap">Dersliklere özel kontenjan kullan</span>
-        </label>
-        <div id="cap-editor" class="cap-editor hidden"></div>
-        <p id="capacity-summary" class="status muted"></p>
-      </fieldset>
-
-      <fieldset class="field options-row">
-        <legend data-i18n="optionsTitle">Seçenekler</legend>
-        <div class="option-col">
-          <label for="seed" data-i18n="seed">Rastgelelik tohumu</label>
-          <input id="seed" type="text" inputmode="numeric" pattern="[0-9]*" data-i18n-placeholder="seedPh">
-          <p class="hint" data-i18n="seedHint"></p>
-        </div>
-        <div class="option-col">
-          <span class="label-like" data-i18n="cellFields">Koltuk kutusunda gösterilecekler</span>
-          <label class="check"><input type="checkbox" id="field-id" checked><span data-i18n="fieldId">Öğrenci No</span><b class="fo" data-fo="id"></b></label>
-          <label class="check"><input type="checkbox" id="field-name" checked><span data-i18n="fieldName">Ad Soyad</span><b class="fo" data-fo="name"></b></label>
-          <label class="check"><input type="checkbox" id="field-seat"><span data-i18n="fieldSeat">Sıra No</span><b class="fo" data-fo="seat"></b></label>
-          <p class="hint" data-i18n="cellFieldsHint"></p>
-        </div>
-      </fieldset>
-
-      <fieldset class="field template-box" id="template-box">
-        <legend data-i18n="templateTitle">Şablon ve Oturum</legend>
-        <p class="hint" data-i18n="templateHint"></p>
-        <div class="tpl-row">
-          <button type="button" class="btn-export" id="tpl-save" data-i18n="tplSave"></button>
-          <button type="button" class="btn-export" id="tpl-copy-code" data-i18n="tplCopyCode"></button>
-          <button type="button" class="btn-export" id="tpl-copy-link" data-i18n="tplCopyLink"></button>
-        </div>
-        <div class="tpl-row">
-          <button type="button" class="btn-export" id="tpl-load" data-i18n="tplLoad"></button>
-          <button type="button" class="btn-export" id="tpl-paste-toggle" data-i18n="tplPasteCode"></button>
-          <input type="file" id="tpl-file" accept=".json,application/json" hidden>
-        </div>
-        <div class="tpl-code hidden" id="tpl-code-row">
-          <input type="text" id="tpl-code" spellcheck="false" autocomplete="off" data-i18n-placeholder="tplPastePh">
-          <button type="button" class="btn-secondary" id="tpl-apply" data-i18n="tplApply"></button>
-        </div>
-        <p class="hint" data-i18n="tplDropHint"></p>
-        <div class="tpl-reset">
-          <button type="button" class="btn-danger" data-start-fresh data-i18n="startFresh"></button>
-          <span class="hint" data-i18n="sessionHint"></span>
-        </div>
-      </fieldset>
-
-      <button id="generate" class="btn-primary" type="button" data-i18n="generate">Yerleşim Planı Oluştur</button>
-      <p id="setup-error" class="status error hidden"></p>
-    </section>
-
-    <!-- ===================== PLAN ===================== -->
-    <section id="plan" class="card hidden">
-      <div class="plan-header">
-        <h2 data-i18n="planTitle">Yerleşim Planı</h2>
-        <p id="seed-info" class="status muted"></p>
-      </div>
-
-      <div class="plan-toolbar">
-        <div id="room-tabs" class="tabs" role="tablist"></div>
-        <div class="toolbar-right">
-          <div class="toggle-group" id="live-toggles">
-            <label class="check"><input type="checkbox" id="live-id" checked><span data-i18n="fieldId">Öğrenci No</span><b class="fo" data-fo="id"></b></label>
-            <label class="check"><input type="checkbox" id="live-name" checked><span data-i18n="fieldName">Ad Soyad</span><b class="fo" data-fo="name"></b></label>
-            <label class="check"><input type="checkbox" id="live-seat"><span data-i18n="fieldSeat">Sıra No</span><b class="fo" data-fo="seat"></b></label>
+        <!-- ============ Step 1: exam & students ============ -->
+        <section class="step step-students" data-step="1">
+          <div class="step-head">
+            <div>
+              <h2 tabindex="-1" data-i18n="s1Title">Sınav ve öğrenciler</h2>
+              <p class="step-sub" data-i18n="s1Sub"></p>
+            </div>
+            <button type="button" class="btn-soft" id="tpl-open">
+              <svg class="ic"><use href="#i-file"/></svg><span data-i18n="tplLoadOpen">Şablon yükle</span>
+            </button>
           </div>
-          <button id="regenerate" class="btn-secondary" type="button" data-i18n="regenerate">Yeniden Karıştır</button>
-        </div>
-      </div>
 
-      <p id="room-meta" class="status muted"></p>
-      <div id="grid-wrap" class="grid-wrap"></div>
-      <p class="hint" data-i18n="dragHint"></p>
+          <div class="s1-layout">
+            <div class="panel s1-input">
+              <div class="field">
+                <label for="exam-name" data-i18n="examName">Sınav adı</label>
+                <input id="exam-name" type="text" autocomplete="off" data-i18n-placeholder="examNamePh">
+              </div>
 
-      <div class="exports">
-        <h3 data-i18n="exportsTitle">İndir</h3>
-        <div class="export-buttons">
-          <div class="export-group">
-            <span class="export-kind">PDF</span>
-            <button type="button" class="btn-export" id="exp-pdf-room" data-i18n="pdfRoom"></button>
-            <button type="button" class="btn-export" id="exp-pdf-all-id" data-i18n="pdfAllId"></button>
-            <button type="button" class="btn-export" id="exp-pdf-all-full" data-i18n="pdfAllFull"></button>
-            <button type="button" class="btn-export" id="exp-pdf-all-tutanak" data-i18n="pdfAllTutanak"></button>
-            <button type="button" class="btn-export" id="exp-pdf-roomlist" data-i18n="pdfRoomList"></button>
+              <div class="field grow">
+                <div class="field-row">
+                  <span class="label" data-i18n="studentsTitle">Öğrenci listesi</span>
+                  <div class="segmented" role="tablist">
+                    <button type="button" class="seg active" role="tab" aria-selected="true" data-input-tab="paste" data-i18n="pasteTab">Yapıştır</button>
+                    <button type="button" class="seg" role="tab" aria-selected="false" data-input-tab="file" data-i18n="fileTab">Dosya yükle</button>
+                  </div>
+                </div>
+                <div class="input-panel" data-input-panel="paste">
+                  <textarea id="paste-area" spellcheck="false" data-i18n-placeholder="pastePh"></textarea>
+                </div>
+                <div class="input-panel" data-input-panel="file" hidden>
+                  <label class="dropzone" id="student-drop">
+                    <input type="file" id="student-file" accept=".txt,.xlsx,.csv,.tsv,text/plain" hidden>
+                    <span class="dz-icon"><svg class="ic"><use href="#i-upload"/></svg></span>
+                    <span class="dz-title" data-i18n="fileHint">Dosya seçin veya buraya bırakın</span>
+                    <span class="dz-sub" data-i18n="fileTypes">.txt (Ninova) · .xlsx · .csv</span>
+                    <span class="dz-file" id="student-file-name"></span>
+                  </label>
+                  <p class="hint" data-i18n="xlsxColsHint"></p>
+                </div>
+              </div>
+
+              <p class="privacy"><svg class="ic"><use href="#i-lock"/></svg><span data-i18n="privacyNote"></span></p>
+            </div>
+
+            <div class="panel s1-preview">
+              <div class="panel-head">
+                <span class="label" data-i18n="previewTitle">Okunan öğrenciler</span>
+                <span class="count-pill" id="student-count">0</span>
+                <button type="button" class="link-btn" id="students-clear" data-i18n="clearList" hidden>Temizle</button>
+              </div>
+              <div class="student-list" id="student-list"></div>
+              <div class="empty-state" id="student-empty">
+                <img src="assets/bee.webp" alt="" width="84" height="84">
+                <p id="student-empty-text"></p>
+              </div>
+            </div>
           </div>
-          <div class="export-group">
-            <span class="export-kind">Excel</span>
-            <button type="button" class="btn-export" id="exp-xlsx-room" data-i18n="xlsxRoom"></button>
-            <button type="button" class="btn-export" id="exp-xlsx-roomlist" data-i18n="xlsxRoomList"></button>
-          </div>
-          <div class="export-group">
-            <span class="export-kind">&nbsp;</span>
-            <button type="button" class="btn-export btn-zip" id="exp-zip-all" data-i18n="zipAll"></button>
-            <button type="button" class="btn-export" id="exp-print" data-i18n="printPage"></button>
-          </div>
-        </div>
-        <p class="hint" data-i18n="zipHint"></p>
-      </div>
-    </section>
-  </main>
+        </section>
 
-  <footer class="site-footer">
-    <p data-i18n="footerNote"></p>
-  </footer>
+        <!-- ============ Step 2: classrooms ============ -->
+        <section class="step step-rooms" data-step="2" hidden>
+          <div class="step-head">
+            <div>
+              <h2 tabindex="-1" data-i18n="s2Title">Derslikler</h2>
+              <p class="step-sub" data-i18n="roomsHint"></p>
+            </div>
+          </div>
 
-  <div id="toast" class="toast hidden"></div>
+          <div class="s2-layout">
+            <div class="panel s2-rooms">
+              <div id="room-picker" class="room-picker"></div>
+            </div>
+
+            <aside class="panel s2-selected">
+              <div class="panel-head">
+                <span class="label" data-i18n="fillOrder">Doldurma sırası</span>
+              </div>
+              <div class="cap-meter">
+                <div class="meter" id="cap-meter"><span id="meter-fill"></span></div>
+                <p id="capacity-summary" class="meter-text"></p>
+              </div>
+              <ol id="selected-list" class="selected-list"></ol>
+              <p class="empty-hint" id="selected-empty" data-i18n="noRoomsYet"></p>
+              <p class="hint" id="cap-edit-hint" data-i18n="capEditHint"></p>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ============ Step 3: seating plan ============ -->
+        <section class="step step-plan" data-step="3" hidden>
+          <h2 class="sr-only" tabindex="-1" data-i18n="planTitle">Yerleşim planı</h2>
+          <div class="plan-toolbar">
+            <div id="room-tabs" class="room-tabs" role="tablist"></div>
+            <div class="plan-controls">
+              <div class="chip-group" role="group" data-i18n-aria="cellFields" data-i18n-title="cellFieldsHint">
+                <button type="button" class="toggle-chip" data-field="id" aria-pressed="true"><span data-i18n="fieldId">Öğrenci No</span><b class="fo" data-fo="id"></b></button>
+                <button type="button" class="toggle-chip" data-field="name" aria-pressed="true"><span data-i18n="fieldName">Ad Soyad</span><b class="fo" data-fo="name"></b></button>
+                <button type="button" class="toggle-chip" data-field="seat" aria-pressed="false"><span data-i18n="fieldSeat">Sıra No</span><b class="fo" data-fo="seat"></b></button>
+              </div>
+              <label class="seed-pill" data-i18n-title="seedHint">
+                <span data-i18n="seedShort">Tohum</span>
+                <input id="seed" type="text" inputmode="numeric" autocomplete="off" spellcheck="false">
+              </label>
+              <button type="button" id="regenerate" class="btn-soft">
+                <svg class="ic"><use href="#i-shuffle"/></svg><span class="regen-label" data-i18n="regenerate">Yeniden karıştır</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="grid-wrap" class="grid-wrap"></div>
+
+          <div class="sel-bar" id="sel-bar" data-keeps-pop>
+            <p id="sel-text" class="sel-text"></p>
+            <div class="sel-actions" id="sel-actions" hidden>
+              <button type="button" class="btn-soft small" id="sel-edit"><svg class="ic"><use href="#i-edit"/></svg><span id="sel-edit-label"></span></button>
+              <button type="button" class="btn-soft small danger" id="sel-clear"><svg class="ic"><use href="#i-trash"/></svg><span data-i18n="editRemove"></span></button>
+              <button type="button" class="icon-btn" id="sel-cancel" data-i18n-aria="editCancel"><svg class="ic"><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ Step 4: download & save ============ -->
+        <section class="step step-export" data-step="4" hidden>
+          <div class="s4-layout">
+            <div class="s4-main">
+              <div class="ready-card">
+                <img src="assets/bee.webp" alt="" class="ready-bee" width="88" height="88">
+                <div class="ready-text">
+                  <h2 tabindex="-1" data-i18n="s4Title">Plan hazır</h2>
+                  <p class="step-sub" id="ready-summary"></p>
+                </div>
+                <button type="button" class="btn-primary btn-zip" id="exp-zip-all">
+                  <svg class="ic"><use href="#i-download"/></svg><span data-i18n="zipAll">Tüm çıktılar (ZIP)</span>
+                </button>
+                <p class="hint ready-hint" data-i18n="zipHint"></p>
+              </div>
+
+              <div class="export-list">
+                <div class="export-row">
+                  <div class="export-info">
+                    <span class="export-name" data-i18n="expRoomTitle">Tek derslik</span>
+                    <select id="export-room" class="room-select" data-i18n-aria="expRoomTitle"></select>
+                  </div>
+                  <div class="export-actions">
+                    <button type="button" class="btn-chip" id="exp-pdf-room">PDF</button>
+                    <button type="button" class="btn-chip" id="exp-xlsx-room">Excel</button>
+                    <button type="button" class="btn-chip" id="exp-print"><svg class="ic"><use href="#i-print"/></svg><span data-i18n="printPage">Yazdır</span></button>
+                  </div>
+                </div>
+                <div class="export-row">
+                  <div class="export-info">
+                    <span class="export-name" data-i18n="expAllTitle">Tüm derslikler · PDF</span>
+                    <span class="export-desc" data-i18n="expAllDesc"></span>
+                  </div>
+                  <div class="export-actions">
+                    <button type="button" class="btn-chip" id="exp-pdf-all-id" data-i18n="expOnlyId">Yalnız numara</button>
+                    <button type="button" class="btn-chip" id="exp-pdf-all-full" data-i18n="expFull">Tam bilgi</button>
+                    <button type="button" class="btn-chip" id="exp-pdf-all-tutanak" data-i18n="expTutanak">Tutanaklı</button>
+                  </div>
+                </div>
+                <div class="export-row">
+                  <div class="export-info">
+                    <span class="export-name" data-i18n="expListTitle">Tek sayfa derslik listesi</span>
+                    <span class="export-desc" data-i18n="expListDesc"></span>
+                  </div>
+                  <div class="export-actions">
+                    <button type="button" class="btn-chip" id="exp-pdf-roomlist">PDF</button>
+                    <button type="button" class="btn-chip" id="exp-xlsx-roomlist">Excel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <aside class="panel s4-save">
+              <h3 data-i18n="saveTitle">Ayarları kaydet</h3>
+              <p class="hint" data-i18n="templateHint"></p>
+              <div class="out-field">
+                <label for="tpl-code-out" data-i18n="tplCodeLabel">Kod</label>
+                <div class="copy-row">
+                  <input id="tpl-code-out" type="text" readonly spellcheck="false">
+                  <button type="button" class="btn-soft small" id="tpl-copy-code"><svg class="ic"><use href="#i-copy"/></svg><span data-i18n="copy">Kopyala</span></button>
+                </div>
+              </div>
+              <div class="out-field">
+                <label for="tpl-link-out" data-i18n="tplLinkLabel">Bağlantı</label>
+                <div class="copy-row">
+                  <input id="tpl-link-out" type="text" readonly spellcheck="false">
+                  <button type="button" class="btn-soft small" id="tpl-copy-link"><svg class="ic"><use href="#i-link"/></svg><span data-i18n="copy">Kopyala</span></button>
+                </div>
+              </div>
+              <button type="button" class="btn-soft" id="tpl-save"><svg class="ic"><use href="#i-download"/></svg><span data-i18n="tplSave">Şablonu indir (.json)</span></button>
+              <p class="hint" data-i18n="tplJsonHint"></p>
+
+              <div class="fresh-box">
+                <p class="hint" data-i18n="sessionHint"></p>
+                <button type="button" class="btn-ghost danger" data-start-fresh><svg class="ic"><use href="#i-trash"/></svg><span data-i18n="startFresh"></span></button>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <!-- ============ Bottom bar: back / status / next ============ -->
+      <footer class="win-bottom">
+        <button type="button" id="nav-back" class="btn-ghost nav-back"><svg class="ic"><use href="#i-left"/></svg><span data-i18n="back">Geri</span></button>
+        <p id="step-status" class="step-status" aria-live="polite"></p>
+        <button type="button" id="nav-next" class="btn-primary nav-next"><span id="nav-next-label"></span><svg class="ic"><use href="#i-right"/></svg></button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Load a template: file or code -->
+  <dialog id="tpl-dialog" class="dialog">
+    <div class="dialog-head">
+      <h3 data-i18n="tplLoadTitle">Şablon yükle</h3>
+      <button type="button" class="icon-btn" data-close-dialog data-i18n-aria="close"><svg class="ic"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="hint" data-i18n="tplLoadHint"></p>
+    <label class="dropzone compact" id="tpl-drop">
+      <input type="file" id="tpl-file" accept=".json,application/json" hidden>
+      <span class="dz-icon"><svg class="ic"><use href="#i-file"/></svg></span>
+      <span class="dz-title" data-i18n="tplFileHint"></span>
+    </label>
+    <div class="or"><span data-i18n="or">veya</span></div>
+    <label for="tpl-code" class="label" data-i18n="tplPasteCode">Kod yapıştır</label>
+    <div class="copy-row">
+      <input id="tpl-code" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="tplPastePh">
+      <button type="button" class="btn-primary small" id="tpl-apply" data-i18n="tplApply">Uygula</button>
+    </div>
+  </dialog>
+
+  <!-- Confirmation -->
+  <dialog id="confirm-dialog" class="dialog dialog-small">
+    <p id="confirm-text" class="confirm-text"></p>
+    <div class="dialog-actions">
+      <button type="button" class="btn-ghost" id="confirm-cancel" data-i18n="editCancel">Vazgeç</button>
+      <button type="button" class="btn-primary" id="confirm-ok"></button>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="vendor/jspdf.umd.min.js" defer></script>
   <script src="vendor/exceljs.min.js" defer></script>
