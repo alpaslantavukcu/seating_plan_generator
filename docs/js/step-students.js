@@ -56,6 +56,15 @@ export function hydrateStudents(s) {
   document.getElementById('exam-name').value = s.examName;
 }
 
+// A template replaced the student list: the pasted text or file name on
+// screen no longer describes it.
+export function resetStudentInputs() {
+  document.getElementById('paste-area').value = '';
+  lastPaste = '';
+  fileName = '';
+  parseFailed = false;
+}
+
 function replaceStudents(students) {
   update((s) => {
     s.students = students;

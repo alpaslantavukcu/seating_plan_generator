@@ -244,10 +244,18 @@
             </div>
 
             <aside class="panel s4-save">
-              <h3 data-i18n="saveTitle">Ayarları kaydet</h3>
+              <h3 data-i18n="saveTitle">Şablonu kaydet</h3>
               <p class="hint" data-i18n="templateHint"></p>
+              <label class="check-row">
+                <input type="checkbox" id="tpl-include-students" checked>
+                <span id="tpl-include-label"></span>
+              </label>
+              <p class="hint" id="tpl-students-hint" data-i18n="tplStudentsHint"></p>
               <div class="out-field">
-                <label for="tpl-code-out" data-i18n="tplCodeLabel">Kod</label>
+                <div class="out-label">
+                  <label for="tpl-code-out" data-i18n="tplCodeLabel">Kod</label>
+                  <span class="out-len" id="tpl-code-len"></span>
+                </div>
                 <div class="copy-row">
                   <input id="tpl-code-out" type="text" readonly spellcheck="false">
                   <button type="button" class="btn-soft small" id="tpl-copy-code"><svg class="ic"><use href="#i-copy"/></svg><span data-i18n="copy">Kopyala</span></button>

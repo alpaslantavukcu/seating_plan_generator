@@ -8,7 +8,7 @@ import { getState, set, subscribe } from './store.js';
 import { t, applyLang, toggleLang } from './i18n.js';
 import { saveSessionSoon, saveSessionNow, loadSession, clearSession, onStorageError } from './persist.js';
 import { initWizard, renderChrome, clampStep } from './wizard.js';
-import { initStudents, renderStudents, hydrateStudents } from './step-students.js';
+import { initStudents, renderStudents, hydrateStudents, resetStudentInputs } from './step-students.js';
 import { initRooms, renderRooms } from './step-rooms.js';
 import { initPlan, renderPlan, ensurePlan } from './step-plan.js';
 import { initExport, renderExport } from './step-export.js';
@@ -66,7 +66,8 @@ async function init() {
   initPlan(classrooms);
   initExport(classrooms);
   initTemplateUi(classrooms, {
-    onApplied: () => {
+    onApplied: ({ studentsReplaced }) => {
+      if (studentsReplaced) resetStudentInputs();
       hydrateStudents(getState());
       clampStep();
     },
@@ -84,9 +85,12 @@ async function init() {
   restoreSession(classrooms);
   clampStep();
   render();
-  await applyHashTemplate();
+  const fromLink = await applyHashTemplate();
   // Last, so restoring and hydrating above do not immediately rewrite storage.
   startAutoSave();
+  // The link is stripped from the address bar, so save what it brought now:
+  // a refresh must not lose it.
+  if (fromLink) saveSessionNow(getState());
 }
 
 init();

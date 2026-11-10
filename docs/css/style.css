@@ -950,6 +950,23 @@ button:focus-visible, .lang-pill:focus-visible, select:focus-visible { outline: 
 .s4-save .hint { margin: 0; }
 .out-field { display: flex; flex-direction: column; gap: 5px; }
 .out-field label { font-size: 0.78rem; font-weight: 650; color: var(--ink-2); }
+.out-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.out-len { font-size: 0.74rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  font-size: 0.86rem;
+  font-weight: 650;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.check-row input { width: 18px; height: 18px; margin: 0; flex: none; accent-color: var(--sage-600); cursor: pointer; }
+.check-row:has(input:disabled) { opacity: 0.55; cursor: default; }
 .copy-row { display: flex; gap: 8px; }
 .copy-row input { flex: 1; min-width: 0; padding: 8px 11px; font-family: var(--mono); font-size: 0.78rem; background: var(--surface); }
 .s4-save > .btn-soft { align-self: flex-start; }

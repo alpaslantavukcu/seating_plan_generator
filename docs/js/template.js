@@ -1,28 +1,43 @@
-// Plan templates: a portable, settings-only description of a setup — exam name,
-// classrooms and their fill order, custom capacities, seed, seat-cell fields
-// and their order. Templates deliberately carry NO student data and NO
-// generated plan.
+// Plan templates: a portable description of a setup — exam name, classrooms
+// and their fill order, custom capacities, seed, seat-cell fields and their
+// order, and optionally the student list (a class keeps the same students all
+// semester). Templates never carry the generated plan.
 //
 // Two shapes, on purpose:
 //   * the .json file — readable, carries everything including the exam name;
 //   * the code / link — a packed binary payload that carries everything EXCEPT
-//     the exam name, because the name is the bulk of the bytes and a template
-//     exists to be reused under a different exam anyway.
+//     the exam name, because a template exists to be reused under a different
+//     exam anyway. Settings alone make an ~11-character code; a student list
+//     is deflate-compressed into a block at the end (code format 3).
 //
 // Pure module: no DOM, no i18n. Warnings come back as {key, params} for the
 // caller to translate.
 
 import { DEFAULT_CELL_FIELDS, DEFAULT_CELL_ORDER, CELL_KEYS } from './store.js';
+import { formatLongName } from './parse.js';
 
 export const TEMPLATE_TYPE = 'seating-plan-template';
 export const TEMPLATE_VERSION = 1;
 
 const CODE_PREFIX = 'SP1-';
 // Format 1: flags, rooms, capacities, seed. Format 2 adds one byte after the
-// flags for the order of the seat-cell lines. Both are still decoded.
+// flags for the order of the seat-cell lines. Format 3 is format 2 plus a
+// student-list block, and is only written when a list is included, so
+// settings-only codes stay exactly what they were. All three are decoded.
 const CODE_FORMAT_V1 = 1;
 const CODE_FORMAT = 2;
+const CODE_FORMAT_STUDENTS = 3;
 const MAX_NAME_LENGTH = 200;
+
+// Limits for student data read from a file or code: nothing in one is trusted.
+const MAX_STUDENTS = 5000;
+const MAX_STUDENT_ID = 40;
+const MAX_STUDENT_NAME = 200;
+const MAX_STUDENT_BLOCK = 1 << 20; // bytes, compressed or not
+
+// First byte of the student block: how the "id<TAB>name" lines are stored.
+const STUDENTS_RAW = 0;
+const STUDENTS_DEFLATE = 1;
 
 // APPEND ONLY — NEVER REORDER OR REMOVE.
 // A room's position here is its one-byte id inside every code ever shared, so
@@ -43,6 +58,7 @@ const FLAG_FIELD_ID = 2;
 const FLAG_FIELD_NAME = 4;
 const FLAG_FIELD_SEAT = 8;
 const FLAG_SEED = 16;
+const FLAG_STUDENTS = 32;
 
 const NAME_ESCAPE = 0x80; // set on a room byte: an inline UTF-8 name follows
 
@@ -65,14 +81,20 @@ export function extractSettings(state) {
   };
 }
 
-export function buildTemplate(settings, classroomsVersion) {
-  return {
+// `students` is optional; when given, the file lists them as {id, name} with
+// the full name as it was read (the seat cell shortens long names itself).
+export function buildTemplate(settings, classroomsVersion, students = null) {
+  const template = {
     type: TEMPLATE_TYPE,
     version: TEMPLATE_VERSION,
     savedAt: new Date().toISOString(),
     classroomsVersion: classroomsVersion ?? null,
     settings,
   };
+  if (students && students.length) {
+    template.students = students.map((st) => ({ id: st.id, name: st.rawName }));
+  }
+  return template;
 }
 
 export function serializeTemplate(template) {
@@ -147,8 +169,28 @@ function orderIndex(order) {
 
 // Packs everything but the exam name. Deterministic: the same settings always
 // produce the same code, and any difference — including room order, which is
-// fill order — produces a different one.
+// fill order — produces a different one. Settings only (format 2).
 export function encodeSettings(settings) {
+  return sealCode(settingsBytes(settings, false));
+}
+
+// Settings plus, when `students` is non-empty, the student list (format 3).
+// Async because compression is. Codes with students decode the same in every
+// browser, though two browsers may compress to different strings.
+export async function encodeTemplateCode(settings, students) {
+  if (!students || !students.length) return encodeSettings(settings);
+  const out = settingsBytes(settings, true);
+  const block = await packStudents(students);
+  for (const byte of block) out.push(byte);
+  return sealCode(out);
+}
+
+function sealCode(out) {
+  out.push(checksum(out));
+  return CODE_PREFIX + bytesToBase64Url(Uint8Array.from(out));
+}
+
+function settingsBytes(settings, withStudents) {
   const rooms = Array.isArray(settings.selectedRooms) ? settings.selectedRooms : [];
   if (rooms.length > 255) throw new Error('too many classrooms to encode');
 
@@ -157,13 +199,14 @@ export function encodeSettings(settings) {
   const seed = digitsOnly(settings.seed);
   const useCustomCapacities = !!settings.useCustomCapacities;
 
-  const out = [CODE_FORMAT];
+  const out = [withStudents ? CODE_FORMAT_STUDENTS : CODE_FORMAT];
   out.push(
     (useCustomCapacities ? FLAG_CUSTOM_CAPS : 0)
     | (fields.id ? FLAG_FIELD_ID : 0)
     | (fields.name ? FLAG_FIELD_NAME : 0)
     | (fields.seat ? FLAG_FIELD_SEAT : 0)
-    | (seed ? FLAG_SEED : 0),
+    | (seed ? FLAG_SEED : 0)
+    | (withStudents ? FLAG_STUDENTS : 0),
   );
   out.push(orderIndex(order));
 
@@ -189,15 +232,99 @@ export function encodeSettings(settings) {
   }
 
   if (seed) pushVarint(out, Number(seed) >>> 0);
+  return out;
+}
 
-  out.push(checksum(out));
-  return CODE_PREFIX + bytesToBase64Url(Uint8Array.from(out));
+/* ---------- student list block ---------- */
+
+// One "id<TAB>name" line per student. Tabs and line breaks inside a field
+// would break the framing, so they become spaces.
+function studentLines(students) {
+  const clean = (v) => String(v ?? '').replace(/[\t\r\n]+/g, ' ').trim();
+  return students.map((st) => `${clean(st.id)}\t${clean(st.rawName)}`).join('\n');
+}
+
+// Runs bytes through a (de)compression stream. Reading stops past `limit`, so
+// a hostile code cannot inflate into gigabytes before it is rejected.
+async function streamThrough(bytes, transform, limit = Infinity) {
+  const reader = new Blob([bytes]).stream().pipeThrough(transform).getReader();
+  const chunks = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.length;
+    if (total > limit) {
+      await reader.cancel();
+      throw new Error('student list too large');
+    }
+    chunks.push(value);
+  }
+  const out = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return out;
+}
+
+// [mode byte][varint length][payload]. Deflate when the browser has it and it
+// actually helps; plain UTF-8 otherwise.
+async function packStudents(students) {
+  const raw = new TextEncoder().encode(studentLines(students));
+  let mode = STUDENTS_RAW;
+  let payload = raw;
+  if (typeof CompressionStream === 'function') {
+    const packed = await streamThrough(raw, new CompressionStream('deflate-raw'));
+    if (packed.length < raw.length) {
+      mode = STUDENTS_DEFLATE;
+      payload = packed;
+    }
+  }
+  if (payload.length > MAX_STUDENT_BLOCK) throw new Error('student list too large for a code');
+  const out = [mode];
+  pushVarint(out, payload.length);
+  for (const byte of payload) out.push(byte);
+  return out;
+}
+
+async function unpackStudents(mode, payload) {
+  let raw = payload;
+  if (mode === STUDENTS_DEFLATE) {
+    if (typeof DecompressionStream !== 'function') throw new Error('this browser cannot read compressed codes');
+    raw = await streamThrough(payload, new DecompressionStream('deflate-raw'), 4 * MAX_STUDENT_BLOCK);
+  } else if (mode !== STUDENTS_RAW) {
+    throw new Error('unknown student block format');
+  }
+  const lines = new TextDecoder('utf-8', { fatal: true }).decode(raw).split('\n');
+  return lines.map((line) => {
+    const tab = line.indexOf('\t');
+    return tab === -1 ? { id: line, name: '' } : { id: line.slice(0, tab), name: line.slice(tab + 1) };
+  });
+}
+
+// Student lists from a file or code: [{id, name}] -> [{id, rawName, name}],
+// dropping rows without an ID and capping sizes. Returns null for "no list".
+export function normalizeStudents(raw) {
+  if (!Array.isArray(raw)) return null;
+  const students = [];
+  for (const item of raw) {
+    if (students.length >= MAX_STUDENTS) break;
+    if (!item || typeof item !== 'object') continue;
+    const id = String(item.id ?? '').trim().slice(0, MAX_STUDENT_ID);
+    const rawName = String(item.name ?? item.rawName ?? '').trim().slice(0, MAX_STUDENT_NAME);
+    if (!id) continue;
+    students.push({ id, rawName, name: formatLongName(rawName) });
+  }
+  return students.length ? students : null;
 }
 
 // Accepts a bare code, a prefixed one, or either with stray whitespace from a
-// chat or email client. Returns {settings, warnings} with NO examName key, so
-// applying it leaves whatever the user already typed alone.
-export function decodeSettings(code, rooms) {
+// chat or email client. Resolves to {settings, warnings, students} with NO
+// examName key, so applying it leaves whatever the user already typed alone;
+// `students` is null unless the code carries a list.
+export async function decodeSettings(code, rooms) {
   const cleaned = String(code ?? '').trim().replace(/\s+/g, '');
   const body = cleaned.startsWith(CODE_PREFIX) ? cleaned.slice(CODE_PREFIX.length) : cleaned;
   if (!body) throw new Error('empty template code');
@@ -216,7 +343,7 @@ export function decodeSettings(code, rooms) {
   };
 
   const format = readByte();
-  if (format !== CODE_FORMAT_V1 && format !== CODE_FORMAT) throw new Error('unsupported code format');
+  if (![CODE_FORMAT_V1, CODE_FORMAT, CODE_FORMAT_STUDENTS].includes(format)) throw new Error('unsupported code format');
   const flags = readByte();
   let cellOrder = DEFAULT_CELL_ORDER;
   if (format >= 2) {
@@ -257,9 +384,20 @@ export function decodeSettings(code, rooms) {
     if (cursor.i > end) throw new Error('truncated code');
   }
 
+  const hasStudents = !!(flags & FLAG_STUDENTS);
+  if (hasStudents !== (format === CODE_FORMAT_STUDENTS)) throw new Error('bad student flag in code');
+  let rawStudents = null;
+  if (hasStudents) {
+    const mode = readByte();
+    const length = readVarint(bytes, cursor);
+    if (length > MAX_STUDENT_BLOCK || cursor.i + length > end) throw new Error('truncated code');
+    rawStudents = await unpackStudents(mode, bytes.subarray(cursor.i, cursor.i + length));
+    cursor.i += length;
+  }
+
   if (cursor.i !== end) throw new Error('trailing bytes in code');
 
-  return normalizeSettings({
+  const result = normalizeSettings({
     selectedRooms,
     useCustomCapacities,
     customCapacities,
@@ -271,6 +409,8 @@ export function decodeSettings(code, rooms) {
     },
     cellOrder,
   }, rooms);
+  result.students = normalizeStudents(rawStudents);
+  return result;
 }
 
 /* ---------- validation ---------- */
@@ -345,5 +485,7 @@ export function validateTemplate(raw, rooms) {
   const src = raw.settings;
   if (!src || typeof src !== 'object') throw new Error('template has no settings');
 
-  return normalizeSettings({ examName: '', ...src }, rooms);
+  const result = normalizeSettings({ examName: '', ...src }, rooms);
+  result.students = normalizeStudents(raw.students);
+  return result;
 }
