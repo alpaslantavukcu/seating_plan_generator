@@ -1,6 +1,13 @@
 # Web Uygulaması (GitHub Pages)
 
-`docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır: Ninova'dan öğrenci listesini yapıştırın (veya .txt / .xlsx / .csv yükleyin), derslikleri seçin, planı oluşturun; ardından sürükle-bırak ile yer değiştirin, öğrencileri düzenleyin ve PDF / Excel çıktılarını indirin. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
+`docs/` klasörü, kurulum gerektirmeyen ve tamamen tarayıcıda çalışan statik bir web uygulamasıdır. Uygulama, sayfa kaydırmadan adım adım ilerleyen tek bir pencereden oluşur:
+
+1. **Sınav ve öğrenciler** — sınav adı ve öğrenci listesi (Ninova'dan yapıştırın veya .txt / .xlsx / .csv yükleyin). Kayıtlı bir şablon da buradan yüklenir.
+2. **Derslikler** — derslikleri seçin (seçim sırası doldurma sırasıdır), sırayı değiştirin, gerekirse kontenjanı düşürün.
+3. **Yerleşim** — plan oluşturulur. Bir koltuğa dokunup başka bir koltuğa dokunarak (dokunmatik ekranlarda da çalışır, derslikler arasında da) veya sürükle-bırak ile yer değiştirin; çift tıklayarak ya da seçim çubuğundaki **Düzenle** ile öğrenciyi düzenleyin.
+4. **İndir ve kaydet** — PDF / Excel çıktıları ve şablon (kod, bağlantı, .json).
+
+Bir sonraki adım, mevcut adım tamamlanınca açılır; eksik olan şey alt çubukta yazar. Pencere telefonda tam ekran açılır. Türkçe/İngilizce dil desteği vardır ve hiçbir veri sunucuya gönderilmez.
 
 Yayınlamak için: GitHub deposunda **Settings → Pages → Source: "Deploy from a branch" → `main` / `/docs`** seçin. Site `https://<kullanıcı>.github.io/<depo>/` adresinde yayınlanır. Derslik yerleşimleri `tools/convert_templates.py` betiği ile `docs/data/classrooms.json` dosyasına önceden dönüştürülür ve şablonlar ile `tutanak.pdf` `docs/templates/` altına kopyalanır; `configuration.json`, şablonlar veya tutanak değişirse betiği yeniden çalıştırıp sonucu commit'leyin.
 
@@ -21,21 +28,30 @@ Paylaşılmayan tek şey rastgele sayı üreteci: aynı tohum komut satırında 
 
 **Şablon**, bir kurulumu yeniden kullanılabilir hale getirir. Şablonda yalnızca ayarlar bulunur: derslik seçimi *ve doldurma sırası*, özel kontenjanlar, tohum ve koltuk kutusunda gösterilecek alanlar *ile sıraları*. Böylece aynı şablon farklı sınavlarda ve farklı öğrenci listeleriyle kullanılabilir. Üç şekilde taşınır:
 
-- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda Şablon kutusuna bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
-- **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Kod yapıştır** ile uygulanır.
+- **Şablonu indir (.json)** → saklanabilen, e-postayla gönderilebilen ve başka bir bilgisayarda 1. adımdaki **Şablon yükle** penceresine bırakılabilen okunabilir bir dosya. **Sınav adını taşıyan tek biçim budur.**
+- **Kodu kopyala** → mesajla paylaşılabilen `SP1-ARYCBge5YDU` gibi kısa, tek satırlık bir metin; **Şablon yükle** penceresindeki **Kod yapıştır** alanından uygulanır.
 - **Bağlantıyı kopyala** → aynı kodun URL'e gömülmüş hali (`…/#t=ARYCBge5YDU`); bağlantıyı açmak ayarları uygular.
 
 Kod ve bağlantı sınav adını bilerek dışarıda bırakır: sınav adı verinin büyük kısmını oluşturur ve şablon zaten başka bir sınavda kullanılmak içindir. Böylece tipik bir kod 11 karakter, bağlantının tamamı ise 60 karakterin altında kalır. Kodlama ikili (binary) ve sıkıştırılmış olduğundan hem belirlenimlidir (aynı ayarlar her zaman aynı kodu verir; derslik sırası dâhil en küçük fark kodu değiştirir) hem de kendini denetler: eksik veya yanlış yazılmış bir kod sessizce yanlış yorumlanmak yerine reddedilir.
 
 Şablon **öğrenci listesini ve oluşturulmuş planı asla içermez**. Bir şablon uygulandığında ayarlar değişir ve plan artık uyuşmadığı için temizlenir; yüklü öğrenci listesi olduğu gibi kalır, kod veya bağlantı ise yazdığınız sınav adına da dokunmaz. Şablonlar yerel `docs/data/classrooms.json` dosyasına göre doğrulanır: karşı bilgisayarda bulunmayan derslikler atlanır, kontenjanlar gerçek derslik kapasitesine düşürülür ve durum uyarı olarak bildirilir.
 
-**Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve **Her Şeyi Temizle** düğmesiyle silinir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
+**Oturum otomatik kaydı**, çalışılan oturumu — ayarlar, okunan öğrenci listesi ve sürükle-bırak ile yapılan yer değiştirmeler dâhil plan — tarayıcının `localStorage` alanına yazar; sayfa yenilense veya sekme yanlışlıkla kapansa bile hiçbir şey kaybolmaz. Geri dönüldüğünde pencere kalınan adımda açılır ve bir bilgi şeridi gösterilir. Hiçbir veri sunucuya gönderilmez, bilgisayarda kalır ve 4. adımdaki (veya bilgi şeridindeki) **Her şeyi temizle** düğmesiyle silinir. Koltuklarda elle değişiklik yapılmış bir planı sıfırlayacak bir ayar değişikliğinden önce onay istenir. Derslik yerleşimleri değişmişse kaydedilmiş plan otomatik olarak devre dışı bırakılır.
 
 ---
 
 # Web app (GitHub Pages)
 
-The `docs/` folder is a self-contained static site. To publish it:
+The `docs/` folder is a self-contained static site. The app is one window that moves through four steps, with no page scrolling:
+
+1. **Exam & students** — exam name and student list (paste from Ninova or upload .txt / .xlsx / .csv). A saved template is loaded here too.
+2. **Classrooms** — pick rooms (pick order is fill order), reorder them, lower a room's capacity if needed.
+3. **Seating** — the plan is generated. Tap a seat and then another to swap them (works on touch screens and across rooms), or drag and drop; double-click a seat, or use **Edit** in the selection bar, to edit a student.
+4. **Download & save** — the PDF / Excel outputs and the template (code, link, .json).
+
+The next step opens once the current one is complete, and the bottom bar says what is missing. On a phone the window fills the screen.
+
+To publish it:
 
 1. Push this repository to GitHub.
 2. In the repository: **Settings → Pages → Build and deployment → Source: "Deploy from a branch"**, then select branch **`main`** and folder **`/docs`**. Save.
@@ -62,8 +78,8 @@ To preview locally: `python3 -m http.server 8000 --directory docs` and open http
 
 **Templates** make a setup reusable. A template holds settings only — classroom selection *and fill order*, custom capacities, seed and the seat-cell fields *with their order* — so the same one serves different exams and different student lists. It can be moved three ways:
 
-- **Download template (.json)** → a readable file to keep, email or drop back onto the Template box on any machine. This is the only form that also carries the **exam name**.
-- **Copy code** → a short single-line string such as `SP1-ARYCBge5YDU` to paste into a message; **Paste code** applies it.
+- **Download template (.json)** → a readable file to keep, email or drop into the **Load template** dialog (step 1) on any machine. This is the only form that also carries the **exam name**.
+- **Copy code** → a short single-line string such as `SP1-ARYCBge5YDU` to paste into a message; the **Paste code** field in the **Load template** dialog applies it.
 - **Copy link** → the same code in a URL hash (`…/#t=ARYCBge5YDU`); opening the link applies the settings.
 
 The code and link leave the exam name out deliberately — it is the bulk of the bytes, and a template is meant to be reused under a different exam anyway. That keeps a typical code around 11 characters and the whole link under 60. The encoding is a packed binary layout, so it is deterministic (identical settings always give an identical code, and any difference — including room order — changes it) and self-checking: a truncated or mistyped code is rejected rather than silently misread.
@@ -72,4 +88,4 @@ A template **never contains the student list or the generated plan**. Applying o
 
 > Maintainer note: `ROOM_TABLE` in [`docs/js/template.js`](docs/js/template.js) maps classrooms to the one-byte ids used inside codes. It is **append-only** — reordering or removing entries would decode already-shared codes into the wrong classrooms. A room missing from the list still works; it just makes the code slightly longer.
 
-**Session auto-save** writes the working session — settings, parsed students and the plan including drag-drop swaps and inline edits — to the browser's `localStorage`, so a refresh or an accidental tab close loses nothing. On return a banner reports the restore. Nothing is uploaded; the data stays on that machine, and **Start Fresh** in the Template & Session box erases it. The saved plan is discarded automatically if the classroom layouts changed underneath it.
+**Session auto-save** writes the working session — settings, parsed students and the plan including drag-drop swaps and inline edits — to the browser's `localStorage`, so a refresh or an accidental tab close loses nothing. On return the window opens at the step you left and a banner reports the restore. Nothing is uploaded; the data stays on that machine, and **Start fresh** in step 4 (or in the banner) erases it. A settings change that would reset a plan with hand-made seat changes asks first. The saved plan is discarded automatically if the classroom layouts changed underneath it.

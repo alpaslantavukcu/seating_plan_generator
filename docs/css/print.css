@@ -1,17 +1,19 @@
-/* Print only the active classroom grid. */
+/* Print only the active classroom grid, whichever step is on screen. */
 @media print {
-  .site-header, #setup, .plan-toolbar, .plan-header, #room-meta,
-  .exports, .hint, .site-footer, .toast, #seed-info { display: none !important; }
-  body { background: #fff; }
-  main { margin: 0; padding: 0; max-width: none; }
-  .card { border: none; box-shadow: none; padding: 0; }
-  #plan { display: block !important; }
-  .grid-wrap { overflow: visible; padding: 0; }
-  .room-grid { min-width: 0; gap: 4px; }
+  html, body { height: auto; overflow: visible; background: #fff; }
+  .app { display: block; height: auto; padding: 0; }
+  .window { display: block; height: auto; max-height: none; border-radius: 0; box-shadow: none; overflow: visible; }
+  .win-top, .win-bottom, .notice, .step:not(.step-plan), .plan-toolbar, .sel-bar,
+  .toast, dialog, .edit-pop { display: none !important; }
+  .win-body { overflow: visible; padding: 0; }
+  .step.step-plan, .step.step-plan[hidden] { display: block !important; height: auto; animation: none; }
+
+  .grid-wrap { overflow: visible; padding: 0; border: 0; background: #fff; }
+  .room-grid { height: auto; min-width: 0; max-width: none !important; gap: 4px; }
   .g-title { background: #fff; color: #000; border: 2px solid #000; border-radius: 0; }
   .g-lectern { background: #fff; color: #000; border: 1px solid #000; border-radius: 0; }
-  .g-seat { border-color: #000 !important; background: #fff !important; border-radius: 0; }
+  .g-seat { min-height: 52px; border-color: #000 !important; border-style: solid !important; background: #fff !important; border-radius: 0; box-shadow: none !important; }
   .g-seat .s-id, .g-seat .s-name, .g-seat .s-no { color: #000; }
   .g-corridor { background: #fff; border: 1px dashed #999; border-radius: 0; color: #666; }
-  .g-seat.disabled { background: #f0f0f0 !important; }
+  .g-seat.disabled { background: #f0f0f0 !important; border-style: dashed !important; }
 }

@@ -19,7 +19,9 @@ const state = {
   cellOrder: [...DEFAULT_CELL_ORDER],
   students: [],                // [{id, name, rawName}]
   plan: null,                  // {roomId: [{seat, cell, studentIdx|null}]}
+  planEdited: false,           // true once a seat was swapped, edited or cleared by hand
   activeRoom: null,
+  step: 1,                     // wizard step on screen (1–4)
 };
 
 const listeners = new Set();
@@ -57,4 +59,18 @@ export function setCellField(s, key, enabled) {
     s.cellOrder = s.cellOrder.filter((k) => k !== key);
     s.cellOrder.push(key);
   }
+}
+
+// Capacities that actually apply: the per-room overrides only count while the
+// custom-capacity flag is on (the flag is what templates and codes carry).
+export function effectiveCaps(s = state) {
+  return s.useCustomCapacities ? s.customCapacities : {};
+}
+
+// Forget the generated plan; it no longer matches the settings or students.
+export function dropPlan(s) {
+  s.plan = null;
+  s.usedSeed = null;
+  s.planEdited = false;
+  s.activeRoom = null;
 }
